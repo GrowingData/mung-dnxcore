@@ -1,0 +1,7 @@
+{
+    "name": "mung",
+    "description": "Simple app for collecting and visualizing data",
+    "env": {
+	"BUILDPACK_URL": "https://github.com/heroku/dotnet-buildpack.git"
+    }
+}
