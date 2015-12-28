@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Mvc.Rendering;
 
-namespace MusicStore.Models
+namespace GrowingData.Mung.Web.Models
 {
     public class ExternalLoginConfirmationViewModel
     {

@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Authentication;
 using Microsoft.AspNet.Authentication.Twitter;
 using Microsoft.AspNet.Identity;
-using MusicStore.Mocks.Common;
+using GrowingDataMungWeb.Mocks.Common;
 
-namespace MusicStore.Mocks.Twitter
+namespace GrowingDataMungWeb.Mocks.Twitter
 {
     internal class TestTwitterEvents
     {

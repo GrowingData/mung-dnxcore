@@ -9,10 +9,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Server;
-using MusicStore.Components;
-using MusicStore.Models;
+using GrowingData.Mung.Web.Components;
+using GrowingData.Mung.Web.Models;
 
-namespace MusicStore
+namespace GrowingData.Mung.Web
 {
     /// <summary>
     /// To make runtime to load an environment based startup class, specify the environment by the following ways:

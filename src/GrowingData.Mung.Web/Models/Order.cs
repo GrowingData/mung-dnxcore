@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Mvc.ModelBinding;
 
-namespace MusicStore.Models
+namespace GrowingData.Mung.Web.Models
 {
     //[Bind(Include = "FirstName,LastName,Address,City,State,PostalCode,Country,Phone,Email")]
     public class Order

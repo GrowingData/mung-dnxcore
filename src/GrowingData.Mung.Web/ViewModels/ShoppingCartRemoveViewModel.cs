@@ -1,4 +1,4 @@
-﻿namespace MusicStore.ViewModels
+﻿namespace GrowingData.Mung.Web.ViewModels
 {
     public class ShoppingCartRemoveViewModel
     {

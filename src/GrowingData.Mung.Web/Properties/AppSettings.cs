@@ -1,4 +1,4 @@
-﻿namespace MusicStore
+﻿namespace GrowingData.Mung.Web
 {
     public class AppSettings
     {

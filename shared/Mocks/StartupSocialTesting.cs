@@ -13,15 +13,15 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MusicStore.Components;
-using MusicStore.Mocks.Common;
-using MusicStore.Mocks.Facebook;
-using MusicStore.Mocks.Google;
-using MusicStore.Mocks.MicrosoftAccount;
-using MusicStore.Mocks.Twitter;
-using MusicStore.Models;
+using GrowingDataMungWeb.Components;
+using GrowingDataMungWeb.Mocks.Common;
+using GrowingDataMungWeb.Mocks.Facebook;
+using GrowingDataMungWeb.Mocks.Google;
+using GrowingDataMungWeb.Mocks.MicrosoftAccount;
+using GrowingDataMungWeb.Mocks.Twitter;
+using GrowingDataMungWeb.Models;
 
-namespace MusicStore
+namespace GrowingDataMungWeb
 {
     public class StartupSocialTesting
     {

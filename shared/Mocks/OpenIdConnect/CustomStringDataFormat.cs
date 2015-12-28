@@ -1,7 +1,7 @@
 ﻿#if TESTING
 using Microsoft.AspNet.Authentication;
 
-namespace MusicStore.Mocks.OpenIdConnect
+namespace GrowingDataMungWeb.Mocks.OpenIdConnect
 {
     internal class CustomStringDataFormat : ISecureDataFormat<string>
     {

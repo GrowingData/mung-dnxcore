@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MusicStore.Components
+namespace GrowingData.Mung.Web.Components
 {
     /// <summary>
     /// Abstracts the system clock to facilitate testing.

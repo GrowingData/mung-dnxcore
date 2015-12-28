@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.WebUtilities;
 
-namespace MusicStore.Mocks.MicrosoftAccount
+namespace GrowingDataMungWeb.Mocks.MicrosoftAccount
 {
     /// <summary>
     /// Summary description for MicrosoftAccountMockBackChannelHandler

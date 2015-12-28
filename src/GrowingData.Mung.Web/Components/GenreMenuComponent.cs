@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
-using MusicStore.Models;
+using GrowingData.Mung.Web.Models;
 
-namespace MusicStore.Components
+namespace GrowingData.Mung.Web.Components
 {
     [ViewComponent(Name = "GenreMenu")]
     public class GenreMenuComponent : ViewComponent

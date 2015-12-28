@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace MusicStore
+namespace GrowingData.Mung.Web
 {
     public static class MessageServices
     {

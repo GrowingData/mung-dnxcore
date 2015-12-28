@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNet.Mvc.ModelBinding;
 
-namespace MusicStore.Models
+namespace GrowingData.Mung.Web.Models
 {
     public class Album
     {

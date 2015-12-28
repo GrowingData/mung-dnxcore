@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MusicStore.Components
+namespace GrowingData.Mung.Web.Components
 {
     /// <summary>
     /// Provides access to the normal system clock.

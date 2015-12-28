@@ -6,10 +6,10 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MusicStore.Components;
-using MusicStore.Models;
+using GrowingData.Mung.Web.Components;
+using GrowingData.Mung.Web.Models;
 
-namespace MusicStore
+namespace GrowingData.Mung.Web
 {
     public class Startup
     {

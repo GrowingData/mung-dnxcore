@@ -5,10 +5,10 @@ using Microsoft.AspNet.Antiforgery;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Primitives;
-using MusicStore.Models;
-using MusicStore.ViewModels;
+using GrowingData.Mung.Web.Models;
+using GrowingData.Mung.Web.ViewModels;
 
-namespace MusicStore.Controllers
+namespace GrowingData.Mung.Web.Controllers
 {
     public class ShoppingCartController : Controller
     {

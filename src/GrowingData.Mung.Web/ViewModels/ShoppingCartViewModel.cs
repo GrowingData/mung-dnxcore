@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using MusicStore.Models;
+using GrowingData.Mung.Web.Models;
 
-namespace MusicStore.ViewModels
+namespace GrowingData.Mung.Web.ViewModels
 {
     public class ShoppingCartViewModel
     {

@@ -8,10 +8,10 @@ using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Caching.Memory;
-using MusicStore.Models;
-using MusicStore.ViewModels;
+using GrowingData.Mung.Web.Models;
+using GrowingData.Mung.Web.ViewModels;
 
-namespace MusicStore.Areas.Admin.Controllers
+namespace GrowingData.Mung.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
     [Authorize("ManageStore")]

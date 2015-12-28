@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Http;
 using Microsoft.Data.Entity;
 
-namespace MusicStore.Models
+namespace GrowingData.Mung.Web.Models
 {
     public class ShoppingCart
     {

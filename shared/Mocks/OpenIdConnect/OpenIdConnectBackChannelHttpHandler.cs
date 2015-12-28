@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MusicStore.Mocks.OpenIdConnect
+namespace GrowingDataMungWeb.Mocks.OpenIdConnect
 {
     internal class OpenIdConnectBackChannelHttpHandler : HttpMessageHandler
     {

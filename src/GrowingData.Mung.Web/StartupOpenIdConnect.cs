@@ -6,11 +6,10 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using MusicStore.Components;
-using MusicStore.Models;
+using GrowingData.Mung.Web.Components;
+using GrowingData.Mung.Web.Models;
 
-namespace MusicStore
-{
+namespace GrowingData.Mung.Web {
     /// <summary>
     /// To make runtime to load an environment based startup class, specify the environment by the following ways:
     /// 1. Drop a Microsoft.AspNet.Hosting.ini file in the wwwroot folder
@@ -28,12 +27,10 @@ namespace MusicStore
     /// --server.urls http://localhost:5002 --ASPNET_ENV OpenIdConnect",
     ///  },
     /// </summary>
-    public class StartupOpenIdConnect
-    {
+    public class StartupOpenIdConnect {
         private readonly Platform _platform;
 
-        public StartupOpenIdConnect(IApplicationEnvironment env, IRuntimeEnvironment runtimeEnvironment)
-        {
+        public StartupOpenIdConnect(IApplicationEnvironment env, IRuntimeEnvironment runtimeEnvironment) {
             // Below code demonstrates usage of multiple configuration sources. For instance a setting say 'setting1'
             // is found in both the registered sources, then the later source will win. By this way a Local config can
             // be overridden by a different setting while deployed remotely.
@@ -49,22 +46,18 @@ namespace MusicStore
 
         public IConfiguration Configuration { get; private set; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public void ConfigureServices(IServiceCollection services) {
             services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             var useInMemoryStore = _platform.IsRunningOnMono || _platform.IsRunningOnNanoServer;
 
             // Add EF services to the services container
-            if (useInMemoryStore)
-            {
+            if (useInMemoryStore) {
                 services.AddEntityFramework()
                         .AddInMemoryDatabase()
                         .AddDbContext<MusicStoreContext>(options =>
                             options.UseInMemoryDatabase());
-            }
-            else
-            {
+            } else {
                 services.AddEntityFramework()
                         .AddSqlServer()
                         .AddDbContext<MusicStoreContext>(options =>
@@ -76,10 +69,8 @@ namespace MusicStore
                     .AddEntityFrameworkStores<MusicStoreContext>()
                     .AddDefaultTokenProviders();
 
-            services.AddCors(options =>
-            {
-                options.AddPolicy("CorsPolicy", builder =>
-                {
+            services.AddCors(options => {
+                options.AddPolicy("CorsPolicy", builder => {
                     builder.WithOrigins("http://example.com");
                 });
             });
@@ -97,8 +88,7 @@ namespace MusicStore
             services.AddSingleton<ISystemClock, SystemClock>();
 
             // Configure Auth
-            services.AddAuthorization(options =>
-            {
+            services.AddAuthorization(options => {
                 options.AddPolicy(
                     "ManageStore",
                     authBuilder => {
@@ -107,8 +97,7 @@ namespace MusicStore
             });
         }
 
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
-        {
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory) {
             loggerFactory.AddConsole(minLevel: LogLevel.Warning);
 
             app.UseStatusCodePagesWithRedirects("~/Home/StatusCodePage");
@@ -134,15 +123,13 @@ namespace MusicStore
             app.UseIdentity();
 
             // Create an Azure Active directory application and copy paste the following
-            app.UseOpenIdConnectAuthentication(options =>
-            {
+            app.UseOpenIdConnectAuthentication(options => {
                 options.Authority = "https://login.windows.net/[tenantName].onmicrosoft.com";
                 options.ClientId = "[ClientId]";
             });
 
             // Add MVC to the request pipeline
-            app.UseMvc(routes =>
-            {
+            app.UseMvc(routes => {
                 routes.MapRoute(
                     name: "areaRoute",
                     template: "{area:exists}/{controller}/{action}",

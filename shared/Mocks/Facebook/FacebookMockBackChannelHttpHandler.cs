@@ -4,9 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.WebUtilities;
-using MusicStore.Mocks.Common;
+using GrowingDataMungWeb.Mocks.Common;
 
-namespace MusicStore.Mocks.Facebook
+namespace GrowingDataMungWeb.Mocks.Facebook
 {
     /// <summary>
     /// Summary description for FacebookMockBackChannelHttpHandler

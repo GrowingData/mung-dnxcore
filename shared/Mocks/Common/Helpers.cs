@@ -1,7 +1,7 @@
 ﻿#if TESTING
 using System;
 
-namespace MusicStore.Mocks.Common
+namespace GrowingDataMungWeb.Mocks.Common
 {
     internal class Helpers
     {

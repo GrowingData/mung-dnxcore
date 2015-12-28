@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.WebUtilities;
 
-namespace MusicStore.Mocks.Twitter
+namespace GrowingDataMungWeb.Mocks.Twitter
 {
     /// <summary>
     /// Summary description for TwitterMockBackChannelHttpHandler

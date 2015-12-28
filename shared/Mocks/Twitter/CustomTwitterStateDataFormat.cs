@@ -3,7 +3,7 @@ using Microsoft.AspNet.Authentication;
 using Microsoft.AspNet.Authentication.Twitter;
 using Newtonsoft.Json;
 
-namespace MusicStore.Mocks.Twitter
+namespace GrowingDataMungWeb.Mocks.Twitter
 {
     /// <summary>
     /// Summary description for CustomTwitterStateDataFormat

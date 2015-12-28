@@ -7,9 +7,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Mvc.Rendering;
 using Microsoft.Extensions.DependencyInjection;
-using MusicStore.Models;
+using GrowingData.Mung.Web.Models;
 
-namespace MusicStore.Controllers
+namespace GrowingData.Mung.Web.Controllers
 {
     [Authorize]
     public class AccountController : Controller

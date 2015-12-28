@@ -9,7 +9,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MusicStore.Models
+namespace GrowingData.Mung.Web.Models
 {
     public static class SampleData
     {

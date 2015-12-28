@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Authorization;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
-using MusicStore.Models;
+using GrowingData.Mung.Web.Models;
 
-namespace MusicStore.Controllers
+namespace GrowingData.Mung.Web.Controllers
 {
     [Authorize]
     public class CheckoutController : Controller

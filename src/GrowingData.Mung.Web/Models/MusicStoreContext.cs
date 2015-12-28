@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Data.Entity;
 
-namespace MusicStore.Models
+namespace GrowingData.Mung.Web.Models
 {
     public class ApplicationUser : IdentityUser { }
 

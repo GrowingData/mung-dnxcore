@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Authentication.OpenIdConnect;
 using Microsoft.AspNet.Http;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using MusicStore.Mocks.Common;
+using GrowingDataMungWeb.Mocks.Common;
 
-namespace MusicStore.Mocks.OpenIdConnect
+namespace GrowingDataMungWeb.Mocks.OpenIdConnect
 {
     internal class TestOpenIdConnectEvents
     {

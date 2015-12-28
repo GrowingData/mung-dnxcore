@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 
-namespace MusicStore
+namespace GrowingData.Mung.Web
 {
     /// <summary>
     /// This demonstrates how the application can be launched in a console application.

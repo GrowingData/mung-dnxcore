@@ -7,9 +7,9 @@ using Microsoft.AspNet.Authentication;
 using Microsoft.AspNet.Authentication.MicrosoftAccount;
 using Microsoft.AspNet.Authentication.OAuth;
 using Microsoft.AspNet.Identity;
-using MusicStore.Mocks.Common;
+using GrowingDataMungWeb.Mocks.Common;
 
-namespace MusicStore.Mocks.MicrosoftAccount
+namespace GrowingDataMungWeb.Mocks.MicrosoftAccount
 {
     internal class TestMicrosoftAccountEvents
     {

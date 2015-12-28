@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace MusicStore.Models
+namespace GrowingData.Mung.Web.Models
 {
     public class Artist
     {

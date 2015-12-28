@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
 using Microsoft.Data.Entity;
 using Microsoft.Extensions.Caching.Memory;
-using MusicStore.Models;
+using GrowingData.Mung.Web.Models;
 
-namespace MusicStore.Controllers
+namespace GrowingData.Mung.Web.Controllers
 {
     public class StoreController : Controller
     {

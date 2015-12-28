@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.PlatformAbstractions;
 
-namespace MusicStore
+namespace GrowingData.Mung.Web
 {
     internal class Platform
     {

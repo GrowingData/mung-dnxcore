@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Mvc;
-using MusicStore.Models;
+using GrowingData.Mung.Web.Models;
 
-namespace MusicStore.Components
+namespace GrowingData.Mung.Web.Components
 {
     [ViewComponent(Name = "CartSummary")]
     public class CartSummaryComponent : ViewComponent

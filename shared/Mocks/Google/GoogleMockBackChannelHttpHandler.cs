@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Http.Internal;
 using Microsoft.AspNet.WebUtilities;
 
-namespace MusicStore.Mocks.Google
+namespace GrowingDataMungWeb.Mocks.Google
 {
     /// <summary>
     /// Summary description for GoogleMockBackChannelHttpHandler
