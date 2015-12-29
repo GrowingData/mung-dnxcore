@@ -2,10 +2,8 @@
 using System.Runtime.InteropServices;
 using Microsoft.Extensions.PlatformAbstractions;
 
-namespace GrowingData.Mung.Web
-{
-    internal class Platform
-    {
+namespace GrowingData.Mung.Web {
+    internal class Platform {
         // Defined in winnt.h
         private const int PRODUCT_NANO_SERVER = 0x0000006D;
 
@@ -23,8 +21,7 @@ namespace GrowingData.Mung.Web
         private bool? _isMono;
         private bool? _isWindows;
 
-        public Platform(IRuntimeEnvironment runtimeEnvironment)
-        {
+        public Platform(IRuntimeEnvironment runtimeEnvironment) {
             _runtimeEnvironment = runtimeEnvironment;
         }
 
@@ -32,8 +29,7 @@ namespace GrowingData.Mung.Web
         {
             get
             {
-                if (_isWindows == null)
-                {
+                if (_isWindows == null) {
                     _isWindows = _runtimeEnvironment.OperatingSystem.Equals(
                         "Windows", StringComparison.OrdinalIgnoreCase);
                 }
@@ -46,8 +42,7 @@ namespace GrowingData.Mung.Web
         {
             get
             {
-                if (_isMono == null)
-                {
+                if (_isMono == null) {
                     _isMono = _runtimeEnvironment.RuntimeType.Equals("Mono", StringComparison.OrdinalIgnoreCase);
                 }
 
@@ -59,24 +54,17 @@ namespace GrowingData.Mung.Web
         {
             get
             {
-                if (_isNano == null)
-                {
+                if (_isNano == null) {
                     var osVersion = new Version(_runtimeEnvironment.OperatingSystemVersion ?? "");
 
-                    try
-                    {
+                    try {
                         int productType;
-                        if (GetProductInfo(osVersion.Major, osVersion.Minor, 0, 0, out productType))
-                        {
+                        if (GetProductInfo(osVersion.Major, osVersion.Minor, 0, 0, out productType)) {
                             _isNano = productType == PRODUCT_NANO_SERVER;
-                        }
-                        else
-                        {
+                        } else {
                             _isNano = false;
                         }
-                    }
-                    catch
-                    {
+                    } catch {
                         // If the API call fails, the API set is not there which means
                         // that we are definetely not running on Nano
                         _isNano = false;

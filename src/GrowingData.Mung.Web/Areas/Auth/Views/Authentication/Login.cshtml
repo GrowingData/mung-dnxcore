@@ -1,0 +1,49 @@
+﻿@{
+	ViewBag.Title = "Login";
+
+	var message = ViewBag.ErrorMessage as string;
+}
+
+
+<div class="row">
+	<div class="col-sm-offset-2 col-sm-8">
+		<div class="mung-section">
+			<div class="section-header">
+				<h2>Login</h2>
+			</div>
+
+			<div class="section-inner">
+				<form action="/@GrowingData.Mung.Web.Urls.LOGIN" method="post">
+					@if (!string.IsNullOrEmpty(message)) {
+						<div class="col-sm-2"></div>
+						<div class="col-sm-10">
+							<div class="red-bg login-error-message">@message</div>
+						</div>
+					}
+
+
+
+					<fieldset class="form-group row">
+						<label for="exampleInputEmail1" class="col-sm-2">Email address</label>
+						<div class="col-sm-10">
+							<input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+						</div>
+					</fieldset>
+
+					<fieldset class="form-group row">
+						<label for="exampleInputPassword1" class="col-sm-2">Password</label>
+						<div class="col-sm-10">
+							<input type="password" class="form-control" id="password" name="password" placeholder="Password">
+						</div>
+					</fieldset>
+					<div class="form-group row">
+						<div class="col-sm-offset-2 col-sm-10">
+							<button type="submit" class="btn green-bg">Login</button>
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

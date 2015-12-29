@@ -1,0 +1,19 @@
+﻿@{
+	// Find all the templates, and render them.  Do it on the fly because its more fun.
+	var env = ViewBag.HostingEnvironment as IHostingEnvironment;
+
+	var path = env.MapPath("../Areas/Dashboard/Views/Shared/GraphTemplates");
+	var templateDirectories = System.IO.Directory.EnumerateDirectories(path);
+}
+
+@foreach (var template in templateDirectories) {
+	var templateName = new DirectoryInfo(template).Name;
+	var view = Directory.EnumerateFiles(template, "*.cshtml").FirstOrDefault();
+	var fi = new FileInfo(view);
+	var nameWithoutExtension = fi.Name.Split('.').First();
+<div class="graph-templates">
+	<div class="graph-template @nameWithoutExtension">
+	@Html.Partial(string.Format("GraphTemplates/{0}/{1}", templateName, nameWithoutExtension))
+	</div>
+</div>
+}

@@ -1,0 +1,15 @@
+Pages:
+
+https://github.com/aspnet/Security/blob/dev/samples/CookieSessionSample/MemoryCacheTicketStore.cs
+
+https://github.com/aspnet/Security/blob/dev/samples/CookieSessionSample/Startup.cs
+https://github.com/aspnet/Security/blob/dev/src/Microsoft.AspNet.Authentication.Cookies/CookieAuthenticationHandler.cs
+
+
+
+https://www.nuget.org/packages/Microsoft.AspNet.Authentication.Cookies/
+
+http://www.npgsql.org/doc/copy.html
+https://www.nuget.org/packages/Npgsql/3.1.0-alpha6
+https://www.nuget.org/packages/CsvToolkit/
+https://www.nuget.org/packages/OAuth.AspNet.Tokens

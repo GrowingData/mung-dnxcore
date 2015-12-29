@@ -1,0 +1,84 @@
+﻿
+<div class="graph-template-inner show-sql show-html">
+
+	<h1>Table</h1>
+
+	<p class="explanation">
+		Build an SQL statement that you would like the output of which
+		bound a table in the graph.
+	</p>
+
+	<div class="instructions">
+		<h1>Documentation</h1>
+		<p>
+			You can change the formatting of any of the columns by setting the
+			"data-format-units" value to a pipe "|" seperated list of format
+			codes.
+		</p>
+
+		<h2>Simple formatting</h2>
+		<p>
+			You can use the "data-format-unit" attribute on the element
+			that you bind to, so format the value in the of the following
+			ways:
+		</p>
+		<table class="format-guide">
+			<tr>
+				<th>Format code</th>
+				<th>Description</th>
+				<th>Example</th>
+			</tr>
+			<tr>
+				<td><b>integer</b></td>
+				<td>No decimal places, with thousand seperators (",")</td>
+				<td>1234.05 -> "1,234"</td>
+			</tr>
+			<tr>
+				<td><b>float2dp</b></td>
+				<td>Rounded to 2 decimal places, with thousand seperators (",")</td>
+				<td>1,234.56" -> "1,234.57"</td>
+			</tr>
+			<tr>
+				<td><b>percent</b></td>
+				<td>Converts a number to a percent</td>
+				<td>0.05 -> "5%"</td>
+			</tr>
+			<tr>
+				<td><b>dollars</b></td>
+				<td>Displays a number as dollars, with 2 significant figures</td>
+				<td>1,234.567 -> "$1,234.56"</td>
+			</tr>
+
+		</table>
+
+		<h2>
+			Use d3 formatting strings (Advanced)
+		</h2>
+		<p>
+			If you are familiar with using <a href="https://github.com/mbostock/d3/wiki/Formatting" target="_blank">d3 format strings</a>,
+			you may use these by setting the "data-format-d3" attribute.
+		</p>
+	</div>
+
+
+
+	<pre class="default-sql">
+SELECT url, COUNT(*) as request_count
+FROM dyn.request
+WHERE _at_ > DATEADD(DAY, -1, GETUTCDATE())
+AND url NOT LIKE '/api%'
+GROUP BY url
+ORDER BY request_count DESC
+	</pre>
+
+	<pre class="default-html">
+<div class="mung-table-binder" data-format-unit="string|integer">
+</div>
+	</pre>
+
+	<pre class="default-js">
+function(data, $component){
+	$component.find(".mung-table-binder").mungTableBinder(data);
+}
+	</pre>
+</div>

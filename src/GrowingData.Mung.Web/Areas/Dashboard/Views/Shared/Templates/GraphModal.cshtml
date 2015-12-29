@@ -1,0 +1,104 @@
+﻿<!-- <Templates/ViewModal> -->
+@{
+	// Find all the templates, and render them.  Do it on the fly because its more fun.
+	var env = ViewBag.HostingEnvironment as IHostingEnvironment;
+
+	var path = env.MapPath("../Areas/Dashboard/Views/Shared/GraphTemplates");
+	var templateDirectories = System.IO.Directory.EnumerateDirectories(path);
+}
+
+<div id="edit-graph" class="modal fade">
+	<div class="modal-dialog modal-lg" >
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">
+					<span class="edit">Edit component</span>
+					<span class="add">Add component</span>
+
+				</h4>
+			</div>
+			<div class="modal-body">
+
+				<div class="row">
+					<div class="col col-sm-12">
+						<label>Graph template</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-9">
+					</div>
+					<div class="col col-sm-3">
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col col-sm-9">
+						<label>Graph title</label>
+						<input type="text" class="graph-title" placeholder="Enter a title for your graph" />
+					</div>
+					<div class="col col-sm-3">
+						<label>Graph template</label>
+						<button class="btn load-template blue-bg pull-right" style="margin-top:32px; width:60px;">Load</button>
+						<select class="select-template" style="margin-right:120px; width:auto">
+							@foreach (var template in templateDirectories) {
+								var templateName = new DirectoryInfo(template).Name;
+								<option value="@templateName">@templateName</option>
+							}
+						</select>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col col-sm-12">
+						<label>SQL</label>
+						<select class="pull-right select-connection">
+							@foreach (var connection in Connection.List()) {
+								<option value="@connection.ConnectionId">@connection.Name</option>
+							}
+						</select>
+						<div class="editor-sql">
+							<textarea class="text-sql"></textarea>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col col-sm-12">
+						<label>HTML</label>
+						<div class="editor-html">
+							<textarea class="component-html"></textarea>
+						</div>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col col-sm-12">
+						<label>Javascript</label>
+						<div class="editor-js">
+							<textarea class="component-js"></textarea>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-12">
+						<button type="button" class="btn btn-primary btn-preview blue-bg" style="margin:0 auto; display:block;">Preview</button>
+						<div class="preview graph">
+
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default left btn-close">Close</button>
+				<button type="button" class="btn right btn-save green-bg">Save</button>
+			</div>
+		</div>
+	</div>
+
+</div>
+<!-- </Templates/ViewModal> -->

@@ -1,0 +1,41 @@
+﻿<!-- <Templates/ViewModal> -->
+<div id="add-dashboard-modal" class="modal fade">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">
+					<span class="add">Create dashboard</span>
+
+				</h4>
+			</div>
+			<div class="modal-body">
+				<input type="text" class="dashboard-title" placeholder="Enter a title for your dashboard" />
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default left btn-close">Close</button>
+				<button type="button" class="btn right btn-save green-bg">Create</button>
+			</div>
+		</div>
+
+
+		<script type="text/javascript">
+			MungOnLoader(function () {
+				$("#add-dashboard-modal .btn-save").click(function () {
+					document.location = "/create/dashboard/" + MUNG.Utilities.convertToUrl($(".dashboard-title").val());
+				});
+
+				$("#add-dashboard-modal .btn-close").click(function () {
+					$("#add-dashboard-modal").modal('hide');
+				});
+
+				$(".add-dashboard-button").click(function () {
+					$("#add-dashboard-modal").modal('show');
+				});
+			});
+		</script>
+	</div>
+</div>
+<!-- </Templates/ViewModal> -->

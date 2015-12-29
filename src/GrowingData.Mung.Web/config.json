@@ -1,14 +1,18 @@
 ﻿{
-    "AppSettings": {
-        "SiteTitle": "ASP.NET MVC Music Store"
-    },
-    "DefaultAdminUsername": "Administrator@test.com",
-    "DefaultAdminPassword": "YouShouldChangeThisPassword1!",
-    "Data": {
-        "DefaultConnection": {
-            // Use a shared (and running) LocalDB database when executing in IIS e.g.
-            // "Server=(localdb)\\.\\IIS_DB;Database=MusicStore;Trusted_Connection=False;MultipleActiveResultSets=true;User ID=iis_login;Password=********"
-            "Connectionstring": "Server=(localdb)\\MSSQLLocalDB;Database=MusicStore;Trusted_Connection=True;MultipleActiveResultSets=true"
-        }
-    }
+	"AppSettings": {
+		"SiteTitle": "ASP.NET MVC Music Store"
+	},
+	"Data": {
+		"DefaultConnection": {
+			"Connectionstring": "data source=.\\SqlExpress;initial catalog=mung;persist security info=True;user id=tezza;password=123456;multipleactiveresultsets=True"
+		}
+	},
+	"Logging": {
+		"IncludeScopes": false,
+		"LogLevel": {
+			"Default": "Verbose",
+			"System": "Information",
+			"Microsoft": "Information"
+		}
+	}
 }

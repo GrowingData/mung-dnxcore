@@ -1,0 +1,44 @@
+﻿@{
+
+	var dashboard = ViewBag.Dashboard as Dashboard;
+	ViewBag.Title = dashboard.Title;
+
+	var graphs = ViewBag.Graphs as List<Graph>;
+
+	var graphsJson = Newtonsoft.Json.JsonConvert.SerializeObject(graphs);
+	var dashboardJson = Newtonsoft.Json.JsonConvert.SerializeObject(dashboard);
+}
+
+<div class="dashboard ">
+	<div class="dashboard-header">
+
+		<h2 class="dashboard-title">
+			@dashboard.Title
+		<button type="button" class="btn btn-info btn-sm green-bg pull-right" id="add-graph">+ Add graph</button>
+
+	</h2>
+</div>
+
+<div class="graph-holder grid-stack">
+
+
+</div>
+
+
+</div>
+
+@Html.Partial("Templates/GraphModal")
+@Html.Partial("Templates/Graph")
+
+@Html.Partial("GraphTemplates")
+
+
+
+<script type="text/javascript">
+	MungOnLoader(function () {
+		var dashboard = $(".dashboard").mungDashboard(
+			@Html.Raw( dashboardJson ),
+			@Html.Raw(graphsJson)
+		);
+	});
+</script>
