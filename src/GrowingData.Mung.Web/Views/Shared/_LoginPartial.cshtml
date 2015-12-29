@@ -13,7 +13,7 @@
 		<a class="pull-right" href="javascript:void(0)">@mungerIdentity.Munger.Name</a>
 	</li>
 	<li>
-		<form method="post" action="/logout">
+		<form method="post" action="/@Urls.LOGOUT">
 			<button type="submit" class="btn btn-info btn-sm red-bg">Sign out</button>
 		</form>
 	</li>
@@ -21,10 +21,10 @@
 } else {
 <ul class="nav navbar-nav navbar-right">
 	<li>
-		<a class="pull-right" href="/join">Join</a>
+		<a class="pull-right" href="/@Urls.INITIAL_ACCOUNT_CREATE">Setup</a>
 	</li>
 	<li>
-		<a class="pull-right" href="/login">Login</a>
+		<a class="pull-right" href="/@Urls.LOGIN">Login</a>
 	</li>
 </ul>
 }

@@ -1,50 +1,48 @@
 ﻿{
-  "userSecretsId": "aspnet5-GrowingData.Mung.Web-351d3ca8-d07b-40eb-a1c1-089f6a37a2e3",
-  "version": "1.0.0-*",
-  "compilationOptions": {
-    "emitEntryPoint": true
-  },
+	"userSecretsId": "aspnet5-GrowingData.Mung.Web-351d3ca8-d07b-40eb-a1c1-089f6a37a2e3",
+	"version": "1.0.0-*",
+	"compilationOptions": {
+		"emitEntryPoint": true
+	},
 
-  "dependencies": {
-    "EntityFramework.Commands": "7.0.0-rc1-final",
-    "EntityFramework.MicrosoftSqlServer": "7.0.0-rc1-final",
-    "GrowingData.Utilities.DnxCore": "",
-    "Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Diagnostics.Entity": "7.0.0-rc1-final",
-    "Microsoft.AspNet.Identity.EntityFramework": "3.0.0-rc1-final",
-    "Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
-    "Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
-    "Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
-    "Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
-    "Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
-    "Microsoft.Extensions.CodeGenerators.Mvc": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.FileProviderExtensions": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Configuration.UserSecrets": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
-    "Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
-    "Microsoft.VisualStudio.Web.BrowserLink.Loader": "14.0.0-rc1-final"
-  },
+	"dependencies": {
+		"GrowingData.Utilities.DnxCore": "",
+		"GrowingData.Mung.Core": "",
+		"GrowingData.Mung.Relationizer": "",
+		"Microsoft.AspNet.Authentication.Cookies": "1.0.0-rc1-final",
+		"Microsoft.AspNet.Diagnostics.Entity": "7.0.0-rc1-final",
+		"Microsoft.AspNet.IISPlatformHandler": "1.0.0-rc1-final",
+		"Microsoft.AspNet.Mvc": "6.0.0-rc1-final",
+		"Microsoft.AspNet.Mvc.TagHelpers": "6.0.0-rc1-final",
+		"Microsoft.AspNet.Server.Kestrel": "1.0.0-rc1-final",
+		"Microsoft.AspNet.StaticFiles": "1.0.0-rc1-final",
+		"Microsoft.AspNet.Tooling.Razor": "1.0.0-rc1-final",
+		"Microsoft.Extensions.CodeGenerators.Mvc": "1.0.0-rc1-final",
+		"Microsoft.Extensions.Configuration.FileProviderExtensions": "1.0.0-rc1-final",
+		"Microsoft.Extensions.Configuration.Json": "1.0.0-rc1-final",
+		"Microsoft.Extensions.Configuration.UserSecrets": "1.0.0-rc1-final",
+		"Microsoft.Extensions.Logging": "1.0.0-rc1-final",
+		"Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
+		"Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final"
+	},
 
-  "commands": {
-    "web": "Microsoft.AspNet.Server.Kestrel"
-  },
+	"commands": {
+		"web": "Microsoft.AspNet.Server.Kestrel"
+	},
 
-  "frameworks": {
-    "dnxcore50": { }
-  },
+	"frameworks": {
+		"dnxcore50": { }
+	},
 
-  "exclude": [
-    "wwwroot",
-    "node_modules"
-  ],
-  "publishExclude": [
-    "**.user",
-    "**.vspscc"
-  ],
-  "scripts": {
-    "prepublish": [ "npm install", "bower install", "gulp clean", "gulp min" ]
-  }
+	"exclude": [
+		"wwwroot",
+		"node_modules"
+	],
+	"publishExclude": [
+		"**.user",
+		"**.vspscc"
+	],
+	"scripts": {
+		"prepublish": [ "npm install", "bower install", "gulp clean", "gulp min" ]
+	}
 }

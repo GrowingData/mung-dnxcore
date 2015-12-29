@@ -1,21 +1,21 @@
 ﻿{
-  "authors": [ "Tez" ],
-  "dependencies": {
-    "Newtonsoft.Json": "7.0.1",
-    "System.Data.Common": "4.0.1-beta-23516",
-    "System.Data.SqlClient": "4.0.0-beta-23516",
-    "System.Linq": "4.0.1-beta-23516",
-    "System.Reflection.TypeExtensions": "4.1.0-beta-23516",
-    "System.Security.Cryptography.Primitives": "4.0.0-beta-23516",
-    "System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-    "System.Threading.Thread": "4.0.0-beta-23516"
-  },
-  "description": "GrowingData.Utilities.DnxCore Class Library",
-  "frameworks": {
-    "dnxcore50": { }
-  },
-  "licenseUrl": "",
-  "projectUrl": "",
-  "tags": [ "" ],
-  "version": "1.0.0-*"
+	"authors": [ "Terence Siganakis" ],
+	"dependencies": {
+		"Newtonsoft.Json": "7.0.1",
+		"System.Data.Common": "4.0.1-beta-23516",
+		"System.Data.SqlClient": "4.0.0-beta-23516",
+		"System.Linq": "4.0.1-beta-23516",
+		"System.Reflection.TypeExtensions": "4.1.0-beta-23516",
+		"System.Security.Cryptography.Primitives": "4.0.0-beta-23516",
+		"System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
+		"System.Threading.Thread": "4.0.0-beta-23516"
+	},
+	"description": "GrowingData.Utilities.DnxCore Class Library",
+	"frameworks": {
+		"dnxcore50": { }
+	},
+	"licenseUrl": "",
+	"projectUrl": "",
+	"tags": [ "" ],
+	"version": "1.0.0-*"
 }
