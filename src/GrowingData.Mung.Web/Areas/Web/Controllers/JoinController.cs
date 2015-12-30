@@ -7,7 +7,7 @@ using GrowingData.Mung.Web;
 using GrowingData.Mung.Web.Models;
 
 namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
-	[Area("Auth")]
+	[Area("Web")]
 	public class SetupController : Controller {
 
 		// GET: Auth/Authenication

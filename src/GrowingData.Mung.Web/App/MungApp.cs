@@ -6,11 +6,12 @@ using System.Data.SqlClient;
 using GrowingData.Mung.Core;
 using Microsoft.AspNet.Hosting;
 using GrowingData.Mung.Relationizer;
+using GrowingData.Mung.Web.Models;
 
 namespace GrowingData.Mung.Web {
 	public class MungApp {
 		private static MungApp _app;
-		public static MungApp App {
+		public static MungApp Current {
 			get {
 				if (_app == null) {
 					throw new InvalidOperationException("Please call MungApp.Initialize before trying to access the App");
@@ -23,6 +24,7 @@ namespace GrowingData.Mung.Web {
 
 		public static void Initialize(IHostingEnvironment env) {
 			_app = new MungApp(env);
+			
 		}
 
 		private EventPipeline _pipeline;
@@ -35,7 +37,7 @@ namespace GrowingData.Mung.Web {
 		public string DataPath {
 			get {
 				return _dataPath;
-		}
+			}
 		}
 
 
@@ -44,7 +46,7 @@ namespace GrowingData.Mung.Web {
 			_env = env;
 
 			_basePath = new DirectoryInfo(env.WebRootPath).Parent.FullName;
-			
+
 
 			_dataPath = Path.Combine(_basePath, "data");
 
@@ -54,6 +56,14 @@ namespace GrowingData.Mung.Web {
 
 
 			_pipeline.AddProcessor(new RelationalEventProcessor(_dataPath));
+
+			// Set the serializer for our JWT
+			JwtHelper.InitializeJsonSerialization();
+
+
+			// Check to see if we have an "apps" yet, if not create one
+			App.InitializeApps();
+
 		}
 
 

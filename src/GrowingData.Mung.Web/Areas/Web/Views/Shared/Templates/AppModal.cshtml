@@ -1,0 +1,44 @@
+﻿<!-- <Templates/ViewModal> -->
+<div id="add-app-modal" class="modal fade">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">
+					<span class="add">Create app</span>
+
+				</h4>
+			</div>
+			<form method="post" action="/app/create" id="form-create-app">
+				<div class="modal-body">
+					<input type="text" class="dashboard-title" placeholder="Enter a name for your app" />
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default left btn-close">Close</button>
+					<button type="button" class="btn right btn-save green-bg">Create app</button>
+				</div>
+			</form>
+		</div>
+
+
+		<script type="text/javascript">
+			MungOnLoader(function () {
+				$("#add-app-modal .btn-save").click(function () {
+					$("#form-create-app").submit();
+				});
+
+				$("#add-app-modal .btn-close").click(function () {
+					$("#add-dashboard-modal").modal('hide');
+					return false;
+				});
+
+				$(".add-app-button").click(function () {
+					$("#add-dashboard-modal").modal('show');
+				});
+			});
+		</script>
+	</div>
+</div>
+<!-- </Templates/ViewModal> -->

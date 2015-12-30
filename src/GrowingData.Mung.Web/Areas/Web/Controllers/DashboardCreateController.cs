@@ -9,7 +9,7 @@ using GrowingData.Utilities.DnxCore;
 
 namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
-	[Area("Dashboard")]
+	[Area("Web")]
 	public class DashboardCreateController : MungSecureController {
 
 		public DashboardCreateController(IHostingEnvironment env) : base(env) {

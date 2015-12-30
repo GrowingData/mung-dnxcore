@@ -6,7 +6,7 @@ using GrowingData.Mung.Web.Models;
 
 namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
-	[Area("Dashboard")]
+	[Area("Web")]
 	public class FirehoseController : MungSecureController {
 
 		public FirehoseController(IHostingEnvironment env) : base(env) {

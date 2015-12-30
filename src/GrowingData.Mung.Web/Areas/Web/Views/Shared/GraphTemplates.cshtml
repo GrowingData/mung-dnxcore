@@ -2,7 +2,7 @@
 	// Find all the templates, and render them.  Do it on the fly because its more fun.
 	var env = ViewBag.HostingEnvironment as IHostingEnvironment;
 
-	var path = env.MapPath("../Areas/Dashboard/Views/Shared/GraphTemplates");
+	var path = env.MapPath("../Areas/Web/Views/Shared/GraphTemplates");
 	var templateDirectories = System.IO.Directory.EnumerateDirectories(path);
 }
 

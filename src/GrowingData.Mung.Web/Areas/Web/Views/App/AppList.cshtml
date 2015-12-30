@@ -1,0 +1,52 @@
+﻿@{
+	ViewBag.Title = "Apps";
+
+	var apps = ViewBag.Apps as List<App>;
+}
+<div class="row">
+	<div class="col-sm-12">
+		<div class="mung-section">
+			<div class="section-header">
+				<button type="button" class="btn btn-md green-bg pull-right add-dashboard-button">+ Add App</button>
+				<h2> Apps</h2>
+				<p>
+					"Apps" generate the data that Mung consumes.  To make sure that only apps you approve
+					are able to add data to your data warehouse, we require that each app has an "AppKey"
+					and "AppSecret" which secure communications between Mung and your application.
+
+				</p>
+			</div>
+
+			@if (apps.Count == 0) {
+			<div class="empty-message">
+				You have not yet created any apps, please use the
+				"Add dashboard" button above to get started.
+			</div>
+
+			}
+
+			<div class="section-header" style="padding-bottom:20px;">
+				<table class="table mung-table">
+					<tr>
+						<th>App name</th>
+						<th>AppKey</th>
+						<th>AppSecret</th>
+					</tr>
+					@foreach (var app in apps) {
+				<tr>
+					<td>@app.Name</td>
+					<td>@app.AppKey</td>
+					<td>@app.AppSecret</td>
+				</tr>
+					}
+				</table>
+
+			</div>
+		</div>
+
+	</div>
+
+</div>
+
+
+@Html.Partial("Templates/DashboardModal")
