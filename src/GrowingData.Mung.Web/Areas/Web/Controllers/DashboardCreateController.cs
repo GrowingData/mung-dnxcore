@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Hosting;
-using GrowingData.Mung;
+using GrowingData.Mung.Web.Models;
 using GrowingData.Utilities.DnxCore;
 
 
@@ -25,20 +25,29 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 					.Replace("/", "");
 			}
 
-			using (var cn = DatabaseContext.Db.Metadata()) {
+			using (var cn = DatabaseContext.Db.Mung()) {
 
 				// Does the URL already exist?
 
-				var existing = cn.DumpList<int>(@"SELECT DashboardId FROM mung.Dashboard WHERE Url = @Url", new { Url = newUrl });
-				if (existing.Count > 0) {
-					return Redirect("/dashboard/" + newUrl);
-				} else {
-					cn.ExecuteSql(@"INSERT INTO mung.Dashboard (Url, Title, CreatedAt, UpdatedAt, CreatedByUserId, ModifiedByUserId)
-						SELECT @Url, @Title, GETUTCDATE(), GETUTCDATE(), @UserId, @UserId
-					", new { Url = newUrl, UserId = 1, Title = title });
 
-					return Redirect("/dashboard/" + newUrl);
+				var existing = Dashboard.Get(newUrl);
+				if (existing != null) {
+					return Redirect($"/dashboard{newUrl}");
 				}
+
+				var dashboard = new Dashboard() {
+					Url = newUrl,
+					CreatedByMungUserId = CurrentUser.MungUserId,
+					UpdatedByMungUserId = CurrentUser.MungUserId,
+					Title = title,
+					CreatedAt = DateTime.UtcNow,
+					UpdatedAt = DateTime.UtcNow
+
+				}.Insert();
+
+
+				return Redirect($"/dashboard{dashboard.Url}");
+
 			}
 		}
 	}

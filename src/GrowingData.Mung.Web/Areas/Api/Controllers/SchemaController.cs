@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Mvc;
 using GrowingData.Utilities.DnxCore;
-using GrowingData.Mung.Web;
+using GrowingData.Mung.Core;
 
 namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 	public class SchemaController : MungSecureController {
@@ -24,33 +24,34 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 					ORDER BY table_catalog, table_schema, table_name, ordinal_position
 			";
 
-			using (var cn = DatabaseContext.Db.Warehouse()) {
-				//var tables = new Dictionary<string, MungTable>();
+			using (var cn = DatabaseContext.Db.Events()) {
+				var tables = new Dictionary<string, DbTable>();
 
-				//cn.ExecuteRow(sql, null, (reader) => {
-				//	var tableName = (string)reader["table_name"];
-				//	var tableSchema = (string)reader["table_schema"];
-				//	var columnName = (string)reader["column_name"];
-				//	var columnType = (string)reader["data_type"];
+				cn.ExecuteRow(sql, null, (reader) => {
+					var tableName = (string)reader["table_name"];
+					var tableSchema = (string)reader["table_schema"];
+					var columnName = (string)reader["column_name"];
+					var columnType = (string)reader["data_type"];
 
-				//	MungTable tbl = null;
+					DbTable tbl = null;
 
-				//	if (!tables.ContainsKey(tableName)) {
-				//		tbl = new MungTable(tableName, tableSchema);
-				//		tables[tableName] = tbl;
-				//	} else {
-				//		tbl = tables[tableName];
-				//	}
+					if (!tables.ContainsKey(tableName)) {
+						tbl = new DbTable(tableName, tableSchema);
+						tables[tableName] = tbl;
+					} else {
+						tbl = tables[tableName];
+					}
 
-				//	tbl.Columns.Add(new MungColumn(columnName, columnType));
-				//});
+					var converter = DbTypeConverter.Postgresql;
+
+					tbl.Columns.Add(new DbColumn(columnName, converter.GetTypeFromInformationSchema(columnType)));
+				});
 
 
-				//return Json(new { Schema = tables.Values.OrderBy(x=>x.TableName) });
+				return Json(new { Schema = tables.Values.OrderBy(x => x.TableName) });
 			}
 
-
-			return null;
+			
 		}
 	}
 }

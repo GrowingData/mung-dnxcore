@@ -26,6 +26,8 @@ namespace GrowingData.Mung.Web.Areas.Ingest.Controllers {
 					var events = obj["events"].ToObject<List<MungServerEvent>>();
 
 					foreach (var evt in events) {
+						evt.AppId = app.AppId;
+
 						MungApp.Current.Pipeline.Process(evt);
 					}
 

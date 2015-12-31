@@ -28,13 +28,13 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 		[HttpPost]
 		public ActionResult Create(string name) {
 
-			if (CurrentMunger == null || !CurrentMunger.IsAdmin) {
+			if (CurrentUser == null || !CurrentUser.IsAdmin) {
 				return Redirect("/login");
 			}
 
-			var app = new App(name, CurrentMunger.MungerId);
+			var app = new App(name, CurrentUser.MungUserId);
 
-			app.Save();
+			app.Insert();
 
 			return Redirect("/apps");
 		}

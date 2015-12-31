@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.Common;
 using System.Data.SqlClient;
-
+using Npgsql;
 using GrowingData.Utilities.DnxCore;
 
 namespace GrowingData.Mung.Web.Models {
@@ -35,7 +35,7 @@ namespace GrowingData.Mung.Web.Models {
 
 		public DbConnection GetConnection() {
 			if (ConnectionId == -1) {
-				return DatabaseContext.Db.Warehouse();
+				return DatabaseContext.Db.Events();
 			}
 
 			var connectionType = Type;
@@ -45,11 +45,11 @@ namespace GrowingData.Mung.Web.Models {
 				return cn;
 			}
 
-			//if (connectionType.Name == "PostgreSQL") {
-			//	var cn = new NpgsqlConnection(ConnectionString);
-			//	cn.Open();
-			//	return cn;
-			//}
+			if (connectionType.Name == "PostgreSQL") {
+				var cn = new NpgsqlConnection(ConnectionString);
+				cn.Open();
+				return cn;
+			}
 
 			throw new Exception("Unable to find connection provider with type: " + connectionType.Name);
 
@@ -65,9 +65,9 @@ namespace GrowingData.Mung.Web.Models {
 			if (connectionId == -1) {
 				return Mung;
 			}
-			using (var cn = DatabaseContext.Db.Metadata()) {
+			using (var cn = DatabaseContext.Db.Mung()) {
 				var connection = cn.ExecuteAnonymousSql<Connection>(
-						@"SELECT * FROM mung.Connection WHERE ConnectionId = @ConnectionId",
+						@"SELECT * FROM Connection WHERE ConnectionId = @ConnectionId",
 						 new { ConnectionId = connectionId }
 					)
 					.FirstOrDefault();
@@ -81,8 +81,8 @@ namespace GrowingData.Mung.Web.Models {
 		/// <param name="connectionId"></param>
 		/// <returns></returns>
 		public static List<Connection> List() {
-			using (var cn = DatabaseContext.Db.Metadata()) {
-				var connections = cn.ExecuteAnonymousSql<Connection>(@"SELECT * FROM mung.Connection", null);
+			using (var cn = DatabaseContext.Db.Mung()) {
+				var connections = cn.ExecuteAnonymousSql<Connection>(@"SELECT * FROM Connection", null);
 				connections.Add(Mung);
 
 				return connections;
@@ -94,11 +94,11 @@ namespace GrowingData.Mung.Web.Models {
 		/// </summary>
 		/// <returns></returns>
 		public bool Save() {
-			using (var cn = DatabaseContext.Db.Metadata()) {
+			using (var cn = DatabaseContext.Db.Mung()) {
 
 				if (ConnectionId == -1) {
 					var sql = @"
-	INSERT INTO mung.Connection(ConnectionTypeId, Name, ConnectionString)
+	INSERT INTO Connection(ConnectionTypeId, Name, ConnectionString)
 		SELECT @ConnectionTypeId, @Name, @ConnectionString";
 					cn.ExecuteSql(sql, new {
 						Name = Name,
@@ -112,8 +112,10 @@ namespace GrowingData.Mung.Web.Models {
 				} else {
 
 					var sql = @"
-	UPDATE mung.Connection
-		SET Name=@Name, ConnectionString=@ConnectionString, UpdatedAt=@UpdatedAt
+	UPDATE Connection
+		SET Name = @Name, 
+			ConnectionString = @ConnectionString, 
+			UpdatedAt = @UpdatedAt
 		WHERE GraphId = @GraphId";
 					cn.ExecuteSql(sql, new {
 						Name = Name,
@@ -131,9 +133,9 @@ namespace GrowingData.Mung.Web.Models {
 		/// </summary>
 		/// <returns></returns>
 		public bool Delete() {
-			using (var cn = DatabaseContext.Db.Metadata()) {
+			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"
-	DELETE FROM mung.Connection
+	DELETE FROM Connection
 		WHERE ConnectionId = @ConnectionId";
 				cn.ExecuteSql(sql, new {
 					ConnectionId = ConnectionId

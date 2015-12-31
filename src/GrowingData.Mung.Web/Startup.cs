@@ -20,7 +20,10 @@ namespace GrowingData.Mung.Web {
 			Configuration = builder.Build();
 
 
-			DatabaseContext.Initialize(Configuration["Data:DefaultConnection:ConnectionString"]);
+			DatabaseContext.Initialize(
+				Configuration["Data:mung:ConnectionString"],
+				Configuration["Data:mung_events:ConnectionString"]
+			);
 
 			MungApp.Initialize(env);
 		}

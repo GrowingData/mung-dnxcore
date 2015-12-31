@@ -14,8 +14,8 @@ namespace GrowingData.Mung.Web.Models {
 		public static List<ConnectionType> ConnectionTypes {
 			get {
 				if (_connectionTypes == null) {
-					using (var cn = DatabaseContext.Db.Metadata()) {
-						_connectionTypes = cn.ExecuteAnonymousSql<ConnectionType>("SELECT * FROM mung.ConnectionType", null);
+					using (var cn = DatabaseContext.Db.Mung()) {
+						_connectionTypes = cn.ExecuteAnonymousSql<ConnectionType>("SELECT * FROM ConnectionType", null);
 
 					}
 				}

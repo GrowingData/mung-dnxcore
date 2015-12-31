@@ -21,7 +21,7 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 				var connection = Connection.Get(connectionId.Value);
 				return connection.GetConnection();
 			} else {
-				return DatabaseContext.Db.Warehouse();
+				return DatabaseContext.Db.Events();
 			}
 		}
 

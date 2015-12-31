@@ -17,12 +17,12 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 		[Route("")]
 		public ActionResult Default() {
 			Console.WriteLine("HomeController.Default");
-			var munger = CurrentMunger;
+			var munger = CurrentUser;
 			if (munger == null) {
 				return Redirect("/" + Urls.LOGIN);
 			}
 
-			ViewBag.Dashboards = Dashboard.List(CurrentMunger.MungerId);
+			ViewBag.Dashboards = Dashboard.List(CurrentUser.MungUserId);
 
 
 

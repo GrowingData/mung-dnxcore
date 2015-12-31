@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Data.Common;
-using System.Data.SqlClient;
+using Npgsql;
 
 namespace GrowingData.Mung {
 	public class DatabaseContext {
@@ -12,37 +12,42 @@ namespace GrowingData.Mung {
 		}
 
 
-		public static void Initialize(string connectionString) {
+		public static void Initialize(string mungConnectionString, string eventsConnectionString) {
+
+			_Db = new DatabaseContext(mungConnectionString, eventsConnectionString);
 			Console.WriteLine("DatabaseContext initialized!");
-
-			_Db = new DatabaseContext(connectionString);
-		}
-
-
-		private string _sqlWarehouseConnectionString;
-		public DatabaseContext(string connectionString) {
-			_sqlWarehouseConnectionString = connectionString;
 		}
 
 
 
-		public Func<DbConnection> Warehouse {
+		private string _mungConnectionString;
+		private string _eventsConnectionString;
+		public DatabaseContext(string mungConnectionString, string eventsConnectionString) {
+			_mungConnectionString = mungConnectionString;
+			_eventsConnectionString = eventsConnectionString;
+		}
+
+		public Func<DbConnection> Events {
 			get {
 				return () => {
-					var cn = new SqlConnection(_sqlWarehouseConnectionString);
+					var cn = new NpgsqlConnection(_eventsConnectionString);
 					cn.Open();
 					return cn;
 				};
 			}
 		}
-		public Func<DbConnection> Metadata {
+
+
+		public Func<DbConnection> Mung {
 			get {
 				return () => {
-					var cn = new SqlConnection(_sqlWarehouseConnectionString);
+					var cn = new NpgsqlConnection(_mungConnectionString);
 					cn.Open();
 					return cn;
 				};
 			}
 		}
+
+
 	}
 }

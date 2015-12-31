@@ -19,26 +19,26 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 		[Route("dashboards")]
 		public ActionResult ViewDashboardList(string url) {
-			var munger = CurrentMunger;
+			var munger = CurrentUser;
 			if (munger == null) {
 				return Redirect("/login");
 			}
 
 
-			ViewBag.Dashboards = Dashboard.List(munger.MungerId);
+			ViewBag.Dashboards = Dashboard.List(munger.MungUserId);
 			return View("DashboardList");
 		}
 
 		[Route("dashboard/{*url}")]
 		public ActionResult ViewDashboard(string url) {
 
-			var munger = CurrentMunger;
+			var munger = CurrentUser;
 			if (munger == null) {
 				return Redirect("/login");
 			}
 
 			url = "/" + url;
-			using (var cn = DatabaseContext.Db.Metadata()) {
+			using (var cn = DatabaseContext.Db.Mung()) {
 
 				// Does the URL already exist?
 

@@ -27,21 +27,22 @@ namespace GrowingData.Mung.Web {
 		public override void OnActionExecuting(ActionExecutingContext context) {
 			base.OnActionExecuting(context);
 			ViewBag.HostingEnvironment = _env;
+
 		}
 
-		public Munger CurrentMunger {
+		public MungUser CurrentUser {
 			get {
-				var id = CurrentMungerIdentity;
+				var id = CurrentUserIdentity;
 				if (id != null) {
-					return id.Munger;
+					return id.User;
 				}
 				return null;
 			}
 		}
-		public MungerIdentity CurrentMungerIdentity {
+		public MngUserIdentity CurrentUserIdentity {
 			get {
 
-				return HttpContext.CurrentMungerIdentity();
+				return HttpContext.CurrentMungUserIdentity();
 			}
 		}
 

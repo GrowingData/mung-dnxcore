@@ -13,29 +13,29 @@ using GrowingData.Utilities.DnxCore;
 using GrowingData.Mung.Web.Models;
 
 namespace GrowingData.Mung.Web {
-    public class MungerIdentity : ClaimsIdentity {
+    public class MngUserIdentity : ClaimsIdentity {
         public const string OriginalIssuer = "mung.io";
 
-        private Munger _munger = null;
-        public Munger Munger
+        private MungUser _user = null;
+        public MungUser User
         {
-            get { return _munger; }
+            get { return _user; }
         }
 
         public static string Issuer(HttpContext context) {
             return context.Request.Host.Value.ToLower();
         }
 
-        public MungerIdentity(Munger user, HttpContext context)
+        public MngUserIdentity(MungUser user, HttpContext context)
             : base(CookieAuthenticationDefaults.AuthenticationScheme) {
 
-            _munger = user; 
+            _user = user; 
             this.AddClaim(new Claim(ClaimTypes.Email, user.Email, ClaimValueTypes.String, Issuer(context), OriginalIssuer));
             this.AddClaim(new Claim(ClaimTypes.Name, user.Name, ClaimValueTypes.String, Issuer(context), OriginalIssuer));
         }
 
 
-        public static MungerIdentity LoadIdentity(HttpContext context) {
+        public static MngUserIdentity LoadIdentity(HttpContext context) {
             if (context.User.Identities.Any(identity => identity.IsAuthenticated)) {
                 var emailClaim = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
 
@@ -45,13 +45,13 @@ namespace GrowingData.Mung.Web {
                 }
 
                 var email = emailClaim.Value;
-                var user = Munger.Get(email);
+                var user = MungUser.Get(email);
 
                 if (user == null) {
                     return null;
                 }
 
-                var identity = new MungerIdentity(user, context);
+                var identity = new MngUserIdentity(user, context);
 
 
                 return identity;

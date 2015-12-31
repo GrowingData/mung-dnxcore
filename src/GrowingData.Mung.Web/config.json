@@ -1,10 +1,13 @@
 ﻿{
 	"AppSettings": {
-		"SiteTitle": "ASP.NET MVC Music Store"
+		"SiteTitle": "Mung.io"
 	},
 	"Data": {
-		"DefaultConnection": {
-			"Connectionstring": "data source=.\\SqlExpress;initial catalog=mung;persist security info=True;user id=tezza;password=123456;multipleactiveresultsets=True"
+		"mung": {
+			"Connectionstring": "Server=127.0.0.1;Port=5432;Database=mung;User Id=postgres;Password=123456;"
+		},
+		"mung_events": {
+			"Connectionstring": "Server=127.0.0.1;Port=5432;Database=mung_events;User Id=postgres;Password=123456;"
 		}
 	},
 	"Logging": {

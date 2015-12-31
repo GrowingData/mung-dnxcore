@@ -23,11 +23,11 @@ namespace GrowingData.Mung.Web.Models {
 			// Make sure we are pointing to the right dashboard
 			DashboardId = dashboard.DashboardId;
 
-			using (var cn = DatabaseContext.Db.Metadata()) {
+			using (var cn = DatabaseContext.Db.Mung()) {
 
 				if (GraphId == -1) {
 					var sql = @"
-	INSERT INTO mung.Graph(DashboardId, Title, Html, Sql, Js, X, Y, Width, Height)
+	INSERT INTO Graph(DashboardId, Title, Html, Sql, Js, X, Y, Width, Height)
 		SELECT @DashboardId, @Title, @Html, @Sql, @Js, @X, @Y, @Width, @Height";
 					cn.ExecuteSql(sql, this);
 
@@ -40,7 +40,7 @@ namespace GrowingData.Mung.Web.Models {
 					}
 
 					var sql = @"
-	UPDATE mung.Graph
+	UPDATE Graph
 		SET Title=@Title, Html=@Html, Sql=@Sql, Js=@Js, X=@X, Y=@Y, Width=@Width, Height=@Height
 		WHERE GraphId = @GraphId";
 					cn.ExecuteSql(sql, this);
@@ -60,7 +60,7 @@ namespace GrowingData.Mung.Web.Models {
 		public bool Delete(Dashboard dashboard) {
 			var graphs = dashboard.GetGraphs();
 
-			using (var cn = DatabaseContext.Db.Metadata()) {
+			using (var cn = DatabaseContext.Db.Mung()) {
 				if (GraphId == -1) {
 					throw new Exception("No GraphId was specified for deletion: " + dashboard.Url);
 				} else {
@@ -70,7 +70,7 @@ namespace GrowingData.Mung.Web.Models {
 					}
 
 					var sql = @"
-	DELETE FROM mung.Graph
+	DELETE FROM Graph
 		WHERE GraphId = @GraphId
 		AND		DashboardId = @DashboardId";
 

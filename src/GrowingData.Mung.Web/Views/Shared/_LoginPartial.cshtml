@@ -2,15 +2,15 @@
 @{
 	var loggedIn = false;
 
-	var mungerIdentity = this.Context.CurrentMungerIdentity();
+	var MungUserIdentity = this.Context.CurrentMungUserIdentity();
 }
 
-@if (mungerIdentity != null) {
+@if (MungUserIdentity != null) {
 
 
 <ul class="nav navbar-nav navbar-right">
 	<li>
-		<a class="pull-right" href="javascript:void(0)">@mungerIdentity.Munger.Name</a>
+		<a class="pull-right" href="javascript:void(0)">@MungUserIdentity.User.Name</a>
 	</li>
 	<li>
 		<form method="post" action="/@Urls.LOGOUT">
