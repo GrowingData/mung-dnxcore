@@ -14,7 +14,7 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 		[Route(Urls.INITIAL_ACCOUNT_CREATE)]
 		[HttpGet]
 		public ActionResult Setup() {
-			if (MungUser.HasMungers) {
+			if (Munger.HasMungers) {
 				return Redirect("/");
 			}
 			return View();
@@ -23,10 +23,10 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 		[Route(Urls.INITIAL_ACCOUNT_CREATE)]
 		[HttpPost]
 		public ActionResult Setup(string email, string password, string name) {
-			if (MungUser.HasMungers) {
+			if (Munger.HasMungers) {
 				return Redirect("/");
 			}
-			return CreateUser(email, password, name, !MungUser.HasMungers);
+			return CreateUser(email, password, name, !Munger.HasMungers);
 		}
 
 
@@ -35,13 +35,13 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 			var salt = StringHashing.CreateSalt();
 			var passwordHash = StringHashing.HashStrings(password, salt);
 
-			var existing = MungUser.Get(email);
+			var existing = Munger.Get(email);
 			if (existing != null) {
 				ViewBag.ErrorMessage = "A user with the same email has already created an account";
 				return View();
 			}
 
-			var munger = new MungUser() {
+			var munger = new Munger() {
 				Name = name,
 				Email = email,
 				PasswordSalt = salt,
@@ -49,7 +49,7 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 				IsAdmin = isAdmin
 			};
 
-			munger.MungUserId = munger.Insert();
+			munger.Insert();
 
 			HttpContext.Login(munger);
 

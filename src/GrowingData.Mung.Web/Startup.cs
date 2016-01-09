@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 namespace GrowingData.Mung.Web {
 	public class Startup {
 		public Startup(IHostingEnvironment env) {
-			Console.WriteLine("Yo, startup");
 
 			// Set up configuration sources.
 			var builder = new ConfigurationBuilder()

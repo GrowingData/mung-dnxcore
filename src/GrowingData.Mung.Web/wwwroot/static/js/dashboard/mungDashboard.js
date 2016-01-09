@@ -5,12 +5,13 @@
 		if (dashboardModel == null) throw "mungDashboard: dashboardModel is null";
 		if (graphs == null) throw "mungDashboard: graphs is null";
 
-
 		var self = this;
+
 		self.dashboardModel = dashboardModel;
+		self.poller = MUNG.LongPoll();
 
 
-		self.componentPopup = $("#edit-graph").mungGraphEditor(dashboardModel);
+		self.componentPopup = $("#edit-graph").mungGraphEditor(self);
 
 		self.addComponentButton = $("#add-graph").click(function () {
 			self.componentPopup.create();
@@ -63,14 +64,18 @@
 
 				self.grid.add_widget(graph, graphData.X, graphData.Y, graphData.Width, graphData.Height);
 			});
-
 		}
+
+
 
 
 		function init() {
 			bindGridStack();
-
 			addViews();
+
+			//self.poller.registerCallback("*", function (evt) {
+			//	console.log(evt);
+			//});
 		}
 
 

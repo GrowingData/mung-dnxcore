@@ -25,7 +25,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 			}
 
 
-			ViewBag.Dashboards = Dashboard.List(munger.MungUserId);
+			ViewBag.Dashboards = Dashboard.List(munger.MungerId);
 			return View("DashboardList");
 		}
 

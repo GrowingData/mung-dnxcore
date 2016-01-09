@@ -22,7 +22,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 				return Redirect("/" + Urls.LOGIN);
 			}
 
-			ViewBag.Dashboards = Dashboard.List(CurrentUser.MungUserId);
+			ViewBag.Dashboards = Dashboard.List(CurrentUser.MungerId);
 
 
 

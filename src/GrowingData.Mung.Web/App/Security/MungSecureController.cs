@@ -30,7 +30,7 @@ namespace GrowingData.Mung.Web {
 
 		}
 
-		public MungUser CurrentUser {
+		public Munger CurrentUser {
 			get {
 				var id = CurrentUserIdentity;
 				if (id != null) {
@@ -39,10 +39,10 @@ namespace GrowingData.Mung.Web {
 				return null;
 			}
 		}
-		public MngUserIdentity CurrentUserIdentity {
+		public MungerIdentity CurrentUserIdentity {
 			get {
 
-				return HttpContext.CurrentMungUserIdentity();
+				return HttpContext.CurrentMungerIdentity();
 			}
 		}
 

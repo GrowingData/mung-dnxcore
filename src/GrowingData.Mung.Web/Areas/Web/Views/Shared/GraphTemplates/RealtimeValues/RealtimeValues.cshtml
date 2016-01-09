@@ -1,0 +1,60 @@
+﻿
+<div class="graph-template-inner show-html show-js" data-connection-id="5">
+
+	<h1>Realtime Values</h1>
+
+	<p class="explanation">
+		Uses a realtime connection to display data from the latest
+		event of a given type.
+	</p>
+
+	<div class="instructions">
+		<h1>Documentation</h1>
+		<p>
+			Generate your SQL query which will return a table
+			of results, with a Date or Time value called "Date"
+			and any number of numeric columns to chart.
+		</p>
+
+		<h2>Simple formatting</h2>
+		<p>
+			You can change the formatting of the y-axis by modifying
+			the "yFormatter" method.
+		</p>
+		<p>
+			To add a column to the chart, specify an array of objects
+			containing the name of the column, and the color it should
+			render as in the "seriesColumns" property.
+		</p>
+	</div>
+
+
+
+	<!-- Start: The SQL code -->
+	<pre class="default-sql"></pre>
+	<!-- End: The SQL code -->
+	<!-- Start: The HTML code -->
+	<div class="default-html">
+		<div class="realtime-graph" data-subscription-events="*">
+			<div class="realtime-values">
+				<ul>
+					<li class="realtime-value">
+						<h4 class="value-header">LAST EVENT TIME</h4>
+						<h2 class="single-value-holder last-event-time"></h2>
+					</li>
+
+				</ul>
+
+			</div>
+		</div>
+	</div>
+	<!-- End: The HTML code -->
+	<!-- Start: The javascript code -->
+	<pre class="default-js">
+function(data, $component){
+	$component.find(".last-event-time").text(data.LogTime);
+}
+	
+	</pre>
+	<!-- End: The javascript code -->
+</div>

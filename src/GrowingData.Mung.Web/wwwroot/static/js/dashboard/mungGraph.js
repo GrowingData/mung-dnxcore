@@ -94,11 +94,46 @@
 		}
 
 		function init() {
-			self.refresh();
 			self.edit.click(function () {
 				self.dashboard.editGraph(self);
 
 			});
+
+			if (graphModel.data.ConnectionId == 5) {
+				// Realtime, so register this with the dashboardPoller
+				var fn = null;
+				try {
+					fn = Function("data", "$component", parseFunctionBody(self.graphModel.data.Js));
+
+				} catch (x) {
+					self.error.text("Javascript parse error: " + x.toString()).show();
+					setStatus("Javascript function parse error");
+					console.log(x);
+					return;
+				}
+
+
+				setStatus("Initializing...");
+				self.contentInner.html(self.graphModel.data.Html);
+				self.title.text(self.graphModel.data.Title);
+
+
+				var graphSettings = self.find(".realtime-graph");
+				if (graphSettings.length==0){
+					setStatus("Realtime graphs require an element with class 'realtime-graph' and an attribute 'data-subscription-events' ");
+					
+				}
+				var events = graphSettings.data("subscription-events").split(',');
+
+				self.dashboard.poller.registerCallback(events, function (data) {
+					fn(data, self);
+				});
+
+				setStatus("Ready.");
+				return;
+			}
+
+			self.refresh();
 		}
 
 		init();

@@ -8,6 +8,7 @@ namespace GrowingData.Mung.Web.Models {
 	public class Graph {
 		public int GraphId;
 		public int DashboardId;
+		public int ConnectionId;
 		public string Title;
 		public string Html;
 		public string Sql;
@@ -17,39 +18,55 @@ namespace GrowingData.Mung.Web.Models {
 		public double Width;
 		public double Height;
 
-		public bool Save(Dashboard dashboard) {
-
-			var graphs = dashboard.GetGraphs();
+		public Graph Save(Dashboard dashboard) {
 			// Make sure we are pointing to the right dashboard
 			DashboardId = dashboard.DashboardId;
 
-			using (var cn = DatabaseContext.Db.Mung()) {
-
-				if (GraphId == -1) {
-					var sql = @"
-	INSERT INTO Graph(DashboardId, Title, Html, Sql, Js, X, Y, Width, Height)
-		SELECT @DashboardId, @Title, @Html, @Sql, @Js, @X, @Y, @Width, @Height";
-					cn.ExecuteSql(sql, this);
-
-					return true;
-
-				} else {
-					// Make sure that this graph actually belongs to this Dashboard
-					if (graphs.Count(x => x.GraphId == this.GraphId) != 1) {
-						throw new Exception("The graph specified does not belong to the dashboard with Url: " + dashboard.Url);
-					}
-
-					var sql = @"
-	UPDATE Graph
-		SET Title=@Title, Html=@Html, Sql=@Sql, Js=@Js, X=@X, Y=@Y, Width=@Width, Height=@Height
-		WHERE GraphId = @GraphId";
-					cn.ExecuteSql(sql, this);
-					return true;
-				}
+			if (GraphId <= 0) {
+				return Insert(dashboard);
+			} else {
+				return Update(dashboard);
 			}
+
 		}
 
+		public Graph Insert(Dashboard dashboard) {
 
+			using (var cn = DatabaseContext.Db.Mung()) {
+				var sql = @"
+					INSERT INTO graph(dashboard_id, connection_id, title, html, sql, js, x, y, width, height)
+						VALUES (@DashboardId, @ConnectionId, @Title, @Html, @Sql, @Js, @X, @Y, @Width, @Height)
+						RETURNING graph_id";
+
+				GraphId = cn.DumpList<int>(sql, this).FirstOrDefault();
+
+				return this;
+			}
+		}
+		public Graph Update(Dashboard dashboard) {
+			using (var cn = DatabaseContext.Db.Mung()) {
+				var graphs = dashboard.GetGraphs();
+				if (graphs.Count(x => x.GraphId == this.GraphId) != 1) {
+					throw new Exception("The graph specified does not belong to the dashboard with Url: " + dashboard.Url);
+				}
+
+				var sql = @"
+					UPDATE Graph
+						SET title = @Title, 
+							connection_id = @ConnectionId,
+							html = @Html, 
+							sql = @Sql, 
+							js = @Js, 
+							x = @X, 
+							y = @Y,
+							width = @Width, 
+							height = @Height
+						WHERE graph_id = @GraphId";
+				cn.ExecuteSql(sql, this);
+
+				return this;
+			}
+		}
 
 		/// <summary>
 		/// Deletes a Graph from a Dashboard, checking that the Graph does infact
@@ -70,9 +87,9 @@ namespace GrowingData.Mung.Web.Models {
 					}
 
 					var sql = @"
-	DELETE FROM Graph
-		WHERE GraphId = @GraphId
-		AND		DashboardId = @DashboardId";
+						DELETE FROM Graph
+							WHERE graph_id = @GraphId
+							AND		dashboard_id = @DashboardId";
 
 					cn.ExecuteSql(sql, new {
 						ComponentId = GraphId,

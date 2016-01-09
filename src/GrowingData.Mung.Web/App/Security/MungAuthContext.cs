@@ -21,9 +21,9 @@ namespace GrowingData.Mung.Web {
 			
 		}
 
-		public static MngUserIdentity CurrentMungUserIdentity(this HttpContext context) {
+		public static MungerIdentity CurrentMungerIdentity(this HttpContext context) {
 			if (!context.Items.ContainsKey("munger")) {
-				var identity = MngUserIdentity.LoadIdentity(context);
+				var identity = MungerIdentity.LoadIdentity(context);
 
 				// Cache it for next time, even if its null (as the keys existence tells us not to 
 				// try to load it next time.
@@ -31,11 +31,11 @@ namespace GrowingData.Mung.Web {
 				return identity;
 			}
 
-			return context.Items["munger"] as MngUserIdentity;
+			return context.Items["munger"] as MungerIdentity;
 		}
 
 
-		public static bool Login(this HttpContext context, MungUser user) {
+		public static bool Login(this HttpContext context, Munger user) {
 			if (user == null) {
 				throw new ArgumentNullException("Unable to login a null user");
 			}
@@ -44,7 +44,7 @@ namespace GrowingData.Mung.Web {
 				throw new ArgumentNullException("Unable to login a user without a context");
 			}
 
-			var identity = new MngUserIdentity(user, context);
+			var identity = new MungerIdentity(user, context);
 
 			var signin = context.Authentication.SignInAsync(
 				CookieAuthenticationDefaults.AuthenticationScheme,

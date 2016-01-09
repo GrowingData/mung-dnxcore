@@ -13,11 +13,11 @@ using GrowingData.Utilities.DnxCore;
 using GrowingData.Mung.Web.Models;
 
 namespace GrowingData.Mung.Web {
-    public class MngUserIdentity : ClaimsIdentity {
+    public class MungerIdentity : ClaimsIdentity {
         public const string OriginalIssuer = "mung.io";
 
-        private MungUser _user = null;
-        public MungUser User
+        private Munger _user = null;
+        public Munger User
         {
             get { return _user; }
         }
@@ -26,7 +26,7 @@ namespace GrowingData.Mung.Web {
             return context.Request.Host.Value.ToLower();
         }
 
-        public MngUserIdentity(MungUser user, HttpContext context)
+        public MungerIdentity(Munger user, HttpContext context)
             : base(CookieAuthenticationDefaults.AuthenticationScheme) {
 
             _user = user; 
@@ -35,7 +35,7 @@ namespace GrowingData.Mung.Web {
         }
 
 
-        public static MngUserIdentity LoadIdentity(HttpContext context) {
+        public static MungerIdentity LoadIdentity(HttpContext context) {
             if (context.User.Identities.Any(identity => identity.IsAuthenticated)) {
                 var emailClaim = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
 
@@ -45,13 +45,13 @@ namespace GrowingData.Mung.Web {
                 }
 
                 var email = emailClaim.Value;
-                var user = MungUser.Get(email);
+                var user = Munger.Get(email);
 
                 if (user == null) {
                     return null;
                 }
 
-                var identity = new MngUserIdentity(user, context);
+                var identity = new MungerIdentity(user, context);
 
 
                 return identity;

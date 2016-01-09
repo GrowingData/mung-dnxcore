@@ -17,7 +17,7 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 		public ActionResult Login() {
 
 			// Make sure that we send them to the Setup page if there are no accounts
-			if (!MungUser.HasMungers) {
+			if (!Munger.HasMungers) {
 				return Redirect($"/{Urls.INITIAL_ACCOUNT_CREATE}");
 			}
 
@@ -29,7 +29,7 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 		public ActionResult Login(string email, string password) {
 
 
-			var munger = MungUser.Get(email);
+			var munger = Munger.Get(email);
 
 			var inputHash = StringHashing.HashStrings(password, munger.PasswordSalt);
 

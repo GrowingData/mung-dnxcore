@@ -51,6 +51,26 @@
 				self.editorHtml.editor.code(unescape(template.find(".default-html").html()));
 				self.editorSql.editor.code(unescape(template.find(".default-sql").html()));
 				self.editorJs.editor.code(unescape(template.find(".default-js").html()));
+
+				self.find(".graph-setting").css("display", "none");
+				self.find(".html-row").css("display", "none");
+				self.find(".js-row").css("display", "none");
+
+				var templateInner = template.find(".graph-template-inner");
+
+				if (templateInner.hasClass("show-sql")) {
+					self.find(".graph-setting-sql").css("display", "block");
+				}
+				if (templateInner.hasClass("show-html")) {
+					self.find(".graph-setting-html").css("display", "block");
+				}
+				if (templateInner.hasClass("show-js")) {
+					self.find(".graph-setting-js").css("display", "block");
+				}
+
+				if (templateInner.data("connection-id")) {
+					self.connectionSelector.val(templateInner.data("connection-id"));
+				}
 			}
 
 		}
@@ -73,7 +93,7 @@
 				.clone()
 				.removeClass("template")
 				.appendTo(self.find(".graph.preview"))
-				.mungGraph(previewModel);
+				.mungGraph(previewModel, dashboard);
 
 		});
 
@@ -87,10 +107,10 @@
 				Js: $("." + self.defaultTemplate + " .default-js").text(),
 				X: -1,
 				Y: -1,
-				ConnectionId: -1,
+				ConnectionId: self.connectionSelector.val(),
 				Width: 12,
 				Height: 5,
-			}, dashboard);
+			}, dashboard.dashboardModel);
 
 			self.graphModel.saved(function () {
 				document.location.reload();
@@ -116,6 +136,7 @@
 			self.find(".modal-title .add").hide();
 
 			self.find(".graph-title").val(graphModel.data.Title);
+			self.connectionSelector.val(graphModel.data.ConnectionId);
 
 			self.modal('show');
 

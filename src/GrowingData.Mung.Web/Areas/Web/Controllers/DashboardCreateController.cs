@@ -37,8 +37,8 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 				var dashboard = new Dashboard() {
 					Url = newUrl,
-					CreatedByMungUserId = CurrentUser.MungUserId,
-					UpdatedByMungUserId = CurrentUser.MungUserId,
+					CreatedByMungerId = CurrentUser.MungerId,
+					UpdatedByMungerId = CurrentUser.MungerId,
 					Title = title,
 					CreatedAt = DateTime.UtcNow,
 					UpdatedAt = DateTime.UtcNow

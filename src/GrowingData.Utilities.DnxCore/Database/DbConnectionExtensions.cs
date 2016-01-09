@@ -169,6 +169,13 @@ namespace GrowingData.Utilities.DnxCore {
 
 		#endregion
 
+		private static string KeyFromColumnName(string columnName) {
+			return columnName.ToLower().Replace("_", "");
+		}
+		private static string KeyFromProperty(string propertyName) {
+			return propertyName.ToLower().Replace("_", "");
+		}
+
 		#region Result handling
 
 		/// <summary>
@@ -194,26 +201,27 @@ namespace GrowingData.Utilities.DnxCore {
 					columnNames = new Dictionary<string, string>();
 					for (var i = 0; i < r.FieldCount; i++) {
 						var name = r.GetName(i);
-						var key = name.ToLower();
+						var key = KeyFromColumnName(name);
 
 						columnNames.Add(key, name);
 					}
 				}
 
 				foreach (var p in properties) {
-					var propertyLower = p.Key.ToLower();
-					if (columnNames.ContainsKey(propertyLower)) {
-						var columnName = columnNames[propertyLower];
-						if (r[p.Key] != DBNull.Value) {
+					var pKey = KeyFromProperty(p.Key);
+					if (columnNames.ContainsKey(pKey)) {
+						var columnName = columnNames[pKey];
+						if (r[columnName] != DBNull.Value) {
 							p.Value.SetValue(obj, r[columnName]);
 						}
 					}
 				}
+
 				foreach (var p in fields) {
-					var fieldLower = p.Key.ToLower();
-					if (columnNames.ContainsKey(fieldLower)) {
-						var columnName = columnNames[fieldLower];
-						if (r[p.Key] != DBNull.Value) {
+					var pKey = KeyFromProperty(p.Key);
+					if (columnNames.ContainsKey(pKey)) {
+						var columnName = columnNames[pKey];
+						if (r[columnName] != DBNull.Value) {
 							p.Value.SetValue(obj, r[columnName]);
 						}
 					}

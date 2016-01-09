@@ -24,12 +24,9 @@ namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 
 			var toSave = JsonConvert.DeserializeObject<Graph>(graphJson);
 
+			toSave.Save(dashboard);
 
-			if (toSave.Save(dashboard)) {
-				return Json(new { Success = true, Message = "Success" });
-			} else {
-				return Json(new { Success = false, Message = "Unable to save Graph" });
-			}
+			return Json(new { Success = true, Message = "Success" });
 		}
 
 		[HttpDelete]
@@ -49,7 +46,7 @@ namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 			} else {
 				return Json(new { Success = false, Message = "Unable to save Graph" });
 			}
-			
+
 		}
 	}
 }

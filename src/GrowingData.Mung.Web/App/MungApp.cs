@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using GrowingData.Mung.Core;
-using System;
 using Microsoft.AspNet.Hosting;
 using GrowingData.Mung.Relationizer;
 using GrowingData.Mung.Web.Models;
 using GrowingData.Utilities.DnxCore;
+using GrowingData.Mung.SqlBatch;
+using Npgsql;
 
 namespace GrowingData.Mung.Web {
 	public class MungApp {
@@ -22,19 +23,20 @@ namespace GrowingData.Mung.Web {
 			}
 		}
 
-
-
 		public static void Initialize(IHostingEnvironment env) {
 			_app = new MungApp(env);
-
 		}
 
 		private EventPipeline _pipeline;
+		private LongPollingProcessor _poller;
+		public EventPipeline Pipeline { get { return _pipeline; } }
+		public LongPollingProcessor Poller { get { return _poller; } }
+
+
 		private IHostingEnvironment _env;
 		private string _dataPath;
 		private string _basePath;
 
-		public EventPipeline Pipeline { get { return _pipeline; } }
 
 		public string DataPath {
 			get {
@@ -44,13 +46,13 @@ namespace GrowingData.Mung.Web {
 
 
 		public MungApp(IHostingEnvironment env) {
-			//Console.WriteLine("Paused Initializing of MungApp, press a key to continue...");
-			//Console.ReadKey();
+			Console.WriteLine("Paused Initializing of MungApp, press a key to continue...");
+			Console.ReadKey();
 
-			// Make sure the we set the right parameter prefix
-			//DbConnectionExtensions.DEFAULT_PARAMETER_PREFIX = '?';
 
 			_pipeline = new EventPipeline();
+			_poller = new LongPollingProcessor();
+
 			_env = env;
 
 			_basePath = new DirectoryInfo(env.WebRootPath).Parent.FullName;
@@ -64,6 +66,8 @@ namespace GrowingData.Mung.Web {
 
 
 			_pipeline.AddProcessor(new RelationalEventProcessor(_dataPath));
+			_pipeline.AddProcessor(_poller);
+
 
 			// Set the serializer for our JWT
 			JwtHelper.InitializeJsonSerialization();
@@ -71,6 +75,19 @@ namespace GrowingData.Mung.Web {
 			// Check to see if we have an "apps" yet, if not create one
 			App.InitializeApps();
 
+			// Make sure that we have a reference to the Mung Events connection
+			Connection.InitializeConnection();
+
+
+			BackgroundWorker.Start(new TimeSpan(0, 1, 0), () => {
+				try {
+					Func<NpgsqlConnection> pg = () => { return DatabaseContext.Db.Events() as NpgsqlConnection; };
+
+					SqlBatchChecker.Check(_dataPath, pg);
+				} catch (Exception ex) {
+					Console.WriteLine(ex.Message);
+				}
+			});
 		}
 
 

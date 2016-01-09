@@ -32,7 +32,7 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 				return Redirect("/login");
 			}
 
-			var app = new App(name, CurrentUser.MungUserId);
+			var app = new App(name, CurrentUser.MungerId);
 
 			app.Insert();
 

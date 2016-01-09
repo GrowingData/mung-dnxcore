@@ -21,20 +21,20 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
         [HttpPost]
         public ActionResult Invite(string email, string name) {
 
-            var existing = MungUser.Get(email);
+            var existing = Munger.Get(email);
             if (existing != null) {
                 ViewBag.ErrorMessage = "A user with the same email has already created an account";
                 return View();
             }
 
-            var munger = new MungUser() {
+            var munger = new Munger() {
                 Name = name,
                 Email = email,
                 PasswordSalt = null, // salt,
                 PasswordHash = null //passwordHash
             };
 
-            munger.MungUserId = munger.Insert();
+            munger.Insert();
 
             HttpContext.Login(munger);
 
@@ -54,20 +54,20 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
             var salt = StringHashing.CreateSalt();
             var passwordHash = StringHashing.HashStrings(password, salt);
 
-            var existing = MungUser.Get(email);
+            var existing = Munger.Get(email);
             if (existing != null) {
                 ViewBag.ErrorMessage = "A user with the same email has already created an account";
                 return View();
             }
 
-            var munger = new MungUser() {
+            var munger = new Munger() {
                 Name = name,
                 Email = email,
                 PasswordSalt = salt,
                 PasswordHash = passwordHash
             };
 
-            munger.MungUserId = munger.Insert();
+            munger.Insert();
 
             HttpContext.Login(munger);
 

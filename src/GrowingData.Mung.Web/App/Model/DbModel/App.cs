@@ -34,8 +34,8 @@ namespace GrowingData.Mung.Web.Models {
 		public DateTime CreatedAt;
 		public DateTime UpdatedAt;
 
-		public int CreatedByMungUserId;
-		public int UpdatedByMungUserId;
+		public int CreatedByMunger;
+		public int UpdatedByMunger;
 
 		public App() { }
 
@@ -46,26 +46,9 @@ namespace GrowingData.Mung.Web.Models {
 			AppKey = RandomString.Get(16);
 			CreatedAt = DateTime.UtcNow;
 			UpdatedAt = DateTime.UtcNow;
-			CreatedByMungUserId = createdByUserId;
-			UpdatedByMungUserId = createdByUserId;
+			CreatedByMunger = createdByUserId;
+			UpdatedByMunger = createdByUserId;
 		}
-
-
-		/// <summary>
-		/// Get a connection
-		/// </summary>
-		/// <param name="connectionId"></param>
-		/// <returns></returns>
-		//public static App Get(string appKey) {
-		//	using (var cn = DatabaseContext.Db.Metadata()) {
-		//		var app = cn.ExecuteAnonymousSql<App>(
-		//				@"SELECT * FROM App WHERE AppId = @AppId",
-		//				 new { appId = appId }
-		//			)
-		//			.FirstOrDefault();
-		//		return app;
-		//	}
-		//}
 
 		/// <summary>
 		/// List all connections
@@ -74,7 +57,7 @@ namespace GrowingData.Mung.Web.Models {
 		/// <returns></returns>
 		public static List<App> List() {
 			using (var cn = DatabaseContext.Db.Mung()) {
-				var apps = cn.ExecuteAnonymousSql<App>(@"SELECT * FROM App", null);
+				var apps = cn.ExecuteAnonymousSql<App>(@"SELECT * FROM app", null);
 				return apps;
 			}
 		}
@@ -87,47 +70,18 @@ namespace GrowingData.Mung.Web.Models {
 			using (var cn = DatabaseContext.Db.Mung()) {
 
 				var sql = @"
-	INSERT INTO App(Name, AppSecret, AppKey, CreatedAt, UpdatedAt, CreatedByMungUserId, UpdatedByMungUserId)
-		VALUES (@Name, @AppSecret, @AppKey, @CreatedAt, @UpdatedAt, @CreatedByMungUserId, @CreatedByMungUserId)";
-				cn.ExecuteSql(sql, new {
-					Name = Name,
-					AppKey = AppKey,
-					AppSecret = AppSecret,
-					UpdatedAt = DateTime.UtcNow,
-					CreatedAt = DateTime.UtcNow,
-					CreatedByMungUserId = CreatedByMungUserId
-				});
+					INSERT INTO app(name, app_secret, app_key, created_by_munger, updated_by_munger)
+						VALUES (@Name, @AppSecret, @AppKey, @CreatedByMungUserId, @UpdatedByMungUserId)
+						RETURNING app_id ";
 
+				AppId = cn.ExecuteSql(sql, this);
 				_AppCache = List().ToDictionary(x => x.AppKey);
-				
+
 				return true;
 
 			}
 
 		}
-		//	public bool Save() {
-		//		using (var cn = DatabaseContext.Db.Mung()) {
-
-
-		//			var sql = @"
-		//UPDATE App
-		//	SET Name=@Name,
-		//		UpdatedAt = @UpdatedAt,
-		//		ModifiedByUserId = @ModifiedByUserId
-		//	WHERE AppId = @AppId";
-		//				cn.ExecuteSql(sql, new {
-		//					Name = Name,
-		//					UpdatedAt = DateTime.UtcNow,
-		//					ModifiedByUserId = UpdatedByMungUserId,
-		//					AppId = AppId
-		//				});
-		//			}
-		//		}
-		//		// Update the appCache
-		//		_AppCache = List().ToDictionary(x => x.AppKey);
-
-		//		return true;
-		//	}
 
 
 		/// <summary>
@@ -136,12 +90,8 @@ namespace GrowingData.Mung.Web.Models {
 		/// <returns></returns>
 		public bool Delete() {
 			using (var cn = DatabaseContext.Db.Mung()) {
-				var sql = @"
-	DELETE FROM App
-		WHERE AppId = @AppId";
-				cn.ExecuteSql(sql, new {
-					AppId = AppId
-				});
+				var sql = @"DELETE FROM app WHERE app_id = @AppId";
+				cn.ExecuteSql(sql, this);
 
 				return true;
 			}
