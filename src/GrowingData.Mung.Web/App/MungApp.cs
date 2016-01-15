@@ -9,6 +9,8 @@ using GrowingData.Mung.Relationizer;
 using GrowingData.Mung.Web.Models;
 using GrowingData.Utilities.DnxCore;
 using GrowingData.Mung.SqlBatch;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Npgsql;
 
 namespace GrowingData.Mung.Web {
@@ -25,13 +27,26 @@ namespace GrowingData.Mung.Web {
 
 		public static void Initialize(IHostingEnvironment env) {
 			_app = new MungApp(env);
+
+
+			_app.ProcessInternalEvent("mung_init", new {
+				environment = env.EnvironmentName,
+				www_root = env.WebRootPath
+			});
+
 		}
 
 		private EventPipeline _pipeline;
-		private LongPollingProcessor _poller;
-		public EventPipeline Pipeline { get { return _pipeline; } }
-		public LongPollingProcessor Poller { get { return _poller; } }
+		private LongPollingProcessor _longPollProcessor;
+		private NotificationProcessor _notificationsProcessor;
+		private JsonPostgresProcessor _jsonPostgresProcessor;
+		private RelationalEventProcessor _relationalEventProcessor;
 
+		public EventPipeline Pipeline { get { return _pipeline; } }
+		public LongPollingProcessor LongPollProcessor { get { return _longPollProcessor; } }
+		public NotificationProcessor NotificationProcessor { get { return _notificationsProcessor; } }
+		public JsonPostgresProcessor JsonPostgresProcessor { get { return _jsonPostgresProcessor; } }
+		public RelationalEventProcessor RelationalEventProcessor { get { return _relationalEventProcessor; } }
 
 		private IHostingEnvironment _env;
 		private string _dataPath;
@@ -45,18 +60,29 @@ namespace GrowingData.Mung.Web {
 		}
 
 
+		public void ProcessInternalEvent(string type, object data) {
+			var json = JsonConvert.SerializeObject(data);
+
+			var evt = new MungServerEvent() {
+				Type = type,
+				AppId = App.MungInternal.AppId,
+				LogTime = DateTime.UtcNow,
+				Source = System.Net.Dns.GetHostName(),
+				Data = JToken.Parse(json)
+			};
+			_pipeline.Process(evt);
+		}
+
 		public MungApp(IHostingEnvironment env) {
-			Console.WriteLine("Paused Initializing of MungApp, press a key to continue...");
-			Console.ReadKey();
+			//Console.WriteLine("Paused Initializing of MungApp, press a key to continue...");
+			//Console.ReadKey();
 
 
 			_pipeline = new EventPipeline();
-			_poller = new LongPollingProcessor();
 
 			_env = env;
 
 			_basePath = new DirectoryInfo(env.WebRootPath).Parent.FullName;
-
 
 			_dataPath = Path.Combine(_basePath, "data");
 
@@ -64,13 +90,22 @@ namespace GrowingData.Mung.Web {
 				Directory.CreateDirectory(_dataPath);
 			}
 
+			_relationalEventProcessor = new RelationalEventProcessor(_dataPath);
+			_notificationsProcessor = new NotificationProcessor();
+			_longPollProcessor = new LongPollingProcessor();
+			_jsonPostgresProcessor = new JsonPostgresProcessor(() => DatabaseContext.Db.Events() as NpgsqlConnection);
 
-			_pipeline.AddProcessor(new RelationalEventProcessor(_dataPath));
-			_pipeline.AddProcessor(_poller);
+			_pipeline.AddProcessor(_relationalEventProcessor);
+			_pipeline.AddProcessor(_longPollProcessor);
+			_pipeline.AddProcessor(_notificationsProcessor);
+			_pipeline.AddProcessor(_jsonPostgresProcessor);
 
 
 			// Set the serializer for our JWT
 			JwtHelper.InitializeJsonSerialization();
+
+			// Make sure that we have loaded all the settings the app needs
+			Setting.InitializeSettings();
 
 			// Check to see if we have an "apps" yet, if not create one
 			App.InitializeApps();

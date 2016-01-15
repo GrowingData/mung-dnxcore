@@ -1,4 +1,4 @@
-﻿{
+{
 	"userSecretsId": "aspnet5-GrowingData.Mung.Web-351d3ca8-d07b-40eb-a1c1-089f6a37a2e3",
 	"version": "1.0.0-*",
 	"compilationOptions": {
@@ -26,7 +26,9 @@
 		"Microsoft.Extensions.Logging.Console": "1.0.0-rc1-final",
 		"Microsoft.Extensions.Logging.Debug": "1.0.0-rc1-final",
 		"JWT.DNX.Json.Net": "1.0.0.1",
-		"JWT.DNX": "1.0.0.1"
+		"JWT.DNX": "1.0.0.1",
+		"AWSSDK.SimpleEmail": "3.2.2-beta",
+		"HtmlAgilityPack.NetCore": "1.4.9.2"
 	},
 
 	"commands": {

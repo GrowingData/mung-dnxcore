@@ -1,0 +1,70 @@
+﻿@{
+	ViewBag.Title = "Dashboard";
+
+	var notifications = ViewBag.Notifications as List<Notification>;
+}
+<div class="row">
+	<div class="col-sm-12">
+		<div class="mung-section">
+			<div class="section-header">
+				<button type="button" class="btn btn-md green-bg pull-right add-notification-button">+ Add notification</button>
+				<button type="button" class="btn btn-md blue-bg pull-right edit-settings-button" style="margin-right:16px">Edit Settings</button>
+				<h2> Notifications</h2>
+				<p>
+					MUNG can automatically send templated emails when  
+					events of a certain type are received. 
+				</p>
+			</div>
+
+			<ul class="link-list list-unstyled">
+				@foreach (var n in notifications) {
+				<li>
+					@n.Name (@n.EventType)
+
+				</li>
+
+				}
+			</ul>
+
+
+		</div>
+
+	</div>
+
+</div>
+	@{ 
+		// Load the text from the template, but dont' execute it.
+		var env = ViewBag.HostingEnvironment as IHostingEnvironment;
+		var path = env.MapPath("../Areas/Web/Views/Notification/Template/DefaultNotificationTemplate.cshtml");
+		var content = File.ReadAllText(path);
+	}
+<div class="notification-template" style="display:none;">@Html.Raw(content)</div>
+
+@Html.Partial("Modal/NotificationSettings")
+
+<script type="text/javascript">
+	MUNG.ready(function () {
+
+		$(".add-notification-button").click(function () {
+			var r = Math.random().toString().split(".")[1].substr(0, 6);
+			var resourceUrl = "/Notification/new-notification-" + r + ".cshtml";
+
+			$.ajax({
+				url: "/api/file-system" + resourceUrl,
+				data: {
+					"data": $(".notification-template").html()
+				},
+				method: "PUT",
+				success: function (response) {
+					if (response.Success) {
+						document.location = "/mung?open=" + response.ResourceUrl;
+					}
+				}
+			});
+
+		});
+
+
+	});
+
+</script>

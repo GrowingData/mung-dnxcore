@@ -1,63 +1,33 @@
 ﻿
-<div class="graph-template-inner show-sql show-js">
-
-	<h1>Line chart over time</h1>
-
-	<p class="explanation">
-		Binds the results of your query to a line chart that renders 
-		a number of columns against a single Date column.
-	</p>
-
-	<div class="instructions">
-		<h1>Documentation</h1>
-		<p>
-			Generate your SQL query which will return a table
-			of results, with a Date or Time value called "Date"
-			and any number of numeric columns to chart.
-		</p>
-
-		<h2>Simple formatting</h2>
-		<p>
-			You can change the formatting of the y-axis by modifying
-			the "yFormatter" method.
-		</p>
-		<p>
-			To add a column to the chart, specify an array of objects
-			containing the name of the column, and the color it should
-			render as in the "seriesColumns" property.
-		</p>
-	</div>
-
-
-	
-	<!-- Start: The SQL code -->
-	<pre class="default-sql">
-SELECT CAST(_at_ As DATE) AS date, AVG(redis_time) as redis_time, AVG(sql_time) as sql_time
-FROM dyn.request
-GROUP BY CAST(_at_ As DATE)
-ORDER BY date ASC
-	</pre>
-	<!-- End: The SQL code -->
-	
-
-	<!-- Start: The HTML code -->
-	<div class="default-html">
 <div class="chart-holder"></div>
-	</div>
-	<!-- End: The HTML code -->
 
-	<!-- Start: The javascript code -->
-	<pre class="default-js">
-function(data, $component){
-	$component.find(".chart-holder").mungChartDateLine(data, {
-		dateColumn: "date", 
-        seriesColumns: [
-          {name: "redis_time", color: "#659eeb"},
-          {name: "sql_time", color: "#87b56c"}
-        ], 
-		yFormatter: function(d) { return parseInt(d); }
+<sql>
+SELECT *
+FROM (
+    SELECT system_performance_at AS date, cpu_percent, ram_percent 
+    FROM mung.system_performance 
+    ORDER BY system_performance_at DESC 
+    LIMIT 100
+) a
+ORDER BY date ASC 
+    
+</sql>
+
+
+<script type="text/javascript">    
+    MUNG.graphReady(function($graph, dashboard){
+        MUNG.Sql.execute( $graph.find("sql").text(), "Mung Events (SQL)", function(data){
+            
+            $graph.find(".chart-holder").mungChartDateLine(data, {
+                dateColumn: "date", 
+                seriesColumns: [
+                  {name: "cpu_percent", color: "#659eeb"},
+                  {name: "ram_percent", color: "#87b56c"}
+                ], 
+                yFormatter: function(d) { return parseInt(d); }
+            });
+            
+        });
     });
-}
-	</pre>
-	<!-- End: The javascript code -->
-</div>
+</script>
+

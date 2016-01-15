@@ -1,4 +1,5 @@
-﻿using System;
+﻿using System.Collections.Generic;
+using Microsoft.AspNet.StaticFiles;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -52,9 +53,20 @@ namespace GrowingData.Mung.Web {
 				app.UseExceptionHandler("/Home/Error");
 			}
 
+
+
 			app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
 
-			app.UseStaticFiles();
+			// Static file handlers and mime types
+			var sfo = new StaticFileOptions {
+				ContentTypeProvider = new FileExtensionContentTypeProvider()
+			};
+			((FileExtensionContentTypeProvider)sfo.ContentTypeProvider).Mappings.Add(
+				new KeyValuePair<string, string>(".less", "text/css"));
+
+			app.UseStaticFiles(sfo);
+			// 
+
 			app.UseCookieAuthentication(options => {
 				options.AutomaticAuthenticate = true;
 				options.LoginPath = $"/{Urls.LOGIN}";

@@ -1,13 +1,46 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-
 	<script type="text/javascript">
-		var startTime = new Date();
-		window.fns = [];
-		function MungOnLoader(fn) {
-			window.fns.push(fn);
-		}
+		var MUNG = MUNG || {};
+		MUNG.Loader = {
+			startTime: new Date(),
+			loadCallbacks: [],
+			graphReadyCallbacks: [],
+			ready: function (callback) {
+				this.loadCallbacks.push(callback);
+				return this;
+			},
+			graphReady: function(initCallback){
+				var scriptBlock = document.currentScript;
+				this.graphReadyCallbacks.push({
+					elem: scriptBlock,
+					callback: initCallback
+				});
+				//this.load(function () {
+				//	var graph = $(scriptBlock).parents(".graph").first();
+				//	initCallback(graph);
+				//})
+			},
+			fire: function () {
+				console.log("Ready start: " + elapsed + "ms")
+				var d = new Date();
+				var elapsed = d.getTime() - this.startTime.getTime();
+
+				for (var i = 0; i < this.loadCallbacks.length; i++) {
+					this.loadCallbacks[i]();
+				}
+			}
+		};
+
+		// Shortcut functions
+		MUNG.ready = function (fn) {
+			MUNG.Loader.ready(fn);
+		};
+		MUNG.graphReady = function (fn) {
+			MUNG.Loader.graphReady(fn);
+		};
+
 	</script>
 
 	<meta charset="utf-8" />
@@ -55,12 +88,13 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a asp-controller="Home" asp-action="Index" class="navbar-brand">GrowingData.Mung.Web2</a>
+				<a asp-controller="Home" asp-action="Index" class="navbar-brand">mung</a>
 			</div>
 			<div class="navbar-collapse collapse">
 				<ul class="nav navbar-nav">
 					<li><a href="/">Home</a></li>
 					<li><a href="/dashboards">Dashboards</a></li>
+					<li><a href="/notifications">Notifications</a></li>
 					<li><a href="/connections">Connections</a></li>
 					<li><a href="/apps">Apps</a></li>
 				</ul>
@@ -100,6 +134,7 @@
 		<script src="/static/js/core/MUNG.DataHelpers.js"></script>
 		<script src="/static/js/core/MUNG.EventManager.js"></script>
 		<script src="/static/js/core/MUNG.LongPoll.js"></script>
+		<script src="/static/js/core/MUNG.Sql.js"></script>
 		<script src="/static/js/binders/mungChartDateLine.js"></script>
 		<script src="/static/js/binders/mungTableBinder.js"></script>
 		<script src="/static/js/models/mungGraphModel.js"></script>
@@ -136,6 +171,8 @@
 		<script src="/static/js/core/MUNG.DataHelpers.js"></script>
 		<script src="/static/js/core/MUNG.EventManager.js"></script>
 		<script src="/static/js/core/MUNG.LongPoll.js"></script>
+		<script src="/static/js/core/MUNG.Graph.js"></script>
+		<script src="/static/js/core/MUNG.Sql.js"></script>
 		<script src="/static/js/binders/mungChartDateLine.js"></script>
 		<script src="/static/js/binders/mungTableBinder.js"></script>
 		<script src="/static/js/models/mungGraphModel.js"></script>
@@ -155,17 +192,18 @@
 
 	<script type="text/javascript">
 		$(document).ready(function () {
-			var d = new Date();
-			var elapsed = d.getTime() - startTime.getTime();
-			console.log("Ready start: " + elapsed + "ms")
+			MUNG.Loader.fire();
+			//var d = new Date();
+			//var elapsed = d.getTime() - startTime.getTime();
+			//console.log("Ready start: " + elapsed + "ms")
 
-			for (var i = 0; i < window.fns.length; i++) {
-				window.fns[i]();
-			}
+			//for (var i = 0; i < window.fns.length; i++) {
+			//	window.fns[i]();
+			//}
 
-			d = new Date();
-			var elapsed = d.getTime() - startTime.getTime();
-			console.log("Ready end: " + elapsed + "ms")
+			//d = new Date();
+			//var elapsed = d.getTime() - startTime.getTime();
+			//console.log("Ready end: " + elapsed + "ms")
 		});
 
 	</script>

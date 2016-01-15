@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GrowingData.Mung;
+using System.Net;
 using GrowingData.Utilities.DnxCore;
 
 namespace GrowingData.Mung.Web.Models {
-	public class Dashboard {
+	public class Dashboard : IBracketsEditable {
 		public int DashboardId;
-		public string Url;
-		public string Title;
+		public string Name;
 		public string Css;
 		public string Js;
 		public int CreatedByMungerId;
@@ -17,11 +16,14 @@ namespace GrowingData.Mung.Web.Models {
 		public DateTime CreatedAt;
 		public DateTime UpdatedAt;
 
+		public string EncodedName { get { return WebUtility.UrlEncode(Name); } }
 
-		public static Dashboard Get(string url) {
+		public string ResourceUrl { get { return $"/{MungFileSystem.DashboardRootUrlPart}/{EncodedName}"; } }
+
+		public static Dashboard Get(string name) {
 			using (var cn = DatabaseContext.Db.Mung()) {
-				var sql = @"SELECT * FROM dashboard WHERE url = @Url";
-				var dashboard = cn.ExecuteAnonymousSql<Dashboard>(sql, new { Url = url })
+				var sql = @"SELECT * FROM dashboard WHERE name = @Name OR name = @DecodedName";
+				var dashboard = cn.ExecuteAnonymousSql<Dashboard>(sql, new { Name = name, DecodedName = WebUtility.UrlDecode(name) })
 					.FirstOrDefault();
 
 				return dashboard;
@@ -56,8 +58,8 @@ namespace GrowingData.Mung.Web.Models {
 		public Dashboard Insert() {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"
-					INSERT INTO dashboard (url, title, created_by_munger, updated_by_munger)
-						VALUES (@Url, @Title, @CreatedByMungerId, @UpdatedByMungerId)
+					INSERT INTO dashboard (name, created_by_munger, updated_by_munger)
+						VALUES (@Name, @CreatedByMungerId, @UpdatedByMungerId)
 						RETURNING dashboard_id
 					";
 
@@ -71,8 +73,7 @@ namespace GrowingData.Mung.Web.Models {
 				var sql = @"
 					UPDATE dashboard 
 						SET 
-							url=@Url, 
-							title = Title, 
+							name = @Name, 
 							updated_by_munger = @UpdatedByMungerId
 						WHERE dashboard_id = @DashboardId
 					";
@@ -92,11 +93,15 @@ namespace GrowingData.Mung.Web.Models {
 
 		public List<Graph> GetGraphs() {
 			using (var cn = DatabaseContext.Db.Mung()) {
-				var sql = @"SELECT * FROM graph WHERE dashboard_id = @DashboardId";
+				var sql = @"
+					SELECT *, D.name AS DashboardName
+					FROM graph G 
+					INNER JOIN dashboard D
+					ON G.dashboard_id = G.dashboard_id
+					WHERE D.dashboard_id = @DashboardId";
 				var components = cn.ExecuteAnonymousSql<Graph>(sql, this);
 				return components;
 			}
-
 		}
 	}
 }

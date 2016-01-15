@@ -14,36 +14,22 @@ namespace GrowingData.Mung.ClientTest {
 			var client = new MungClient();
 
 			var perf = new SystemPerformance();
-			perf.BeginCollection(new TimeSpan(0, 0, 1));
+			perf.BeginCollection(new TimeSpan(0, 10, 0));
+
 
 			for (var i = 0; i < 10000; i++) {
-
-				////Console.WriteLine("Sending event: " + i.ToString());
-				//client.Send("tester", "my_first_event", new {
-				//	EventCounter = 100,
-				//	SomethingElse = "yes",
-				//	typeedAs = "int"
-				//});
-				//client.Send("tester", "my_first_event", new {
-				//	EventCounter = 100.09m,
-				//	SomethingElse = "yes",
-				//	typeedAs = "decimal"
-				//});
-				//client.Send("tester", "my_first_event", new {
-				//	EventCounter = 100.09f,
-				//	SomethingElse = "yes",
-				//	typeedAs = "float"
-				//});
-				//client.Send("tester", "my_first_event", new {
-				//	EventCounter = 100.09f,
-				//	SomethingElse = "yes",
-				//	typeedAs = "double"
-				//});
-
-				//Console.WriteLine("Sent!");
-				//Console.ReadKey();
+				Console.WriteLine("Sending...");
+				client.Send("password_reset", new {
+					User = new {
+						Username = "john",
+						FirstName = "John",
+						Message = "This is '\"A mult\r\nline'\"\r\nMessage",
+						Email = "terence@growingdata.com.au"
+					},
+					PasswordResetToken = "shJwFOfIQjy6c3dkjf8id3"
+				});
+				Console.ReadKey();
 			}
-			
 
 			Console.WriteLine("Press any key to exit...");
 			Console.ReadKey();

@@ -12,9 +12,20 @@
 	background: #4e555f;
 }
 
-.cm-s-light-table.CodeMirror {
+.ide-code {
 	background: #202e39;
 }
+
+.cm-s-light-table.CodeMirror,
+.cm-s-light-table.CodeMirror .CodeMirror-gutters,
+.cm-s-light-table.CodeMirror .CodeMirror-linenumbers {
+	background: transparent;
+}
+
+
+	.cm-s-light-table.CodeMirror .CodeMirror-gutters {
+		border-color: #474D56;
+	}
 
 input, select, textarea {
 	background: #202e39;
@@ -166,10 +177,10 @@ ul.firehose > li {
 
 .nvd3 .tick line {
 	stroke: #9DA1AA;
-	stroke-opacity:0.15;
+	stroke-opacity: 0.15;
 }
 
 .nvd3 .nv-axis path.domain {
 	stroke: #9DA1AA;
-	stroke-opacity:0.15;
+	stroke-opacity: 0.15;
 }

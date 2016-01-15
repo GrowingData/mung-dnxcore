@@ -82,6 +82,7 @@
 					.showXAxis(true)        //Show the x-axis
 
 				chart.xAxis.tickFormat(function (d) {
+					return MUNG.DataHelpers.formatDateTime(d);
 					return MUNG.DataHelpers.formatDate_YYYMMDD(d);
 				});
 

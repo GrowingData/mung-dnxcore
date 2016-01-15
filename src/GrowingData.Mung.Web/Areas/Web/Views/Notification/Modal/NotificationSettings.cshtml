@@ -1,0 +1,159 @@
+﻿<!-- <Notification/Modal/NotificationSettings> -->
+@{
+	var fromAddress = "";
+	var accessKey = "";
+	var accessSecret = "";
+	try { fromAddress = SesNotificationSettings.SesFromAddress; } catch { }
+	try { accessKey = SesNotificationSettings.SesAccessKey; } catch { }
+	try { accessSecret = SesNotificationSettings.SesSecretKey; } catch { }
+}
+
+<div id="edit-notification-settings" class="modal fade">
+	<div class="modal-dialog modal-lg">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">
+					<span class="edit">Notification settings</span>
+
+				</h4>
+			</div>
+			<input type="hidden" class="render-template-url" />
+			<div class="modal-body">
+				<div class="row">
+					<div class="col col-sm-12">
+						<label>Notifications from address</label>
+						<input type="text" class="input from-address" value="@fromAddress" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-12">
+						<label>AWS Simple Email Services Access Key</label>
+						<input type="text" class="input access-key" value="@accessKey" />
+					</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-12">
+						<label>AWS Simple Email Services Access Secret</label>
+						<input type="text" class="input access-secret" value="@accessSecret" />
+					</div>
+				</div>
+
+
+			</div>
+			<div class="modal-footer" style="text-align:left">
+				<div class="row">
+					<div class="col col-sm-12">
+						<label>Send Test email</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-8">
+						<input type="email" class="input to-address" />
+					</div>
+					<div class="col col-sm-4">
+						<button type="button" class="btn right btn-test red-bg">Send Test</button>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col col-sm-12">
+						<label class="test-email-result"></label>
+					</div>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default left btn-close">Close</button>
+				<button type="button" class="btn right btn-save green-bg">Save</button>
+			</div>
+		</div>
+	</div>
+
+
+	<script type="text/javascript">
+		MUNG.ready(function () {
+			var self = $("#edit-notification-settings");
+			$(".edit-settings-button").click(function () { self.modal('show'); });
+
+			self.find(".render-template-url").val("http://" + document.location.host + "/notifications/generate")
+
+			self.find(".btn-close").click(function () {
+				self.modal('hide');
+			});
+
+			self.find(".btn-save").click(function () {
+
+				$.ajax({
+					url: "/api/file-system/notification/settings",
+					data: {
+						fromAddress: self.find(".from-address").val(),
+						renderTemplateUrl: self.find(".render-template-url").val(),
+						accessKey: self.find(".access-key").val(),
+						accessSecret: self.find(".access-secret").val(),
+					},
+					method: "POST",
+					success: function (r) {
+
+						if (r.Success) {
+							self.modal('hide');
+						} else {
+							$(".test-email-result").html(r.Message);
+							$(".test-email-result").addClass("red");
+						}
+
+					},
+					error: function (r) {
+						$(".test-email-result").text("An unknown error ocurred");
+						$(".test-email-result").addClass("red");
+
+					}
+				});
+			});
+
+			self.find(".btn-test").click(function () {
+				$(".test-email-result").text("Testing...");
+				$(".test-email-result").removeClass("green red");
+				$.ajax({
+					url: "/api/notifications/test-settings",
+					data: {
+						toAddress: $(".to-address").val(),
+						fromAddress: $(".from-address").val(),
+						renderTemplateUrl: $(".render-template-url").val(),
+						accessKey: $(".access-key").val(),
+						accessSecret: $(".access-secret").val(),
+					},
+					method: "POST",
+					success: function (r) {
+						$(".test-email-result").html(r.Message);
+
+						if (r.Success) {
+							$(".test-email-result").addClass("green");
+						} else {
+							$(".test-email-result").addClass("red");
+						}
+
+					},
+					error: function (r) {
+						$(".test-email-result").text("An unknown error ocurred");
+						$(".test-email-result").addClass("red");
+
+					}
+				});
+			});
+
+		});
+
+	</script>
+
+	@if (!SesNotificationSettings.HasConfiguration()) {
+	<script type="text/javascript">
+
+		MUNG.ready(function () {
+			$("#edit-notification-settings").modal('show');
+		});
+	</script>
+	}
+</div>
+<!-- </Notification/Modal/NotificationSettings> -->

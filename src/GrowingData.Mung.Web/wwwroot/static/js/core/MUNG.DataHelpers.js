@@ -35,9 +35,20 @@ MUNG.DataHelpers = {
 		return d3.time.format("%Y-%m-%d")(new Date(d));
 	},
 
+	formatDateTime: function (d) {
+		return d3.time.format("%Y-%m-%d %H:%M:%S")(new Date(d));
+	},
+
 	parseDate: function (input) {
 		if (input.indexOf('T') > 0) {
-			input = input.split('T')[0];
+			var dateInput = input.split('T')[0];
+			var timeInput = input.split('T')[1];
+
+			var dateParts = dateInput.split('-');
+			var timeParts = timeInput.split(":");
+
+			// Note: months are 0-based
+			return new Date(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], timeParts[2]); 
 		}
 		var parts = input.split('-');
 		// new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])

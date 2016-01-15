@@ -30,20 +30,21 @@ namespace GrowingData.Mung.Client {
 
 		private bool SendRequest(string jwt) {
 		
-			byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jwt);
-
-			HttpWebRequest req = (HttpWebRequest)WebRequest.Create(_Host + "/ingest/v1/events?appKey=" + _AppKey);
-			req.Method = "POST";
-
-			// Maximum 25 seconds
-			req.Timeout = 25000;
-			req.KeepAlive = true;
-			req.ContentLength = bytes.Length;
-			using (Stream os = req.GetRequestStream()) {
-				os.Write(bytes, 0, bytes.Length); //Push it out there
-				os.Close();
-			}
+			
 			try {
+				byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jwt);
+
+				HttpWebRequest req = (HttpWebRequest)WebRequest.Create(_Host + "/ingest/v1/events?appKey=" + _AppKey);
+				req.Method = "POST";
+
+				// Maximum 25 seconds
+				req.Timeout = 25000;
+				req.KeepAlive = true;
+				req.ContentLength = bytes.Length;
+				using (Stream os = req.GetRequestStream()) {
+					os.Write(bytes, 0, bytes.Length); //Push it out there
+					os.Close();
+				}
 				using (WebResponse resp = req.GetResponse()) {
 
 					if (resp == null)

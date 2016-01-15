@@ -23,7 +23,7 @@
 				}
 				@foreach (var dashboard in dashboards) {
 					<li>
-						<a href="@("/dashboard" + dashboard.Url)">@dashboard.Title</a>
+						<a href="@(dashboard.ResourceUrl)">@dashboard.Name</a>
 
 					</li>
 
@@ -43,7 +43,7 @@
 @if (dashboards.Count == 0) {
 
 	<script type="text/javascript">
-		MungOnLoader(function () {
+		MUNG.ready(function () {
 			$("#add-dashboard-modal").modal('show');
 		});
 	</script>

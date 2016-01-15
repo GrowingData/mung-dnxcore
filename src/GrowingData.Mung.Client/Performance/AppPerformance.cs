@@ -53,7 +53,7 @@ namespace GrowingData.Mung.Client {
 						disk_write_mb = (1.0d / (1024 * 1024)) * CounterSample.Calculate(_lastSample["disk_write_mb"], currentSample["disk_write_mb"])
 					};
 
-					_client.Send(Environment.MachineName, "system_performance", eventData);
+					_client.Send("system_performance", eventData);
 
 				} else {
 					_lastSample = new Dictionary<string, CounterSample>();

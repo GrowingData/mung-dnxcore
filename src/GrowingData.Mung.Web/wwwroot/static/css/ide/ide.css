@@ -1,0 +1,46 @@
+﻿/* Dashboard related styles for things like component header spacing, etc*/
+
+.ide {
+	position:absolute;
+	left:0;
+	right:0;
+	top:50px;
+	bottom:0;
+	background:#000;
+}
+
+.ide-header{
+    left: 200px;
+    right: 0;
+    height: 24px;
+    background: #4e555f;
+    position: absolute;
+    z-index: 10;
+}
+
+.ide-header input {
+	height:24px;
+	width:100%;
+	background:transparent;
+	border:none;
+
+}
+
+
+.ide-files{
+	position:absolute;
+	left:0;
+	top:0;
+	bottom:0;
+	width:200px;
+	background:#5f6670;
+}
+
+.ide-code{
+	position:absolute;
+	left:200px;
+	top:24px;
+	bottom:0;
+	right:0px;
+	background:#1F2227;
+}

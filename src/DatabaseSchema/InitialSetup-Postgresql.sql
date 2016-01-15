@@ -20,7 +20,6 @@ CREATE TABLE provider (
 	Name VARCHAR(100) NOT NULL
 ) ;
 
-
 CREATE TABLE connection (
 	connection_id serial PRIMARY KEY,
 	provider_id INT NOT NULL REFERENCES provider(provider_id),
@@ -47,8 +46,7 @@ CREATE TABLE app (
 
 CREATE TABLE dashboard (
 	dashboard_id serial PRIMARY KEY,
-	url VARCHAR(256) NOT NULL UNIQUE,
-	title TEXT NOT NULL,
+	name TEXT NOT NULL UNIQUE,
 	css TEXT NULL,
 	
 	created_at timestamp NOT NULL DEFAULT (now() at time zone 'utc'),
@@ -58,20 +56,34 @@ CREATE TABLE dashboard (
 	updated_by_munger INT NOT NULL REFERENCES munger(munger_id)
 );
 
-
-
 CREATE TABLE graph (
 	graph_id serial PRIMARY KEY,
 	dashboard_id INT NOT NULL REFERENCES dashboard(dashboard_id),
-	connection_id INT NOT NULL REFERENCES connection(connection_id),
-	title TEXT NOT NULL,
+	name TEXT NOT NULL,
 	html TEXT NULL,
-	sql TEXT NULL,
-	js TEXT NULL,
 	x FLOAT NOT NULL,
 	y FLOAT NOT NULL,
 	width FLOAT NOT NULL,
 	height FLOAT NOT NULL
+);
+
+CREATE TABLE setting (
+	key TEXT NOT NULL PRIMARY KEY,
+	value TEXT NOT NULL
+);
+
+CREATE TABLE notification(
+	notification_id serial PRIMARY KEY,
+	name TEXT NOT NULL UNIQUE,
+	event_type TEXT NOT NULL,
+	template TEXT NOT NULL,
+	is_paused BOOLEAN NOT NULL,
+
+	created_at timestamp NOT NULL DEFAULT (now() at time zone 'utc'),
+	updated_at timestamp NOT NULL DEFAULT (now() at time zone 'utc'),
+	
+	created_by_munger INT NOT NULL REFERENCES munger(munger_id),
+	updated_by_munger INT NOT NULL REFERENCES munger(munger_id)
 );
 
 
@@ -81,6 +93,5 @@ INSERT INTO munger(munger_id, email, name, is_admin)
 ;
 
 INSERT INTO provider(name)
-	VALUES ('SQL Server'), ('PostgreSQL'), ('Realtime')
-
+	VALUES ('SQL Server'), ('PostgreSQL')
 ;

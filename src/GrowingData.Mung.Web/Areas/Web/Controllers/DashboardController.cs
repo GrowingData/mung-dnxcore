@@ -19,40 +19,24 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 		[Route("dashboards")]
 		public ActionResult ViewDashboardList(string url) {
-			var munger = CurrentUser;
-			if (munger == null) {
-				return Redirect("/login");
-			}
-
-
-			ViewBag.Dashboards = Dashboard.List(munger.MungerId);
+			ViewBag.Dashboards = Dashboard.List(CurrentUser.MungerId);
 			return View("DashboardList");
 		}
 
-		[Route("dashboard/{*url}")]
-		public ActionResult ViewDashboard(string url) {
+		[Route("dashboard/{name}")]
+		public ActionResult ViewDashboard(string name) {
+			// Does the URL already exist?
 
-			var munger = CurrentUser;
-			if (munger == null) {
-				return Redirect("/login");
+			var dashboard = Dashboard.Get(name);
+
+			if (dashboard == null) {
+				return new HttpNotFoundResult();
 			}
 
-			url = "/" + url;
-			using (var cn = DatabaseContext.Db.Mung()) {
-
-				// Does the URL already exist?
-
-				var dashboard = Dashboard.Get(url);
-
-				if (dashboard == null) {
-					throw new Exception("Unable to find the dashboard at the url: " + url);
-				}
-
-				ViewBag.Dashboard = dashboard;
-				ViewBag.Graphs = dashboard.GetGraphs();
+			ViewBag.Dashboard = dashboard;
+			ViewBag.Graphs = dashboard.GetGraphs();
 
 
-			}
 			return View("Dashboard");
 		}
 	}

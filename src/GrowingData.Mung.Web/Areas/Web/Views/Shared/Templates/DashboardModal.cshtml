@@ -1,4 +1,4 @@
-﻿<!-- <Templates/ViewModal> -->
+﻿<!-- <Templates/DashboardModal> -->
 <div id="add-dashboard-modal" class="modal fade">
 	<div class="modal-dialog modal-lg">
 
@@ -22,9 +22,27 @@
 
 
 		<script type="text/javascript">
-			MungOnLoader(function () {
+			MUNG.ready(function () {
 				$("#add-dashboard-modal .btn-save").click(function () {
-					document.location = "/create/dashboard/" + MUNG.Utilities.convertToUrl($(".dashboard-title").val());
+					$(this).text("Saving...");
+					$.ajax({
+						url: "/api/dashboard/create",
+						data: {
+							"name": $(".dashboard-title").val()
+						},
+						method: "POST",
+						success: function (response) {
+							document.location = response.Dashboard.ResourceUrl;
+							$(this).text("Saved! Preparing...");
+							setTimeout(function () { $("#add-dashboard-modal").modal('hide'); }, 1000);
+
+						},
+						error: function (a, b, c, d) {
+							$(this).text("Oops...");
+							console.error("Error: mungGraph.saveLayout", { a: a, b: b, c: c, d: d });
+						}
+					});
+				
 				});
 
 				$("#add-dashboard-modal .btn-close").click(function () {
@@ -38,4 +56,4 @@
 		</script>
 	</div>
 </div>
-<!-- </Templates/ViewModal> -->
+<!-- </Templates/DashboardModal> -->

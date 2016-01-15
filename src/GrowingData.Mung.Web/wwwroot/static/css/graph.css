@@ -49,6 +49,9 @@
 		line-height: 24px;
 	}
 
+	.graph sql{
+		display:none;
+	}
 
 .grid-stack > .grid-stack-item > .grid-stack-item-content {
 	overflow-y: hidden;

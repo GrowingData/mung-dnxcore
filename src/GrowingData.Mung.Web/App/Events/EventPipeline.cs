@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using GrowingData.Mung.Core;
+using GrowingData.Mung.Web.Models;
 
 namespace GrowingData.Mung.Web {
 	public class EventPipeline {
@@ -53,14 +54,12 @@ namespace GrowingData.Mung.Web {
 		public void Process(MungServerEvent evt) {
 			foreach (var subs in _active.Values) {
 				try {
+					Console.WriteLine($"EventPipeline.Process({evt.Type}, {subs.Name})");
 					subs.EnqueueEvent(evt);
 				} catch (Exception ex) {
 					Debug.WriteLine(ex.Message + "\r\n" + ex.StackTrace);
 				}
 			}
 		}
-
-
-
 	}
 }

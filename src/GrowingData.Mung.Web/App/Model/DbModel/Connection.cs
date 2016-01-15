@@ -51,20 +51,7 @@ namespace GrowingData.Mung.Web.Models {
 				mungConnection.ConnectionString = eventsConnectionString;
 				mungConnection.Update();
 			}
-
-			// Make sure that there is a Mung Real Time connection too;
-			var mungRT = connections.FirstOrDefault(x => x.Name == MungRealtimeEventsConnectionName);
-			if (mungRT == null) {
-				mungConnection = new Connection() {
-					ConnectionId = -2,
-					Name = MungRealtimeEventsConnectionName,
-					ConnectionString = "/api/firehose/poll",
-					ProviderId = Provider.Providers.FirstOrDefault(x => x.Name == "Real Time").ProviderId,
-					CreatedByMunger = -1,
-					UpdatedByMunger = -1
-				};
-				mungConnection.Insert();
-			}
+			
 
 		}
 

@@ -6,46 +6,63 @@ using Microsoft.AspNet.Http;
 using Microsoft.AspNet;
 using GrowingData.Mung;
 using GrowingData.Mung.Web.Models;
+using Microsoft.AspNet.Hosting;
 using GrowingData.Utilities;
 
 using Newtonsoft.Json;
 
 namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
-	public class ApiDashboardController : Controller {
-
-
-		[HttpPost]
-		[Route("api/dashboard/graph")]
-		public ActionResult SaveComponent(string url, string graphJson) {
-			var dashboard = Dashboard.Get(url);
-			if (dashboard == null) {
-				throw new Exception("Unable to find the dashboard at the url: " + url);
-			}
-
-			var toSave = JsonConvert.DeserializeObject<Graph>(graphJson);
-
-			toSave.Save(dashboard);
-
-			return Json(new { Success = true, Message = "Success" });
+	public class ApiDashboardController : MungSecureController {
+		public ApiDashboardController(IHostingEnvironment env) : base(env) {
 		}
 
-		[HttpDelete]
-		[Route("api/dashboard/graph")]
-		public ActionResult DeleteComponent(string url, string graphJson) {
-			url = "/" + url;
+		[HttpPost]
+		[Route("api/dashboard/create")]
+		public ActionResult Create(string name) {
+
+			using (var cn = DatabaseContext.Db.Mung()) {
+
+				// Does the URL already exist?
+
+
+				var existing = Dashboard.Get(name);
+				if (existing != null) {
+					return Redirect($"/dashboard/{name}");
+				}
+				var dashboard = new Dashboard() {
+					CreatedByMungerId = CurrentUser.MungerId,
+					UpdatedByMungerId = CurrentUser.MungerId,
+					Name = name,
+					CreatedAt = DateTime.UtcNow,
+					UpdatedAt = DateTime.UtcNow
+
+				}.Insert();
+
+				MungApp.Current.ProcessInternalEvent("dashboard_create", new {
+					dashboard_name = name,
+					munger_id = CurrentUser.MungerId
+				});
+				return Json(new { Success = true, Dashboard = dashboard });
+
+
+
+			}
+		}
+
+
+		[HttpGet]
+		[Route("api/dashboard/graphs")]
+		public ActionResult ListGraphs(string url) {
 			var dashboard = Dashboard.Get(url);
 			if (dashboard == null) {
 				throw new Exception("Unable to find the dashboard at the url: " + url);
 			}
 
 			var graphs = dashboard.GetGraphs();
-			var toDelete = JsonConvert.DeserializeObject<Graph>(graphJson);
-
-			if (toDelete.Delete(dashboard)) {
-				return Json(new { Success = true, Message = "Success" });
-			} else {
-				return Json(new { Success = false, Message = "Unable to save Graph" });
-			}
+			return Json(new {
+				Graphs = graphs,
+				Success = true
+			}, new JsonSerializerSettings() { Formatting = Formatting.Indented });
 
 		}
 	}

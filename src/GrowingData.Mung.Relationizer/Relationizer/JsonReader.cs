@@ -15,8 +15,8 @@ namespace GrowingData.Mung.Relationizer {
 	public class JsonReader {
 
 
-		private static JsonConverter[] Converters = new JsonConverter[] { 
-				new IsoDateTimeConverter() 
+		private static JsonConverter[] Converters = new JsonConverter[] {
+				new IsoDateTimeConverter()
 		};
 
 
@@ -93,8 +93,11 @@ namespace GrowingData.Mung.Relationizer {
 					if (child.Type == JTokenType.Property) {
 						var property = child as JProperty;
 						if (property.Value.Type != JTokenType.Object) {
-							var mungType = MungType.Get(property.Value.Type);
-							relation.AddField(property.Name, mungType, GetValue(property, mungType));
+							// Ignore null object fields;
+							if (property.Value.Type != JTokenType.Null) {
+								var mungType = MungType.Get(property.Value.Type);
+								relation.AddField(property.Name, mungType, GetValue(property, mungType));
+							}
 						} else {
 							if (property.Value.Type == JTokenType.Array) {
 								foreach (var r in ProcessJsonArray(evt, property.Value, property.Name, relation)) {

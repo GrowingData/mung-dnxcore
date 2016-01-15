@@ -1,14 +1,13 @@
 ﻿
 (function ($) {
-	$.fn.mungGraph = function (graphModel, dashboard) {
-		if (graphModel == null) throw "mungGraph: graphModel is null";
+	$.fn.mungGraph = function (dashboard) {
+		if (dashboard == null) throw "mungGraph: dashboard is null";
 
 		var self = this;
 
 		self.dashboard = dashboard;
-		self.graphModel = graphModel;
-		self.data("model", graphModel);
 		self.data("ref", this);
+		self.model = self.data("model");
 
 		self.content = self.find(".graph-content");
 		self.contentInner = self.find(".graph-content-inner");
@@ -18,122 +17,47 @@
 		self.edit = self.find(".edit-graph");
 		self.status = self.find(".status");
 
-		self.currentData = null;
-		self.currentDataBinder = null;
-
-		setStatus("Initializing...");
-
-		function parseFunctionBody(functionString) {
-			var firstBrace = functionString.indexOf("{") + 1;
-			var lastBrace = functionString.lastIndexOf("}");
-
-
-			return functionString.substring(firstBrace, lastBrace);
-
-		}
-
-		// Render method for drawing the current graph without doing a data
-		// request (for resize events, etc).
-		this.render = function () {
-			setStatus("Rendering...");
-			try {
-				self.currentDataBinder(self.currentData, self);
-				setStatus("Done");
-			} catch (x) {
-				self.error.text("Javascript data binding: " + x.toString()).show();
-				setStatus("Binding error");
-				console.log(x);
-				return
-			}
-
-		}
-
-		this.refresh = function () {
-			setStatus("Refreshing...");
-			self.contentInner.html(self.graphModel.data.Html);
-			self.title.text(self.graphModel.data.Title);
-
-			self.error.hide();
-
-
-			// Firstly try to get the binding function
-			var fn = null;
-			try {
-				fn = Function("data", "$component", parseFunctionBody(self.graphModel.data.Js));
-
-			} catch (x) {
-				self.error.text("Javascript parse error: " + x.toString()).show();
-				setStatus("Javascript function parse error");
-				console.log(x);
-				return;
-			}
-			self.currentDataBinder = fn;
+		this.saveLayout = function (x, y, width, height) {
+			self.model.X = x;
+			self.model.Y = y;
+			self.model.Width = width;
+			self.model.Height = height;
+			console.log("Saving layout for " + self.model.Title + ": " + [x, y, width, height].join(","));
+			self.setStatus("Saving layout...");
 			$.ajax({
-				url: "/api/sql/mung",
-				data: { sql: self.graphModel.data.Sql },
-				method: "POST",
-				success: function (r) {
-					if (r.ErrorMessage) {
-						self.error.text("SQL Error: " + r.ErrorMessage).show();
-						setStatus("Sql Error");
-					} else {
-
-						self.currentData = r;
-						self.render();
-					}
+				url: "/api/file-system/graph/size",
+				data: {
+					"path": "/Dashboards" + dashboard.model.Url + "/" + self.model.Name,
+					"x": x,
+					"y": y,
+					"width": width,
+					"height": height,
 				},
-				error: function (r) {
-
+				method: "POST",
+				success: function (response) {
+					//self.events.fire("saved", response, self)
+					self.setStatus("Saved layout");
+				},
+				error: function (a, b, c, d) {
+					console.error("Error: mungGraph.saveLayout", { a: a, b: b, c: c, d: d });
 				}
 			});
 		}
-
-		function setStatus(text) {
+		this.setStatus = function (text) {
 			self.status.text(text);
-
 		}
+
+
 
 		function init() {
+			self.setStatus("Initializing...");
 			self.edit.click(function () {
-				self.dashboard.editGraph(self);
+				var url = dashboard.model.Url;
+				document.location = "/mung/?open=/Dashboards" + url + "/" + self.model.Name + ".html";
 
 			});
-
-			if (graphModel.data.ConnectionId == 5) {
-				// Realtime, so register this with the dashboardPoller
-				var fn = null;
-				try {
-					fn = Function("data", "$component", parseFunctionBody(self.graphModel.data.Js));
-
-				} catch (x) {
-					self.error.text("Javascript parse error: " + x.toString()).show();
-					setStatus("Javascript function parse error");
-					console.log(x);
-					return;
-				}
-
-
-				setStatus("Initializing...");
-				self.contentInner.html(self.graphModel.data.Html);
-				self.title.text(self.graphModel.data.Title);
-
-
-				var graphSettings = self.find(".realtime-graph");
-				if (graphSettings.length==0){
-					setStatus("Realtime graphs require an element with class 'realtime-graph' and an attribute 'data-subscription-events' ");
-					
-				}
-				var events = graphSettings.data("subscription-events").split(',');
-
-				self.dashboard.poller.registerCallback(events, function (data) {
-					fn(data, self);
-				});
-
-				setStatus("Ready.");
-				return;
-			}
-
-			self.refresh();
+			//self.dashboard.grid.add_widget(self, self.model.X, self.model.Y, self.model.Width, self.model.Height);
+			self.setStatus("Ready.");
 		}
 
 		init();

@@ -203,7 +203,7 @@ namespace GrowingData.Utilities.DnxCore {
 						var name = r.GetName(i);
 						var key = KeyFromColumnName(name);
 
-						columnNames.Add(key, name);
+						columnNames[key] = name;
 					}
 				}
 

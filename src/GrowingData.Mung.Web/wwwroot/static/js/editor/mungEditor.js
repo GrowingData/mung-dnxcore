@@ -17,22 +17,26 @@
 			name: "mung-execute-graph",
 			"Ctrl-Enter": function (cm) {
 				self.graph.execute();
+			},
+			"Ctrl-S": function (cm) {
+				self.graph.save();
 			}
 		}
 
 		this.bindCodeMirror = function () {
 			self.codeMirror = CodeMirror.fromTextArea(self.textarea[0], {
-				mode: 'text/x-sql',
+				mode: mode,
+				lineNumbers: true,
 				matchBrackets: true,
-				theme: 'light-table'
+				theme: 'light-table',
+
 			});
 
 			self.codeMirrorDiv = self.find(".CodeMirror");
 
 
 			// Bind our shortcuts
-			this.codeMirror.addKeyMap(self.keyMap);
-
+			self.codeMirror.addKeyMap(self.keyMap);
 		}
 
 		this.code = function(code) {
@@ -46,6 +50,9 @@
 
 		function init() {
 			self.bindCodeMirror();
+
+			self.css("height", self.parents().first().height() + "px");
+
 		}
 
 		init();

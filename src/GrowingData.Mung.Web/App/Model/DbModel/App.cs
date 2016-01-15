@@ -20,6 +20,15 @@ namespace GrowingData.Mung.Web.Models {
 				defaultApp.Insert();
 				Console.WriteLine("Created a default app");
 
+				var mungInternalApp = new App("mung-internal", -1);
+				mungInternalApp.Insert();
+				Console.WriteLine("Created the mung-internal app");
+			}
+		}
+		
+		public static App MungInternal {
+			get {
+				return _AppCache.Values.FirstOrDefault(a => a.Name == "mung-internal");
 			}
 		}
 
@@ -71,7 +80,7 @@ namespace GrowingData.Mung.Web.Models {
 
 				var sql = @"
 					INSERT INTO app(name, app_secret, app_key, created_by_munger, updated_by_munger)
-						VALUES (@Name, @AppSecret, @AppKey, @CreatedByMungUserId, @UpdatedByMungUserId)
+						VALUES (@Name, @AppSecret, @AppKey, @CreatedByMunger, @CreatedByMunger)
 						RETURNING app_id ";
 
 				AppId = cn.ExecuteSql(sql, this);

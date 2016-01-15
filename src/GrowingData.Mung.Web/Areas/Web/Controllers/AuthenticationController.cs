@@ -30,24 +30,49 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 
 
 			var munger = Munger.Get(email);
+			if (munger == null) {
+
+				MungApp.Current.ProcessInternalEvent("login_failure", new {
+					email = email,
+					reason = "wrong_email",
+					munger_id = -1
+				});
+
+				ViewBag.ErrorMessage = "Please check your email / password.";
+				return View();
+			}
+
 
 			var inputHash = StringHashing.HashStrings(password, munger.PasswordSalt);
 
-			if (inputHash == munger.PasswordHash) {
-                HttpContext.Login(munger);
-                return Redirect("/" + Urls.DEFAULT);
+			if (inputHash != munger.PasswordHash) {
+				MungApp.Current.ProcessInternalEvent("login_failure", new {
+					email = email,
+					reason = "wrong_password",
+					munger_id = munger.MungerId
+				});
 
+				ViewBag.ErrorMessage = "Please check your email / password.";
+				return View();
 			}
+			HttpContext.Login(munger);
 
-			ViewBag.ErrorMessage = "Please check your email / password.";
-			return View();
+
+			MungApp.Current.ProcessInternalEvent("login_success", new {
+				email = email,
+				munger_id = munger.MungerId
+			});
+
+			return Redirect("/" + Urls.DEFAULT);
+
+
 		}
 
 		[Route(Urls.LOGOUT)]
 		[HttpPost]
 		public ActionResult Logout() {
-            
-            HttpContext.Logout();
+
+			HttpContext.Logout();
 			return Redirect("/" + Urls.DEFAULT);
 		}
 	}

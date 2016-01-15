@@ -1,20 +1,36 @@
 ﻿
 (function ($) {
 	// «
-	$.fn.mungDashboard = function (dashboardModel, graphs) {
-		if (dashboardModel == null) throw "mungDashboard: dashboardModel is null";
-		if (graphs == null) throw "mungDashboard: graphs is null";
+	$.fn.mungDashboard = function (model) {
+		if (model == null) throw "mungDashboard: model is null";
 
 		var self = this;
 
-		self.dashboardModel = dashboardModel;
+		self.model = model;
 		self.poller = MUNG.LongPoll();
+		self.graphMap = {};
 
-
-		self.componentPopup = $("#edit-graph").mungGraphEditor(self);
+		//self.componentPopup = $("#edit-graph").mungGraphEditor(self);
 
 		self.addComponentButton = $("#add-graph").click(function () {
-			self.componentPopup.create();
+			// Create a new graph, then send the user to the editor for
+			// the Graph.
+			var r = Math.random().toString().split(".")[1].substr(0, 6);
+			var graphUrl = model.ResourceUrl + "/new-graph-" + r + ".html";
+
+			$.ajax({
+				url: "/api/file-system" + graphUrl,
+				data: {
+					"data": "<h1>A new graph</h1>"
+				},
+				method: "PUT",
+				success: function (response) {
+					if (response.Success) {
+						document.location = "/mung?open="+response.ResourceUrl;
+					}
+				}
+			});
+
 		});
 
 		this.editGraph = function (graph) {
@@ -39,8 +55,8 @@
 					if (item._dirty) {
 						var model = item.el.data("model");
 						var ref = item.el.data("ref");
-						model.setDimensions(item.x, item.y, item.width, item.height);
-						console.log(item);
+
+						ref.saveLayout(item.x, item.y, item.width, item.height);
 						item._dirty = false;
 
 						// Changing the size of them element might necessitate
@@ -54,16 +70,23 @@
 
 		}
 
-		function addViews() {
-			_.each(graphs, function (graphData, key, l) {
-				var model = new mungGraphModel(graphData, dashboardModel);
-				var graph = $(".graph.template")
-					.clone()
-					.removeClass("template")
-					.mungGraph(model, self);
+		function bindGraphs() {
+			self.graphMap = {};
+			$(".graph").each(function () {
+				var graphElem = $(this).mungGraph(self);
+				self.graphMap[graphElem.model.GraphId] = graphElem;
 
-				self.grid.add_widget(graph, graphData.X, graphData.Y, graphData.Width, graphData.Height);
-			});
+
+				// Now bind the initilization script call to the element and dashboard
+				for (var i = 0; i < MUNG.Loader.graphReadyCallbacks.length; i++) {
+					var graphScriptReference = MUNG.Loader.graphReadyCallbacks[i];
+					var scriptGraphId = $(graphScriptReference.elem).parents(".graph").data("graph-id");
+
+					if (scriptGraphId == graphElem.model.GraphId) {
+						graphScriptReference.callback(graphElem, self);
+					}
+				}
+			})
 		}
 
 
@@ -71,11 +94,7 @@
 
 		function init() {
 			bindGridStack();
-			addViews();
-
-			//self.poller.registerCallback("*", function (evt) {
-			//	console.log(evt);
-			//});
+			bindGraphs();
 		}
 
 

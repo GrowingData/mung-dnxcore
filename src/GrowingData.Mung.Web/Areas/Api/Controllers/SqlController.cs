@@ -11,8 +11,6 @@ using GrowingData.Mung.Web.Models;
 
 namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 	public class MungSqlController : MungSecureController {
-
-
 		public MungSqlController(IHostingEnvironment env) : base(env) {
 		}
 

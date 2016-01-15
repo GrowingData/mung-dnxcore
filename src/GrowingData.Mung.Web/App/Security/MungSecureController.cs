@@ -15,8 +15,15 @@ using GrowingData.Mung.Web.Models;
 using Microsoft.AspNet.Mvc.Filters;
 
 namespace GrowingData.Mung.Web {
+
+	/// <summary>
+	/// Any controller inheriting from this Controller must have 
+	/// an Authenticated User, or else they will be sent to the login
+	/// page.
+	/// </summary>
 	public class MungSecureController : Controller {
 		protected readonly IHostingEnvironment _env;
+		private Munger _currentMunger;
 
 		public MungSecureController(IHostingEnvironment env) {
 			_env = env;
@@ -26,25 +33,20 @@ namespace GrowingData.Mung.Web {
 
 		public override void OnActionExecuting(ActionExecutingContext context) {
 			base.OnActionExecuting(context);
+
+			var identity = HttpContext.CurrentMungerIdentity();
+			if (identity == null) {
+				context.Result = Redirect($"/{Urls.LOGIN}");
+                return;
+			}
+
+			_currentMunger = identity.User;
 			ViewBag.HostingEnvironment = _env;
 
 		}
 
-		public Munger CurrentUser {
-			get {
-				var id = CurrentUserIdentity;
-				if (id != null) {
-					return id.User;
-				}
-				return null;
-			}
-		}
-		public MungerIdentity CurrentUserIdentity {
-			get {
-
-				return HttpContext.CurrentMungerIdentity();
-			}
-		}
+		public Munger CurrentUser { get { return _currentMunger; } }
+		public MungerIdentity CurrentUserIdentity { get { return HttpContext.CurrentMungerIdentity(); } }
 
 
 

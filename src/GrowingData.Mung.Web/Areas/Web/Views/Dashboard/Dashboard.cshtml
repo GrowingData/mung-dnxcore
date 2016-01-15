@@ -1,44 +1,64 @@
 ﻿@{
 
 	var dashboard = ViewBag.Dashboard as Dashboard;
-	ViewBag.Title = dashboard.Title;
+	ViewBag.Title = dashboard.Name;
 
 	var graphs = ViewBag.Graphs as List<Graph>;
 
-	var graphsJson = Newtonsoft.Json.JsonConvert.SerializeObject(graphs);
 	var dashboardJson = Newtonsoft.Json.JsonConvert.SerializeObject(dashboard);
+
+
 }
 
 <div class="dashboard ">
 	<div class="dashboard-header">
 
 		<h2 class="dashboard-title">
-			@dashboard.Title
-		<button type="button" class="btn btn-info btn-sm green-bg pull-right" id="add-graph">+ Add graph</button>
+			@dashboard.Name
+			<button type="button" class="btn btn-info btn-sm green-bg pull-right" id="add-graph">+ Add graph</button>
 
-	</h2>
+		</h2>
+	</div>
+
+	<div class="graph-holder grid-stack">
+		@foreach (var graph in graphs) {
+			var graphJson = JsonConvert.SerializeObject(graph)
+				.Replace("</script>", @"<\/script>")
+				.Replace("'", @"\'");
+		<div class="graph grid-stack-item graph-@graph.GraphId" data-graph-id="@graph.GraphId" data-model='@Html.Raw(graphJson)'
+			 data-gs-x="@graph.X" data-gs-y="@graph.Y" data-gs-width="@graph.Width" data-gs-height="@graph.Height"> 
+			<div class="graph-inner grid-stack-item-content">
+				<div class="graph-header">
+
+					<a class="edit-graph"><i class="fa fa-cog"></i></a>
+					<h2 class="graph-title">@graph.Name</h2>
+				</div>
+
+				<div class="graph-content ">
+					<div class="graph-content-inner">
+						@Html.Raw(graph.Html)
+					</div>
+
+					<div class="graph-error red-bg"></div>
+				</div>
+
+				<div class="graph-footer">
+					<div class="status"></div>
+				</div>
+			</div>
+		</div>
+
+		}
+
+	</div>
+
+
 </div>
-
-<div class="graph-holder grid-stack">
-
-
-</div>
-
-
-</div>
-
-@Html.Partial("Templates/GraphModal")
-@Html.Partial("Templates/Graph")
-
-@Html.Partial("GraphTemplates")
-
-
 
 <script type="text/javascript">
-	MungOnLoader(function () {
+	MUNG.ready(function(){
 		var dashboard = $(".dashboard").mungDashboard(
-			@Html.Raw( dashboardJson ),
-			@Html.Raw(graphsJson)
+			@Html.Raw( dashboardJson )
 		);
-	});
+	})
 </script>
