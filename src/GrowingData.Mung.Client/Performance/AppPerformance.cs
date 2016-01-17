@@ -13,8 +13,8 @@ namespace GrowingData.Mung.Client {
 		private CancellationTokenSource _token;
 		private MungClient _client;
 
-		public SystemPerformance() {
-			_client = new MungClient();
+		public SystemPerformance(MungClient client) {
+			_client = client;
 
 			_counters = new Dictionary<string, PerformanceCounter>();
 

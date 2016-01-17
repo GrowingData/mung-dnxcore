@@ -22,6 +22,7 @@ namespace GrowingData.Mung.Client {
 		private string _basePath;
 		private MungTransport _connection;
 		private ConcurrentQueue<PersistentQueueEvent> _eventQueue;
+		private Dictionary<string, PersistentFileHandle> _files;
 
 		internal PersistentQueue(MungTransport connection) {
 			_connection = connection;
@@ -36,9 +37,10 @@ namespace GrowingData.Mung.Client {
 				Directory.CreateDirectory(logPath);
 			}
 			_basePath = logPath;
-
+			_files = new Dictionary<string, PersistentFileHandle>();
 
 			Task.Run(() => ProcessQueue());
+			//Task.Run(() => CheckOldOpenFiles());
 		}
 
 		public static string GetFilename(string name) {
@@ -50,12 +52,15 @@ namespace GrowingData.Mung.Client {
 
 			return fileName;
 		}
+		public static string GetFilename() {
+			return GetFilename("mung-events");
+		}
 
 
 		public void Send(MungEvent evt) {
 			var wrapped = new PersistentQueueEvent() {
 				Event = evt,
-				FileName = Path.Combine(_basePath, GetFilename("mung-events")),
+				FileName = Path.Combine(_basePath, GetFilename()),
 				FilePosition = -1
 			};
 			// Write it to our log
@@ -67,36 +72,56 @@ namespace GrowingData.Mung.Client {
 		}
 
 		public void WriteEvent(PersistentQueueEvent evt) {
-			var json = JsonConvert.SerializeObject(evt);
-			lock (_fileLock) {
-				using (var file = new FileStream(evt.FileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)) {
-					file.Seek(0, SeekOrigin.End);
-					evt.FilePosition = file.Position;
-
-					// Write the start of the line
-					file.WriteByte((byte)'0');
-					file.WriteByte((byte)'\t');
-					using (var streamWriter = new StreamWriter(file)) {
-						streamWriter.WriteLine(json);
-					}
-
-
-				}
-			}
+			PersistentFileHandle handle = GetFileHandleLocked(evt);
+			handle.WriteEvent(evt);
 		}
+
 		public void SetEventComplete(PersistentQueueEvent evt) {
+			PersistentFileHandle handle = GetFileHandleLocked(evt);
+			handle.SetEventComplete(evt);
+		}
+
+		private PersistentFileHandle GetFileHandleLocked(PersistentQueueEvent evt) {
+			PersistentFileHandle handle = null;
 			lock (_fileLock) {
-				using (var file = new FileStream(evt.FileName, FileMode.OpenOrCreate, FileAccess.Write, FileShare.None)) {
-					file.Seek(evt.FilePosition, SeekOrigin.Begin);
-					file.WriteByte((byte)'1');
+				if (_files.ContainsKey(evt.FileName)) {
+					handle = _files[evt.FileName];
+				} else {
+					handle = new PersistentFileHandle(evt.FileName);
+					_files[evt.FileName] = handle;
 				}
 			}
+			return handle;
 		}
 
 		public void WaitUntilQueueEmpty() {
 			while (_eventQueue.Count > 0) {
 				Thread.Sleep(10);
 			}
+		}
+
+
+		private void CheckOldOpenFiles() {
+
+			while (true) {
+				var currentFile = GetFilename();
+				var toRemove = new List<string>();
+				foreach (var k in _files.Keys) {
+					if (k != currentFile) {
+						toRemove.Add(k);
+					}
+				}
+				lock (_fileLock) {
+					foreach (var key in toRemove) {
+						_files.Remove(key);
+					}
+				}
+
+
+				Thread.Sleep(1000 * 60);
+			}
+
+
 		}
 
 		private void ProcessQueue() {
@@ -112,14 +137,14 @@ namespace GrowingData.Mung.Client {
 					try {
 						Console.WriteLine("Sending batch of: " + batch.Count.ToString() + " events:");
 
-						if (_connection.Send(batch.Select(x=>x.Event))) {
+						if (_connection.Send(batch.Select(x => x.Event))) {
 							// Mark these events as having been sent
-							foreach(var evt in batch) {
+							foreach (var evt in batch) {
 								SetEventComplete(evt);
 							}
 							Console.WriteLine("Batch sent and marked complete.");
 						} else {
-							foreach(var evt in batch) {
+							foreach (var evt in batch) {
 								_eventQueue.Enqueue(evt);
 							}
 							Console.WriteLine("Batch send failed, re-queuing for later");
