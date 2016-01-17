@@ -27,7 +27,7 @@ namespace GrowingData.Mung.Client {
 			_connection = connection;
 			_eventQueue = new ConcurrentQueue<PersistentQueueEvent>();
 			var pi = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory);
-			while (pi.Name.ToLower() != "bin" && pi.Name.ToLower() != "debug" && pi.Name.ToLower() != "release") {
+			while (pi.Name.ToLower() == "bin" || pi.Name.ToLower() == "debug" || pi.Name.ToLower() == "release") {
 				pi = pi.Parent;
 			}
 

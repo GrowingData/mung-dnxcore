@@ -26,10 +26,6 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 		[Route("notifications")]
 		public ActionResult NotificationList(string url) {
-			var munger = CurrentUser;
-			if (munger == null) {
-				return Redirect("/login");
-			}
 
 			ViewBag.Notifications = Notification.List(CurrentUser.MungerId);
 			return View("NotificationList");

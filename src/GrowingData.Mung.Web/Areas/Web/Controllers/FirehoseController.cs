@@ -13,13 +13,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 		}
 		[Route("firehose")]
 		public ActionResult FirehoseDefault() {
-			var munger = CurrentUser;
-			if (munger == null) {
-				return Redirect("/login");
-			}
-
-
-			ViewBag.Dashboards = Dashboard.List(munger.MungerId);
+			ViewBag.Dashboards = Dashboard.List(CurrentUser.MungerId);
 
 
 

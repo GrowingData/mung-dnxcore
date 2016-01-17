@@ -10,10 +10,6 @@ namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 
 		[Route("api/notifications/test-settings")]
 		public ActionResult NotificationTest(string toAddress, string fromAddress, string accessKey, string accessSecret) {
-			var munger = CurrentUser;
-			if (munger == null) {
-				return Redirect("/login");
-			}
 
 			if (string.IsNullOrEmpty(toAddress)) {
 				return Json(new { Success = false, Message = $"Please supply a 'To' email address" });

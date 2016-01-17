@@ -29,7 +29,7 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 		public ActionResult Create(string name) {
 
 			if (CurrentUser == null || !CurrentUser.IsAdmin) {
-				return Redirect("/login");
+				return Redirect(Urls.LOGIN);
 			}
 
 			var app = new App(name, CurrentUser.MungerId);

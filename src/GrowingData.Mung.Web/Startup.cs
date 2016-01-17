@@ -72,7 +72,8 @@ namespace GrowingData.Mung.Web {
 				options.LoginPath = $"/{Urls.LOGIN}";
 				options.LogoutPath = $"/{Urls.LOGOUT}";
 			});
-			
+
+			app.UseDeveloperExceptionPage();
 			app.UseMvc(routes => {
 				routes.MapRoute(
 					name: "default",

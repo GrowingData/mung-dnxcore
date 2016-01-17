@@ -19,10 +19,6 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 		[Route("connections")]
 		public ActionResult ConnectionList(string url) {
-			var munger = CurrentUser;
-			if (munger == null) {
-				return Redirect("/login");
-			}
 
 
 			ViewBag.Connections = Connection.List();
