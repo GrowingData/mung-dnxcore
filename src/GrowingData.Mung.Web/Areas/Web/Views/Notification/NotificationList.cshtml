@@ -33,13 +33,7 @@
 	</div>
 
 </div>
-	@{ 
-		// Load the text from the template, but dont' execute it.
-		var env = ViewBag.HostingEnvironment as IHostingEnvironment;
-		var path = env.MapPath("../Areas/Web/Views/Notification/Template/DefaultNotificationTemplate.cshtml");
-		var content = File.ReadAllText(path);
-	}
-<div class="notification-template" style="display:none;">@Html.Raw(content)</div>
+
 
 @Html.Partial("Modal/NotificationSettings")
 
