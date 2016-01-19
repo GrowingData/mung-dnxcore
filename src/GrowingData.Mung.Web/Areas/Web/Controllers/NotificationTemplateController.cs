@@ -138,7 +138,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 			System.IO.File.WriteAllText(templateFilePath, templateCode);
 
-			return templatePath;
+			return templateFilePath;
 		}
 
 		[Route("notifications/generate/test")]
