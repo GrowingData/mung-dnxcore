@@ -75,8 +75,8 @@ namespace GrowingData.Mung.Web {
 		}
 
 		public MungApp(IHostingEnvironment env) {
-			Console.WriteLine("Paused Initializing of MungApp, press a key to continue...");
-			Console.ReadKey();
+			//Console.WriteLine("Paused Initializing of MungApp, press a key to continue...");
+			//Console.ReadKey();
 
 
 			_pipeline = new EventPipeline();
