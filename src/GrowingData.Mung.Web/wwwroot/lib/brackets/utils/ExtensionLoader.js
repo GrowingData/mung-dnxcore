@@ -405,6 +405,7 @@ define(function (require, exports, module) {
                     "DarkTheme",        // Note: only themes ending in -Theme work with AjaxFileSystem
                     //"DebugCommands",
                     "HTMLCodeHints",
+                    "MungPreviewEmail",
                     "HtmlEntityCodeHints",
                     "InlineColorEditor",
                     "InlineTimingFunctionEditor",

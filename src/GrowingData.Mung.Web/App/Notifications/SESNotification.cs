@@ -32,7 +32,7 @@ namespace GrowingData.Mung.Web {
 
 
 			var emailRequest = CreateEmailRequest(exampleEmail, from);
-			
+
 
 			var region = Amazon.RegionEndpoint.USEast1;
 
@@ -62,17 +62,28 @@ namespace GrowingData.Mung.Web {
 
 			var json = JsonConvert.SerializeObject(evt);
 
-			var renderTemplateUrl = SesNotificationSettings.RenderTemplateUrl;
-			using (var client = new HttpClient()) {
-				var postContent = new FormUrlEncodedContent(new KeyValuePair<string, string>[] {
+			try {
+				var renderTemplateUrl = SesNotificationSettings.RenderTemplateUrl;
+				using (var client = new HttpClient()) {
+					var postContent = new FormUrlEncodedContent(new KeyValuePair<string, string>[] {
 					new KeyValuePair<string, string>("notificationId", $"{notification.NotificationId}"),
 					new KeyValuePair<string, string>("event", json)
 
 				});
-				var result = client.PostAsync(renderTemplateUrl, postContent).Result;
-				return result.Content.ReadAsStringAsync().Result;
+					var result = client.PostAsync(renderTemplateUrl, postContent).Result;
+					return result.Content.ReadAsStringAsync().Result;
+				}
+			} catch (Exception ex) {
+				MungApp.Current.ProcessInternalEvent("notification_template_render_exception", new {
+					Notification = notification,
+					NotificationId = notification.NotificationId,
+					Event = evt,
+					Message = "Unable to render template",
+					ExceptionMessage = ex.Message,
+					ExceptionStack = ex.StackTrace
+				});
+				return null;
 			}
-
 		}
 
 		public static SendEmailRequest CreateEmailRequest(string renderedTemplate, string from) {
@@ -87,11 +98,19 @@ namespace GrowingData.Mung.Web {
 			var subjectText = doc.DocumentNode.SelectNodes("//mung-subject").FirstOrDefault()?.InnerText;
 			var bodyHtml = doc.DocumentNode.SelectNodes("//mung-body-html").FirstOrDefault()?.InnerHtml;
 			var bodyText = doc.DocumentNode.SelectNodes("//mung-body-text").FirstOrDefault()?.InnerText;
-			
+
+			var toList = to.Split(';')?.Where(x => !string.IsNullOrEmpty(x)).ToList();
+			var ccList = cc.Split(';')?.Where(x => !string.IsNullOrEmpty(x)).ToList();
+			var bccList = bcc.Split(';')?.Where(x => !string.IsNullOrEmpty(x)).ToList();
+
+			if (toList.Count + ccList.Count + bccList.Count == 0) {
+				throw new Exception("No recipients defined, please ensure your template contains <mung-to />, <mung-cc /> or <mung-bcc /> tags.");
+			}
+
 			var destination = new Destination() {
-				ToAddresses = to.Split(';')?.Where(x=>!string.IsNullOrEmpty(x)).ToList(),
-				BccAddresses = cc.Split(';')?.Where(x => !string.IsNullOrEmpty(x)).ToList(),
-				CcAddresses = bcc.Split(';')?.Where(x => !string.IsNullOrEmpty(x)).ToList()
+				ToAddresses = toList,
+				BccAddresses = ccList,
+				CcAddresses = bccList
 			};
 
 

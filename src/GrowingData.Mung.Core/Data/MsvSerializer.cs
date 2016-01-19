@@ -3,37 +3,20 @@ using System.Data;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace GrowingData.Mung.Core {
-	public class MsvSerializer {
+	public class MsvConverter {
 
 
-		public static string Write(object o) {
+		public static string Serialize(object o) {
 
-			if (o is DateTime) {
-				return ((DateTime)o).ToString("yyyy-MM-dd HH:mm:ss");
-
-			}
 			if (o == null || o == DBNull.Value) {
 				return "NULL";
 			}
-
-			if (o is string) {
-
-				// Strings are escaped 
-				return "\"" + Escape(o.ToString()) + "\"";
-
-			}
-			return o.ToString();
+			
+			return Newtonsoft.Json.JsonConvert.SerializeObject(o);
 		}
-
-		private static string Escape(string unescaped) {
-
-			return unescaped
-				.Replace("\\", "\\" + "\\")     // '\' -> '\\'
-				.Replace("\"", "\\" + "\"");        // '"' -> '""'
-		}
-
 
 		private static string InvalidFormatErrorMessage(DbType expected, string value, ReaderState state) {
 			if (state != null) {
@@ -48,98 +31,22 @@ namespace GrowingData.Mung.Core {
 				return DBNull.Value;
 			}
 
-			if (type == DbType.String) {
-				return val;
-			}
+			if (type == DbType.String) return JsonConvert.DeserializeObject<string>(val);
+			if (type == DbType.DateTime) return JsonConvert.DeserializeObject<DateTime>(val);
+			if (type == DbType.Boolean) return JsonConvert.DeserializeObject<bool>(val);
+			if (type == DbType.Single) return JsonConvert.DeserializeObject<double>(val);
+			if (type == DbType.Double) return JsonConvert.DeserializeObject<double>(val);
+			if (type == DbType.Decimal) return JsonConvert.DeserializeObject<decimal>(val);
+			if (type == DbType.Byte) return JsonConvert.DeserializeObject<byte>(val);
+			if (type == DbType.Int16) return JsonConvert.DeserializeObject<short>(val);
+			if (type == DbType.Int32) return JsonConvert.DeserializeObject<int>(val);
+			if (type == DbType.Int64) return JsonConvert.DeserializeObject<long>(val);
+			if (type == DbType.Guid) return JsonConvert.DeserializeObject<Guid>(val);
 
-			var unknownType = true;
 
-			if (type == DbType.Boolean) {
-				var intValue = -1;
-				if (int.TryParse(val, out intValue)) {
-					if (intValue == 0) return false;
-					if (intValue == 1) return true;
-				}
-				unknownType = false;
-			}
+			throw new InvalidOperationException($"Unable to read value '{val}', as type {type} is unknown.");
 
-			if (type == DbType.DateTime) {
-				var dateTime = DateTime.MinValue;
-				if (DateTime.TryParse(val, out dateTime)) {
-					if (dateTime == DateTime.MinValue) {
-						return DBNull.Value;
-					}
-					return dateTime;
-				}
-				unknownType = false;
-			}
 
-			if (type == DbType.Single) {
-				var f = float.NaN;
-				if (float.TryParse(val, out f)) {
-					return f;
-				}
-				unknownType = false;
-			}
-
-			if (type == DbType.Double) {
-				var d = double.NaN;
-				if (double.TryParse(val, out d)) {
-					return d;
-				}
-				unknownType = false;
-			}
-
-			if (type == DbType.Decimal) {
-				var d = decimal.Zero;
-				if (decimal.TryParse(val, out d)) {
-					return d;
-				}
-				unknownType = false;
-			}
-
-			if (type == DbType.Byte) {
-				byte b = 0;
-				if (byte.TryParse(val, out b)) {
-					return b;
-				}
-				unknownType = false;
-			}
-
-			if (type == DbType.Int16) {
-				short int16 = -1;
-				if (short.TryParse(val, out int16)) {
-					return int16;
-				}
-				unknownType = false;
-			}
-			if (type == DbType.Int32) {
-				int int32 = -1;
-				if (int.TryParse(val, out int32)) {
-					return int32;
-				}
-				unknownType = false;
-			}
-			if (type == DbType.Int64) {
-				long int64 = -1;
-				if (long.TryParse(val, out int64)) {
-					return int64;
-				}
-				unknownType = false;
-			}
-			if (type == DbType.Guid) {
-				Guid guid = Guid.Empty;
-				if (Guid.TryParse(val, out guid)) {
-					return guid;
-				}
-				unknownType = false;
-			}
-
-			if (unknownType) {
-				throw new InvalidOperationException($"Unable to read value '{val}', as type {type} is unknown.");
-			}
-
-			throw new FormatException(InvalidFormatErrorMessage(type, val, state));
 
 		}
 		public static bool IsDBNull(string val) {

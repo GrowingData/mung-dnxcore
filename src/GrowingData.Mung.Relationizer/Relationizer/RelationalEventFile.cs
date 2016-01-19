@@ -24,6 +24,8 @@ namespace GrowingData.Mung.Relationizer {
 			{new DbColumn("_appId_",  MungType.Get(typeof(int))) },
 		};
 
+		private object _locker = new object();
+
 		private StreamWriter _currentStream;
 		private MsvWriter _writer;
 
@@ -45,7 +47,6 @@ namespace GrowingData.Mung.Relationizer {
 
 
 		public string GetFilename(string type) {
-
 			var fileName = string.Format("{0}-{1}.{2}-{3}.msv",
 				type,
 				_eventName,
@@ -68,12 +69,14 @@ namespace GrowingData.Mung.Relationizer {
 		}
 
 		private void Open() {
-			var fileStream = File.Open(GetFilepath(FilePrefixActive), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
-			_currentStream = new StreamWriter(fileStream);
+			lock (_locker) {
+				var fileStream = File.Open(GetFilepath(FilePrefixActive), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
+				_currentStream = new StreamWriter(fileStream);
 
-			_writer = new MsvWriter(_currentStream);
+				_writer = new MsvWriter(_currentStream);
 
-			WriteHeader(_currentStream, _schema);
+				WriteHeader(_currentStream, _schema);
+			}
 		}
 
 		public void WriteRow(RelationalEvent evt) {
@@ -104,7 +107,7 @@ namespace GrowingData.Mung.Relationizer {
 			columns.Add(new DbColumn(_eventName + "_app", MungType.Get(typeof(string))));
 
 
-			foreach(var c in schema.Values) {
+			foreach (var c in schema.Values) {
 				columns.Add(c);
 			}
 
@@ -112,21 +115,23 @@ namespace GrowingData.Mung.Relationizer {
 		}
 
 		public void WriteRow(StreamWriter writer, SortedList<string, DbColumn> schema, RelationalEvent evt) {
-			var values = new Dictionary<string, object>();
-			values.Add(evt.Name + "_id", evt.Id);
-			if (evt.ParentType != null) {
-				values.Add(evt.ParentType + "_id", evt.ParentId);
+			lock (_locker) {
+				var values = new Dictionary<string, object>();
+				values.Add(evt.Name + "_id", evt.Id);
+				if (evt.ParentType != null) {
+					values.Add(evt.ParentType + "_id", evt.ParentId);
 
+				}
+				values.Add(evt.Name + "_at", evt.LogTime);
+				values.Add(evt.Name + "_source", evt.Source);
+				values.Add(evt.Name + "_app", evt.AppId);
+
+				foreach (var kv in evt.Values) {
+					values.Add(kv.Key, kv.Value);
+				}
+
+				_writer.WriteRow(values);
 			}
-			values.Add(evt.Name + "_at", evt.LogTime);
-			values.Add(evt.Name + "_source", evt.Source);
-			values.Add(evt.Name + "_app", evt.AppId);
-
-			foreach (var kv in evt.Values) {
-				values.Add(kv.Key, kv.Value);
-			}
-
-			_writer.WriteRow(values);
 		}
 
 		public static string GetSchemaHash(SortedList<string, DbColumn> schema) {

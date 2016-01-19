@@ -38,3 +38,4 @@ node_modules
 *.sln.ide
 project.lock.json
 src/GrowingData.Mung.Web/data/**
+src/GrowingData.Mung.Web/Areas/Web/Views/NotificationTemplate/Email/**

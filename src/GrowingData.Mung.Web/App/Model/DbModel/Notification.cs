@@ -24,8 +24,8 @@ namespace GrowingData.Mung.Web.Models {
 			}
 		}
 
-		public int CreatedByMungerId;
-		public int UpdatedByMungerId;
+		public int CreatedByMunger;
+		public int UpdatedByMunger;
 
 		public bool IsPaused;
 
@@ -115,7 +115,7 @@ namespace GrowingData.Mung.Web.Models {
 							event_type = @EventType, 
 							template = @Template,
 							is_paused = @IsPaused,
-							updated_by_munger = @UpdatedByMungerId,
+							updated_by_munger = @UpdatedByMunger,
 							updated_at = now() at time zone 'utc'
 						WHERE notification_id = @NotificationId";
 				cn.ExecuteSql(sql, this);

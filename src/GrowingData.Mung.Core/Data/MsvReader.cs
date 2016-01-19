@@ -111,7 +111,7 @@ namespace GrowingData.Mung.Core {
 				FieldNumber = fieldIndex
 			};
 
-			return MsvSerializer.Read(val, _columns[fieldIndex].ColumnType.DatabaseType, readerState);
+			return MsvConverter.Read(val, _columns[fieldIndex].ColumnType.DatabaseType, readerState);
 
 		}
 
@@ -211,7 +211,7 @@ namespace GrowingData.Mung.Core {
 
 		public override bool IsDBNull(int ordinal) {
 			var val = _cursor.Current[ordinal].ToLower();
-			return MsvSerializer.IsDBNull(val);
+			return MsvConverter.IsDBNull(val);
 
 		}
 

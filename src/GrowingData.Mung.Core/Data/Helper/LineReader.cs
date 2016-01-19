@@ -92,6 +92,7 @@ namespace GrowingData.Mung.Core {
 			var running = true;
 			var initialState = removeWhiteSpaceAroundSeparators ? State.IgnoreWhitespace : State.ProcessingText1;
 			var state = initialState;
+			char lastChar = 'x';
 			do {
 				//read header
 				int cc = ReadChar();
@@ -109,14 +110,22 @@ namespace GrowingData.Mung.Core {
 
 				if (allowQuotedFields && c == quoteChar && state != State.AfterProcessingText) {
 					if (state == State.InQuotedString) {
-						if (PeekChar() == (int)quoteChar) {
-							ReadChar();
-							sb.Append(quoteChar);
+						// If we are in a quoted string, then end the quoted string if we get the 
+						// quote character. Unless its prefixed with a "\" to escape it.
+						//if (PeekChar() == (int)quoteChar || lastChar=='\\') {
+						//	ReadChar();
+						if (lastChar == '\\') {
+							sb.Append(c);
 						} else {
+
+							// Keep the '"' quote characters because I want them so I can use the JSON serializer
+							sb.Append(quoteChar);
 							state = State.AfterProcessingText;
 						}
 					} else {
 						//switch mode
+						// Keep the '"' quote characters because I want them so I can use the JSON serializer
+						sb.Append(quoteChar);
 						state = State.InQuotedString;
 					}
 				} else if (state == State.InQuotedString) {
@@ -169,6 +178,7 @@ namespace GrowingData.Mung.Core {
 						sb.Append(c);
 					}
 				}
+				lastChar = c;
 			} while (running);
 		}
 	}

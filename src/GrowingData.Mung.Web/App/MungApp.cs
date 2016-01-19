@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
@@ -74,8 +75,8 @@ namespace GrowingData.Mung.Web {
 		}
 
 		public MungApp(IHostingEnvironment env) {
-			//Console.WriteLine("Paused Initializing of MungApp, press a key to continue...");
-			//Console.ReadKey();
+			Console.WriteLine("Paused Initializing of MungApp, press a key to continue...");
+			Console.ReadKey();
 
 
 			_pipeline = new EventPipeline();
@@ -113,11 +114,15 @@ namespace GrowingData.Mung.Web {
 			// Make sure that we have a reference to the Mung Events connection
 			Connection.InitializeConnection();
 
+			Func<NpgsqlConnection> pg = () => { return DatabaseContext.Db.Events() as NpgsqlConnection; };
+
+			// Do the clean up synchronously so that it wont spark a race condition
+			// with cleaning up old files.
+			SqlBatchChecker.CleanUpOldFiles(_dataPath, pg);
 
 			BackgroundWorker.Start(new TimeSpan(0, 1, 0), () => {
 				try {
-					Func<NpgsqlConnection> pg = () => { return DatabaseContext.Db.Events() as NpgsqlConnection; };
-
+					
 					SqlBatchChecker.Check(_dataPath, pg);
 				} catch (Exception ex) {
 					Console.WriteLine(ex.Message);

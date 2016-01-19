@@ -34,7 +34,7 @@ namespace GrowingData.Mung.Core {
 			}
 
 			for (var i = 0; i < _columns.Count; i++) {
-				_writer.Write(MsvSerializer.Write(reader[_columns[i].ColumnName]));
+				_writer.Write(MsvConverter.Serialize(reader[_columns[i].ColumnName]));
 				_writer.Write("\t");
 			}
 			_writer.Write("\n");
@@ -50,8 +50,12 @@ namespace GrowingData.Mung.Core {
 			}
 
 			for (var i = 0; i < _columns.Count; i++) {
-				_writer.Write(MsvSerializer.Write(reader[_columns[i].ColumnName]));
-				_writer.Write("\t");
+				if (reader.ContainsKey(_columns[i].ColumnName)) {
+					_writer.Write(MsvConverter.Serialize(reader[_columns[i].ColumnName]));
+					_writer.Write("\t");
+				} else {
+					_writer.Write("NULL\t");
+				}
 			}
 			_writer.Write("\n");
 
@@ -113,30 +117,6 @@ namespace GrowingData.Mung.Core {
 				return -1;
 			}
 		}
-
-		public static string Serialize(object o) {
-			if (o is DateTime) {
-				return ((DateTime)o).ToString("yyyy-MM-dd HH:mm:ss");
-
-			}
-			if (o == DBNull.Value) {
-				return "NULL";
-			}
-
-			if (o is string) {
-				// Strings are escaped 
-				return "\"" + Escape(o.ToString()) + "\"";
-
-			}
-			return o.ToString();
-		}
-
-		private static string Escape(string unescaped) {
-
-			return unescaped
-				.Replace("\\", "\\" + "\\")     // '\' -> '\\'
-				.Replace("\"", "\\" + "\"");        // '"' -> '""'
-		}
-
+		
 	}
 }

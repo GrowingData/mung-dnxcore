@@ -2,9 +2,13 @@
 using Microsoft.AspNet.StaticFiles;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Mvc;
+using Microsoft.AspNet.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+using GrowingData.Mung.Web.Areas.Dashboards.Controllers;
 
 
 namespace GrowingData.Mung.Web {
@@ -36,7 +40,7 @@ namespace GrowingData.Mung.Web {
 			services.AddAuthentication();
 
 
-			services.AddMvc();
+			var mvc = services.AddMvc();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

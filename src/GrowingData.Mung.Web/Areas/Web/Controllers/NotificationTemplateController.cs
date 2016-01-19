@@ -13,14 +13,19 @@ using Newtonsoft.Json.Linq;
 using GrowingData.Mung.Web.Models;
 using GrowingData.Mung.Core;
 using System.IO;
-
+using HtmlAgilityPack;
+using GrowingData.Utilities.DnxCore;
+using Microsoft.AspNet.Mvc.Filters;
 
 namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
+
+
 
 	[Area("Web")]
 	public class NotificationTemplateController : Controller {
 		// GET: Dashboards/CreateDashboard
 		IHostingEnvironment _env;
+
 
 		public NotificationTemplateController(IHostingEnvironment env) {
 			_env = env;
@@ -36,7 +41,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 			if (notification == null) {
 				throw new Exception($"Unable to load the notification with notificationId={notificationId}");
 			}
-			
+
 
 			var mse = JsonConvert.DeserializeObject<MungServerEvent>(Request.Form["event"]);
 
@@ -55,6 +60,75 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 			return result;
 		}
 
+		public override void OnActionExecuted(ActionExecutedContext context) {
+			base.OnActionExecuted(context);
+		}
+
+		[Route("notifications/preview")]
+		[HttpPost]
+		public ActionResult PreviewNotification() {
+
+			var template = Request.Form["template"];
+
+			// Try to load the event type from the document;
+			var doc = new HtmlDocument();
+			doc.LoadHtml(template);
+			var eventType = doc.DocumentNode.SelectNodes("//mung-event-type").FirstOrDefault()?.InnerText;
+
+			if (eventType == null) {
+				return Json(new {
+					Success = false,
+					Message = "Please specify an event type, in the form \"<mung-event-type>YOUR_EVENT_TYPE</mung-event-type>\"",
+					highlight = "mung-event-type"
+				});
+			}
+			using (var cn = DatabaseContext.Db.Events()) {
+				var sql = @"SELECT * FROM mung.all WHERE event_type = @eventType ORDER BY at DESC LIMIT 1";
+				using (var reader = cn.DumpReader(sql, new { eventType = eventType })) {
+					if (!reader.Read()) {
+						return Json(new {
+							Success = false,
+							Message = $"The event type \"{eventType}\" does not yet exist.  Fire off a test event to enable live preview.",
+							highlight = "mung-event-type"
+						});
+					}
+					ViewBag.ServerEvent = new MungServerEvent() {
+						LogTime = (DateTime)reader["at"],
+						Source = (string)reader["source"],
+						AppId = (int)reader["app_id"],
+						Data = JToken.Parse((string)reader["json_data"])
+					};
+				}
+			}
+
+			ViewBag.Template = Request.Form["template"];
+
+
+			var tmpName = Guid.NewGuid() + ".cshtml";
+
+			var realPath = WriteTemplate(tmpName, template);
+
+			var nameWithoutExtension = tmpName.Split('.').FirstOrDefault();
+
+			ViewBag.TemplateRealPath = realPath;
+			ViewBag.TemplatePartialPath = $"Email/{nameWithoutExtension}";
+
+			return View("Preview");
+		}
+
+		public string WriteTemplate(string name, string templateCode) {
+
+			// Write the template to somewhere awesome
+			var appPath = new DirectoryInfo(_env.MapPath("")).Parent.FullName;
+			var templatePath = Path.Combine(appPath, "Areas", "Web", "Views", "NotificationTemplate", "Email", $"{name}");
+
+			if (!System.IO.File.Exists(templatePath)) {
+				System.IO.File.Delete(templatePath);
+			}
+			System.IO.File.WriteAllText(templatePath, templateCode);
+
+			return templatePath;
+		}
 
 		[Route("notifications/generate/test")]
 		[HttpGet]
@@ -88,15 +162,8 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 
 			//var mse = JsonConvert.DeserializeObject<MungServerEvent>(Request.Form["event"]);
+			WriteTemplate(notification.Name, notification.Template);
 
-			// Write the template to somewhere awesome
-			var appPath = new DirectoryInfo(_env.MapPath("")).Parent.FullName;
-			var templatePath = Path.Combine(appPath, "Areas", "Web", "Views", "NotificationTemplate", "Email", $"{notification.Name}");
-
-			if (!System.IO.File.Exists(templatePath)) {
-				System.IO.File.Delete(templatePath);
-			}
-			System.IO.File.WriteAllText(templatePath, notification.Template);
 			ViewBag.ServerEvent = mse;
 
 			var nameWithoutExtension = notification.Name.Split('.').FirstOrDefault();

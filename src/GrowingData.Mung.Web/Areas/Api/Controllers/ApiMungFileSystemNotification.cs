@@ -54,7 +54,7 @@ namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 			var newPath = Request.Form["newPath"].ToString();
 			var newPathParts = newPath.Split('/');
 
-			var newNotificationName = newPathParts[4];
+			var newNotificationName = newPathParts[2];
 
 			var notification = Notification.Get(name);
 			if (notification == null) {
@@ -91,7 +91,7 @@ namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 				notification = new Notification() {
 					Name = name,
 					CreatedAt = DateTime.UtcNow,
-					CreatedByMungerId = CurrentUser.MungerId,
+					CreatedByMunger = CurrentUser.MungerId,
 					IsPaused = false
 				};
 				isNew = true;
@@ -105,7 +105,7 @@ namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 
 			notification.Template = content;
 			notification.UpdatedAt = DateTime.UtcNow;
-			notification.UpdatedByMungerId = CurrentUser.MungerId;
+			notification.UpdatedByMunger = CurrentUser.MungerId;
 			notification.Save();
 
 			MungApp.Current.ProcessInternalEvent("notification_save", new {

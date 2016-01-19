@@ -62,6 +62,11 @@ namespace GrowingData.Mung.SqlBatch {
 				var pgTypes = table.Columns
 					.Select(x => PostgresqlDbTypeConverter.Types.FirstOrDefault(p => p.MungType == x.ColumnType).PostgresqlDbType).ToList();
 
+
+				// Not all the columns in the table may be present in the actual reader, so
+				// we insert null if they are missing.  
+				HashSet<string> actualColumns = new HashSet<string>(reader.Columns.Select(c => c.ColumnName));
+
 				using (var writer = cn.BeginBinaryImport(CopyCommand(table))) {
 
 					while (reader.Read()) {
@@ -69,9 +74,11 @@ namespace GrowingData.Mung.SqlBatch {
 						writer.StartRow();
 						for (var i = 0; i < table.Columns.Count; i++) {
 							var col = table.Columns[i];
-
-							writer.Write(reader[col.ColumnName], pgTypes[i]);
-
+							if (actualColumns.Contains(col.ColumnName)) {
+								writer.Write(reader[col.ColumnName], pgTypes[i]);
+							} else {
+								writer.WriteNull();
+							}
 						}
 
 
@@ -95,7 +102,7 @@ namespace GrowingData.Mung.SqlBatch {
 
 			StringBuilder ddl = new System.Text.StringBuilder();
 			ddl.Append($"CREATE TABLE \"{tbl.SchemaName}\".\"{tbl.TableName}\" (\r\n");
-			
+
 			foreach (var c in tbl.Columns) {
 				var pgType = PostgresqlDbTypeConverter.Types.FirstOrDefault(x => x.MungType == c.ColumnType);
 

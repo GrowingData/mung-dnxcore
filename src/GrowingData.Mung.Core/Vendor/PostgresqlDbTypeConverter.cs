@@ -48,6 +48,7 @@ namespace GrowingData.Mung.Core {
 
 
 			// Lets add in some type alias'
+			new PostgresqlType("bool", "boolean", NpgsqlDbType.Boolean, DbType.Boolean, MungTypeCode.Bool),
 			new PostgresqlType("timestamptz", "timestamp", NpgsqlDbType.Timestamp, DbType.DateTime, MungTypeCode.DateTime),
 			new PostgresqlType("timestamptz", "date", NpgsqlDbType.Date, DbType.DateTime, MungTypeCode.DateTime),
 			new PostgresqlType("timestamptz", "time", NpgsqlDbType.Time, DbType.DateTime, MungTypeCode.DateTime),

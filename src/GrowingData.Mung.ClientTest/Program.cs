@@ -13,8 +13,10 @@ namespace GrowingData.Mung.ClientTest {
 		static void Main(string[] args) {
 			var client = new MungClient();
 
-			var perf = new SystemPerformance();
+			var perf = new SystemPerformance(client);
 			perf.BeginCollection(new TimeSpan(0, 10, 0));
+
+
 
 
 			for (var i = 0; i < 10000; i++) {

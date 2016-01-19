@@ -2,7 +2,6 @@
 	ViewBag.Title = "Dashboard";
 
 	var notifications = ViewBag.Notifications as List<Notification>;
-	
 }
 <div class="row">
 	<div class="col-sm-12">
@@ -20,6 +19,8 @@
 			<ul class="link-list list-unstyled">
 				@foreach (var n in notifications) {
 				<li>
+					<a href="/mung?open=@n.ResourceUrl" class="btn btn-sm blue-bg">Edit</a>
+
 					@n.Name (@n.EventType)
 
 				</li>
@@ -33,7 +34,13 @@
 	</div>
 
 </div>
-
+	@{ 
+		// Load the text from the template, but dont' execute it.
+		var env = ViewBag.HostingEnvironment as IHostingEnvironment;
+		var path = System.IO.Path.Combine(env.WebRootPath, "templates", "notifications", "DefaultNotificationTemplate.cshtml");
+		var content = File.ReadAllText(path);
+	}
+<div class="notification-template" style="display:none;">@Html.Raw(content)</div>
 
 @Html.Partial("Modal/NotificationSettings")
 

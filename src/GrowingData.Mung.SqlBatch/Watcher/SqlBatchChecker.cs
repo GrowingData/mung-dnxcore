@@ -21,6 +21,7 @@ namespace GrowingData.Mung.SqlBatch {
 
 		public static void CleanUpOldFiles(string dataPath, Func<NpgsqlConnection> fnConnection) {
 			try {
+				Console.WriteLine("SqlBatchChecker ->  Cleaning up old files");
 				File.AppendAllText(Path.Combine(dataPath, "cleanup-running.log"), "Start: " + DateTime.UtcNow.ToString());
 				ResetLock(dataPath);
 
@@ -64,13 +65,13 @@ namespace GrowingData.Mung.SqlBatch {
 		public static void Check(string prefix, string dataPath, Func<NpgsqlConnection> fnConnection) {
 
 			try {
-				File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "Start: " + DateTime.UtcNow.ToString());
+				File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "Start: " + DateTime.UtcNow.ToString() + "\r\n");
 
 				var lockFilePath = Path.Combine(dataPath, "sql-batch.lock");
 
 				// Make sure we aren't already running...
 				if (File.Exists(lockFilePath)) {
-					File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "End (skipped due to lock): " + DateTime.UtcNow.ToString());
+					File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "End (skipped due to lock): " + DateTime.UtcNow.ToString() + "\r\n");
 					return;
 				}
 
@@ -82,18 +83,18 @@ namespace GrowingData.Mung.SqlBatch {
 						if (File.Exists(loadedFileName)) {
 							// If we have already loaded it, just delete the old file
 							File.Delete(file);
-							System.Diagnostics.Debug.WriteLine("Skipped loading {0}, as it already has a loaded file", file);
+							Console.WriteLine("Skipped loading {0}, as it already has a loaded file", file);
 							continue;
 						}
 
-						System.Diagnostics.Debug.Write("Loading {0}...", file);
+						Console.WriteLine("Loading {0}...", file);
 						var sqlInsert = new PostgresqlBulkInserter("mung", file, fnConnection);
 						sqlInsert.Execute();
 
 						File.Move(file, file.Replace("\\" + prefix, "\\loaded-"));
 
 
-						System.Diagnostics.Debug.WriteLine(" Done.");
+						Console.WriteLine(" Done.");
 					} catch (Exception ex) {
 						var exceptionLogPath = Path.Combine(dataPath, "sql-batch-exceptions.log");
 
@@ -112,7 +113,7 @@ namespace GrowingData.Mung.SqlBatch {
 					}
 				}
 
-				File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "Finished: " + DateTime.UtcNow.ToString());
+				File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "Finished: " + DateTime.UtcNow.ToString() + "\r\n");
 			} catch (Exception ex) {
 				var exceptionLogPath = Path.Combine(dataPath, "sql-batch-exceptions.log");
 				var errorDetails = string.Format("{0}	{1}: {2}\r\n{3}",

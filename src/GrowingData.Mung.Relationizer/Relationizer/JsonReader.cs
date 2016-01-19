@@ -21,11 +21,6 @@ namespace GrowingData.Mung.Relationizer {
 
 
 		public static object GetValue(JProperty token, MungType mungType) {
-			if (mungType.DatabaseType == DbType.Boolean) {
-				return (bool)token ? "1" : "0";
-			}
-
-
 			return token.Value.ToObject<object>();
 		}
 

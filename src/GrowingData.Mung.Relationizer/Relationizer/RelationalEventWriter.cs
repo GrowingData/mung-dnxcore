@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 using GrowingData.Mung.Core;
 
 namespace GrowingData.Mung.Relationizer {
@@ -15,7 +17,7 @@ namespace GrowingData.Mung.Relationizer {
 		private string _eventName;
 		private string _parentEvent;
 		private string _basePath;
-		private string _lastTimeString;
+		//private string _lastTimeString;
 
 		private SortedList<string, DbColumn> _schema;
 
@@ -24,13 +26,35 @@ namespace GrowingData.Mung.Relationizer {
 		// so we need to track them independently
 		private Dictionary<string, RelationalEventFile> _schemaFiles;
 
-		private int _rowsWritten = 0;
+		//private int _rowsWritten = 0;
 
 		public RelationalEventWriter(string basePath, string eventName, string parentEvent) {
 			_eventName = eventName;
 			_parentEvent = parentEvent;
 			_schemaFiles = new Dictionary<string, RelationalEventFile>();
 			_basePath = basePath;
+
+			Task.Run(() => CheckOldFileExpiry());
+		}
+
+		public void CheckOldFileExpiry() {
+			while (true) {
+				lock (_syncRoot) {
+					// Its a new time block, so dispose of all the active files
+					var newTimeString = GetCurrentTimeString();
+
+					var toDelete = _schemaFiles
+						.Where(kv => kv.Value.TimeString != newTimeString)
+						.ToList();
+
+					foreach(var kv in toDelete) {
+						kv.Value.Dispose();
+						_schemaFiles.Remove(kv.Key);
+					}
+				}
+
+				Thread.Sleep(1000);
+			}
 		}
 
 
@@ -39,13 +63,7 @@ namespace GrowingData.Mung.Relationizer {
 		/// </summary>
 		/// <returns></returns>
 		private string GetCurrentTimeString() {
-			//var minutes = Math.Floor(DateTime.UtcNow.Minute / 10d) * 10;
-			var minutes = DateTime.UtcNow.Minute;
-
-			return string.Format("{0}.{1}",
-				DateTime.UtcNow.ToString("yyyy-MM-dd.HH"),
-				minutes
-			);
+			return DateTime.UtcNow.ToString("yyyy-MM-ddTHH.mm");
 		}
 
 		public void Write(RelationalEvent evt) {
@@ -76,25 +94,11 @@ namespace GrowingData.Mung.Relationizer {
 						}
 					}
 				}
-
-				// Its a new time block, so dispose of all the active files
-				if (_lastTimeString == null || _lastTimeString != GetCurrentTimeString()) {
-					var keys = _schemaFiles.Keys.ToList();
-
-					foreach (var k in keys) {
-						_schemaFiles[k].Dispose();
-						_schemaFiles.Remove(k);
-					}
-
-					_lastTimeString = GetCurrentTimeString();
-				}
-
 				var schemaHash = RelationalEventFile.GetSchemaHash(_schema);
 
 				if (!_schemaFiles.ContainsKey(schemaHash)) {
 					_schemaFiles[schemaHash] = new RelationalEventFile(_basePath, GetCurrentTimeString(), _eventName, _parentEvent, _schema);
 				}
-
 				_schemaFiles[schemaHash].WriteRow(evt);
 			}
 		}
