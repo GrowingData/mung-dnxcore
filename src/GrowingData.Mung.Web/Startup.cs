@@ -16,7 +16,6 @@ namespace GrowingData.Mung.Web {
 	public class Startup {
 
 		public Startup(IHostingEnvironment env) {
-			Console.ReadKey();
 
 			// Set up configuration sources.
 			var builder = new ConfigurationBuilder()
