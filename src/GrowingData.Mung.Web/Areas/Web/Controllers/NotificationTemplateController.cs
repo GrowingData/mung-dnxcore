@@ -118,7 +118,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 			var appPath = new DirectoryInfo(_env.MapPath("")).Parent.FullName;
 
 
-			var templatePath = Path.Combine(appPath, "Areas", "Web", "Views", "NotificationTemplate", "Email", $"{name}");
+			var templatePath = Path.Combine(appPath, "Areas", "Web", "Views", "NotificationTemplate", "Email");
 			PathHelpers.CreateDirectoryRecursively(templatePath);
 
 			var templateFilePath = Path.Combine(templatePath, name);
