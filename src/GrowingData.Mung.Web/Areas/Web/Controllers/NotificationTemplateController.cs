@@ -122,7 +122,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 			var appPath = new DirectoryInfo(_env.MapPath("")).Parent.FullName;
 			var templatePath = Path.Combine(appPath, "Areas", "Web", "Views", "NotificationTemplate", "Email", $"{name}");
 
-			if (!System.IO.File.Exists(templatePath)) {
+			if (System.IO.File.Exists(templatePath)) {
 				System.IO.File.Delete(templatePath);
 			}
 			System.IO.File.WriteAllText(templatePath, templateCode);

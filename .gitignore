@@ -38,5 +38,4 @@ project.lock.json
 src/GrowingData.Mung.Web/data/**
 src/GrowingData.Mung.Web/bower_components/**
 src/GrowingData.Mung.Web/node_modules/**
-src/GrowingData.Mung.Web/Areas/Web/Views/NotificationTemplate/Email/**
-src/GrowingData.Mung.Web/Areas/Web/Views/NotificationTemplate/Email/**
+src/GrowingData.Mung.Web/Areas/Web/Views/NotificationTemplate/Email/*.cshtml
