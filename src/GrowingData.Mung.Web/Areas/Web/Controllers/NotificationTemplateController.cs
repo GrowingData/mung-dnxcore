@@ -46,17 +46,13 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 			var mse = JsonConvert.DeserializeObject<MungServerEvent>(Request.Form["event"]);
 
 			// Write the template to somewhere awesome
-			var appPath = new DirectoryInfo(_env.MapPath("")).Parent.FullName;
-			var templatePath = Path.Combine(appPath, "Areas", "Web", "Views", "NotificationTemplate", "Email", $"{notification.Name}");
-
-			if (!System.IO.File.Exists(templatePath)) {
-				System.IO.File.Delete(templatePath);
-			}
-			System.IO.File.WriteAllText(templatePath, notification.Template);
+			var templatePath = WriteTemplate(notification.Name, notification.Template);
+			
 			ViewBag.ServerEvent = mse;
 
 			var nameWithoutExtension = notification.Name.Split('.').FirstOrDefault();
 			var result = View($"Email/{nameWithoutExtension}");
+
 			return result;
 		}
 
@@ -120,12 +116,18 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 			// Write the template to somewhere awesome
 			var appPath = new DirectoryInfo(_env.MapPath("")).Parent.FullName;
-			var templatePath = Path.Combine(appPath, "Areas", "Web", "Views", "NotificationTemplate", "Email", $"{name}");
 
-			if (System.IO.File.Exists(templatePath)) {
-				System.IO.File.Delete(templatePath);
+
+			var templatePath = Path.Combine(appPath, "Areas", "Web", "Views", "NotificationTemplate", "Email", $"{name}");
+			PathHelpers.CreateDirectoryRecursively(templatePath);
+
+			var templateFilePath = Path.Combine(templatePath, name);
+
+			if (System.IO.File.Exists(templateFilePath)) {
+				System.IO.File.Delete(templateFilePath);
 			}
-			System.IO.File.WriteAllText(templatePath, templateCode);
+
+			System.IO.File.WriteAllText(templateFilePath, templateCode);
 
 			return templatePath;
 		}
