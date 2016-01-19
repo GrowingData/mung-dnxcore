@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
 using GrowingData.Mung.Core;
+using Microsoft.AspNet.Mvc.ViewEngines;
 using Microsoft.AspNet.Hosting;
 using GrowingData.Mung.Relationizer;
 using GrowingData.Mung.Web.Models;
@@ -36,6 +37,8 @@ namespace GrowingData.Mung.Web {
 			});
 
 		}
+
+		private static IViewEngine _viewEngine;
 
 		private EventPipeline _pipeline;
 		private LongPollingProcessor _longPollProcessor;

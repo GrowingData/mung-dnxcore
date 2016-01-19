@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System;
 using Microsoft.AspNet.StaticFiles;
 using Microsoft.AspNet.Builder;
 using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Mvc.ViewEngines;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,9 @@ using GrowingData.Mung.Web.Areas.Dashboards.Controllers;
 
 namespace GrowingData.Mung.Web {
 	public class Startup {
+
 		public Startup(IHostingEnvironment env) {
+			Console.ReadKey();
 
 			// Set up configuration sources.
 			var builder = new ConfigurationBuilder()
@@ -37,14 +40,16 @@ namespace GrowingData.Mung.Web {
 		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services) {
 
+			Console.WriteLine("ConfigureServices");
+
 			services.AddAuthentication();
-
-
+			
 			var mvc = services.AddMvc();
 		}
 
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory) {
+			Console.WriteLine("Configure");
 			loggerFactory.AddConsole(Configuration.GetSection("Logging"));
 			loggerFactory.AddDebug();
 
@@ -56,7 +61,7 @@ namespace GrowingData.Mung.Web {
 				app.UseStatusCodePages();
 				app.UseDeveloperExceptionPage();
 			}
-
+			
 
 
 			app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());

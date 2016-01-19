@@ -47,7 +47,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 			// Write the template to somewhere awesome
 			var templatePath = WriteTemplate(notification.Name, notification.Template);
-			
+
 			ViewBag.ServerEvent = mse;
 
 			var nameWithoutExtension = notification.Name.Split('.').FirstOrDefault();
@@ -113,12 +113,21 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 		}
 
 		public string WriteTemplate(string name, string templateCode) {
+			var wwwRoot = _env.WebRootPath;
+			var appRoot = new DirectoryInfo(_env.MapPath("")).Parent.FullName;
 
-			// Write the template to somewhere awesome
-			var appPath = new DirectoryInfo(_env.MapPath("")).Parent.FullName;
-
-
-			var templatePath = Path.Combine(appPath, "Areas", "Web", "Views", "NotificationTemplate", "Email");
+			string[] templateParts = new string[] { "Areas", "Web", "Views", "NotificationTemplate", "Email" };
+			
+			if (wwwRoot.EndsWith("output\\wwwroot")) {
+				templateParts = new string[] {
+					"approot",
+					"src",
+					"GrowingData.Mung.Web"
+				}.Concat(templateParts).ToArray();
+				
+			}
+			
+			var templatePath = Path.Combine( new string[] { appRoot }.Concat(templateParts).ToArray());
 			PathHelpers.CreateDirectoryRecursively(templatePath);
 
 			var templateFilePath = Path.Combine(templatePath, name);
