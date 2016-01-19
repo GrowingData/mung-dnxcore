@@ -97,7 +97,7 @@ namespace GrowingData.Mung.Web.Models {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"
 					INSERT INTO notification(name, event_type, template, created_by_munger, updated_by_munger, is_paused)
-						VALUES (@Name, @EventType, @Template, @CreatedByMungerId, @CreatedByMungerId, @IsPaused)
+						VALUES (@Name, @EventType, @Template, @CreatedByMunger, @CreatedByMunger, @IsPaused)
 						RETURNING notification_id";
 
 				NotificationId = cn.DumpList<int>(sql, this).FirstOrDefault();
