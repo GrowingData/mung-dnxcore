@@ -50,9 +50,10 @@ namespace GrowingData.Mung.Web {
 
 			if (env.IsDevelopment()) {
 				//app.UseBrowserLink();
+				app.UseStatusCodePages();
 				app.UseDeveloperExceptionPage();
-				app.UseDatabaseErrorPage();
 			} else {
+				app.UseStatusCodePages();
 				app.UseDeveloperExceptionPage();
 			}
 
