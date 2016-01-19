@@ -53,8 +53,7 @@ namespace GrowingData.Mung.Web {
 				app.UseDeveloperExceptionPage();
 				app.UseDatabaseErrorPage();
 			} else {
-
-				app.UseExceptionHandler("/Home/Error");
+				app.UseDeveloperExceptionPage();
 			}
 
 
