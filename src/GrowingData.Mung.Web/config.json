@@ -4,10 +4,10 @@
 	},
 	"Data": {
 		"mung": {
-			"Connectionstring": "Server=127.0.0.1;Port=5433;Database=mung;User Id=postgres;Password=postgres;"
+			"Connectionstring": "Server=mung-pgsql;Port=5432;Database=mung;User Id=postgres;Password=postgres;"
 		},
 		"mung_events": {
-			"Connectionstring": "Server=127.0.0.1;Port=5433;Database=mung_events;User Id=postgres;Password=postgres;"
+			"Connectionstring": "Server=mung-pgsql;Port=5432;Database=mung_events;User Id=postgres;Password=postgres;"
 		}
 	},
 	"Logging": {
