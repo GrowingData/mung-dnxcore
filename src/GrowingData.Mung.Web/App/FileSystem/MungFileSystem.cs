@@ -8,12 +8,14 @@ namespace GrowingData.Mung.Web {
 	public class MungFileSystem {
 		public const string DashboardRootUrlPart = "Dashboard";
 		public const string NotificationRootUrlPart = "Notification";
+		public const string QueryRootUrlPart = "Query";
 
 		public static MungFileSystemEntry Hierarchy(Munger currentUser) {
 
 
 			var root = new MungFileSystemEntry("directory", "root", "MUNG", "/", null);
 
+			// Dashboards / Graphs
 			var dashboards = new MungFileSystemEntry("directory", "dashboard-root", DashboardRootUrlPart, $"/{DashboardRootUrlPart}/", root);
             var allGraphs = Graph.GetGraphs();
 
@@ -28,12 +30,17 @@ namespace GrowingData.Mung.Web {
 				}
 			}
 
+			// Notifications
 			var notifications = new MungFileSystemEntry("directory", "notification-root", NotificationRootUrlPart, $"/{NotificationRootUrlPart}", root);
-
 			foreach (var n in Notification.List(currentUser.MungerId)) {
 				var dfs = new MungFileSystemEntry("file", "notification", n.Name, n.ResourceUrl, notifications);
 			}
 
+			// Queries
+			var queries = new MungFileSystemEntry("directory", "query-root", QueryRootUrlPart, $"/{NotificationRootUrlPart}", root);
+			foreach (var q in Query.List(currentUser.MungerId)) {
+				var dfs = new MungFileSystemEntry("file", "query", q.Name, q.ResourceUrl, queries);
+			}
 			return root;
 
 		}

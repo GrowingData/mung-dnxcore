@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Text;
 using System.Collections.Generic;
-using System.Linq;
+using System.Data.Common;
+using GrowingData.Mung.Core;
 using GrowingData.Utilities.DnxCore;
 
 namespace GrowingData.Mung.Web.Models {
@@ -21,6 +22,29 @@ namespace GrowingData.Mung.Web.Models {
 				}
 				return _providers;
 			}
+		}
+
+		public DbBulkInserter GetBulkInserter(Func<DbConnection> targetConnection, string targetSchema, string targetTable) {
+
+			if (Name == "SQL Server") {
+				throw new NotImplementedException("SQL Server doesn't have a bulk inserter working in DNX Core");
+			}
+			if (Name == "PostgreSQL") {
+				return new PostgresqlBulkInserter(targetConnection, targetSchema, targetTable);
+			}
+			throw new Exception($"Unable to load a DbBulkInserter for Provider: {Name}");
+		}
+
+		public DbSchemaReader GetSchemaReader(Func<DbConnection> cn) {
+
+			if (Name == "SQL Server") {
+				return new SqlServerSchemaReader(cn);
+			}
+			if (Name == "PostgreSQL") {
+				return new PostgresqlDbSchemaReader(cn);
+			}
+
+			throw new Exception($"Unable to load a DbSchemaReader for Provider: {Name}");
 
 		}
 	}

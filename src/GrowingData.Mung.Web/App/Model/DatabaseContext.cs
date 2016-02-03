@@ -12,6 +12,9 @@ namespace GrowingData.Mung {
 		}
 
 
+		public string MungConnectionString { get { return _mungConnectionString; } }
+		public string EventsConnectionString { get { return _eventsConnectionString; } }
+
 		public static void Initialize(string mungConnectionString, string eventsConnectionString) {
 
 			_Db = new DatabaseContext(mungConnectionString, eventsConnectionString);

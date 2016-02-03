@@ -22,7 +22,7 @@ define(function (require, exports, module) {
 
 	function updateFocusedEditor(focusedEditor) {
 		if (editor) {
-			inputField.removeEventListener("input", inputChangedHandler, true);
+			editor.off("change", onChangeHandler);
 		}
 
 		if (focusedEditor) {
@@ -32,6 +32,9 @@ define(function (require, exports, module) {
 			if (editor.getFile().name.endsWith(".cshtml")) {
 				editor.on("change", onChangeHandler);
 				updatePreview(editor);
+				emailTemplateHolder.show();
+			} else {
+				emailTemplateHolder.hide();
 			}
 		}
 	};
@@ -40,9 +43,7 @@ define(function (require, exports, module) {
 
 	function onChangeHandler(event) {
 		updatePreview(event.target);
-
 		var code = event.target.document.getText();
-
 	};
 
 	function updatePreview(ed) {
@@ -58,11 +59,7 @@ define(function (require, exports, module) {
 			},
 			error: function (r) {
 				iframe.contents().find('body').html(r);
-				//iframe.contents().html(r.responseText);
-				//var errorDiv = $("<div>").addClass("email-template error-message").text(r.Message).appendTo(emailTemplateHolder);
-				//var stackPre = $("<pre>").addClass("email-template error-stack").text(r.Stack).appendTo(emailTemplateHolder);
-
-
+				updateContentHeight();
 			}
 		});
 	}

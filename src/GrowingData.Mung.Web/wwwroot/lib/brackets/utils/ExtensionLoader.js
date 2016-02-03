@@ -405,7 +405,6 @@ define(function (require, exports, module) {
                     "DarkTheme",        // Note: only themes ending in -Theme work with AjaxFileSystem
                     //"DebugCommands",
                     "HTMLCodeHints",
-                    "MungPreviewEmail",
                     "HtmlEntityCodeHints",
                     "InlineColorEditor",
                     "InlineTimingFunctionEditor",
@@ -421,7 +420,13 @@ define(function (require, exports, module) {
                     "RecentProjects",
                     //"StaticServer",
                     "UrlCodeHints",
-                    "WebPlatformDocs"
+                    "WebPlatformDocs",
+
+					// Mung stuff!!
+                    "MungPreviewEmail",
+                    "MungPreviewQuery",
+                    "MungPreviewSchema",
+                    "MungSQLCodeHints",
                 ];
 
 			return Async.doInParallel(defaultExtensions, function (item) {

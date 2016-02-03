@@ -88,8 +88,15 @@ namespace GrowingData.Mung.SqlBatch {
 						}
 
 						Console.WriteLine("Loading {0}...", file);
-						var sqlInsert = new PostgresqlBulkInserter("mung", file, fnConnection);
-						sqlInsert.Execute();
+
+						var info = new FileInfo(file);
+						var table = info.Name.Split('.').First()
+							.Replace("complete-", "")
+							.Replace("active-", "")
+							.Replace("failed-", "");
+
+						var sqlInsert = new PostgresqlBulkInserter(fnConnection, "mung", table);
+						sqlInsert.Execute(file);
 
 						File.Move(file, file.Replace("\\" + prefix, "\\loaded-"));
 

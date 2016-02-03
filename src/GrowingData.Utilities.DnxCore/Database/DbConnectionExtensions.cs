@@ -89,12 +89,29 @@ namespace GrowingData.Utilities.DnxCore {
 
 		#region Command handling
 
-		private static DbCommand CreateCommand(this DbConnection cn, string sql, object ps) {
+		public static DbCommand CreateCommand(this DbConnection cn, string sql, object ps) {
 			var cmd = cn.CreateCommand();
 
 			cmd.CommandText = sql;
 			cmd.CommandTimeout = DEFAULT_TIMEOUT;
 
+			BindParameters(cmd, sql, ps);
+
+			return cmd;
+
+		}
+
+		public static DbCommand CreateCommand(this DbConnection cn, string sql, Dictionary<string, object> ps) {
+			var cmd = cn.CreateCommand();
+
+			cmd.CommandText = sql;
+			cmd.CommandTimeout = DEFAULT_TIMEOUT;
+			if (ps != null) {
+				foreach (var k in ps.Keys) {
+					var p = GetParameter(cmd, DEFAULT_PARAMETER_PREFIX + k, ps[k]);
+					cmd.Parameters.Add(p);
+				}
+			}
 			BindParameters(cmd, sql, ps);
 
 			return cmd;
@@ -330,6 +347,31 @@ namespace GrowingData.Utilities.DnxCore {
 				.Replace("\"", "\\" + "\"");        // '"' -> '""'
 		}
 
+		public static string DumpJsonRows(this DbConnection cn, string sql, Dictionary<string, object> ps) {
+			using (var cmd = cn.CreateCommand(sql, ps)) {
+				using (var reader = cmd.ExecuteReader()) {
+					// Field names
+					List<string> columnNames =
+						Enumerable.Range(0, reader.FieldCount)
+							.Select(x => reader.GetName(x))
+							.ToList();
+					List<Dictionary<string, string>> data = new List<Dictionary<string, string>>();
+					while (reader.Read()) {
+						Dictionary<string, string> rowData = new Dictionary<string, string>();
+						for (var i = 0; i < reader.FieldCount; i++) {
+							if (reader[i].GetType() == typeof(DateTime)) {
+								// Use ISO time
+								rowData[columnNames[i]] = ((DateTime)reader[i]).ToString("s");
+							} else {
+								rowData[columnNames[i]] = reader[i].ToString();
+							}
+						}
+						data.Add(rowData);
+					}
+					return JsonConvert.SerializeObject(new { ColumnNames = columnNames, Rows = data });
+				}
+			}
+		}
 
 		public static string DumpJsonRows(this DbConnection cn, string sql, object ps) {
 			using (var cmd = cn.CreateCommand(sql, ps)) {

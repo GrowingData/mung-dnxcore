@@ -135,7 +135,7 @@ namespace GrowingData.Mung.Relationizer {
 		}
 
 		public static string GetSchemaHash(SortedList<string, DbColumn> schema) {
-			var schemaString = string.Join("|", schema.Values.Select(x => string.Format("{0}:{1}", x.ColumnName, x.ColumnType)));
+			var schemaString = string.Join("|", schema.Values.Select(x => string.Format("{0}:{1}", x.ColumnName, x.MungType)));
 			return schemaString.HashStringMD5();
 		}
 

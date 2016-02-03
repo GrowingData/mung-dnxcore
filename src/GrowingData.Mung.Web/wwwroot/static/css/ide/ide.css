@@ -1,46 +1,31 @@
 ﻿/* Dashboard related styles for things like component header spacing, etc*/
 
-.ide {
-	position:absolute;
-	left:0;
-	right:0;
-	top:50px;
-	bottom:0;
-	background:#000;
+
+
+#query-panel ul.toolbar {
+	width: 100%;
+	display: block;
+	margin: 0;
+	padding: 0;
+	padding-top: 8px;
 }
 
-.ide-header{
-    left: 200px;
-    right: 0;
-    height: 24px;
-    background: #4e555f;
-    position: absolute;
-    z-index: 10;
-}
+	#query-panel ul.toolbar li.toolbar-button {
+		list-style-type: none;
+		height: 32px;
+		margin: 6px;
+	}
 
-.ide-header input {
-	height:24px;
-	width:100%;
-	background:transparent;
-	border:none;
+		#query-panel ul.toolbar li.toolbar-button a {
+			background: #659eeb;
+			border-color: #659eeb;
+			color: #fff;
+			padding: 6px;
+			cursor: pointer;
+			border-radius:5px;
+		}
 
-}
-
-
-.ide-files{
-	position:absolute;
-	left:0;
-	top:0;
-	bottom:0;
-	width:200px;
-	background:#5f6670;
-}
-
-.ide-code{
-	position:absolute;
-	left:200px;
-	top:24px;
-	bottom:0;
-	right:0px;
-	background:#1F2227;
-}
+			#query-panel ul.toolbar li.toolbar-button a:hover {
+				background: #87b56c;
+				border-color: #87b56c;
+			}

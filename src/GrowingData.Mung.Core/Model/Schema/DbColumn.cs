@@ -7,12 +7,16 @@ namespace GrowingData.Mung.Core {
 	public class DbColumn
 	 {
 		public string ColumnName;
-		public MungType ColumnType;
+		public MungType MungType;
 
+		public DbColumn(string name, Type type) {
+			ColumnName = name.ToLower();
+			MungType = MungType.Get(type);
+		}
 
 		public DbColumn(string name, MungType type) {
 			ColumnName = name.ToLower();
-			ColumnType = type;
+			MungType = type;
 		}
 
 		public int CompareTo(object obj) {

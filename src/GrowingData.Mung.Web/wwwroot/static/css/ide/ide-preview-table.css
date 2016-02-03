@@ -1,0 +1,24 @@
+﻿/* Dashboard related styles for things like component header spacing, etc*/
+
+table.mung-table {
+	border-bottom: solid 1px #ECECEC;
+}
+
+	table.mung-table td {
+		border-top: 1px solid #ECECEC;
+		color: #555D67;
+	}
+
+	table.mung-table th {
+		background: #555D67;
+		border-bottom: 1px solid #ECECEC;
+		text-align: left;
+		font-weight: bold;
+		color: #fff;
+	}
+
+	table.mung-table tr:nth-child(odd),
+	.mung-section .section-inner > ul > li:nth-child(odd),
+	.mung-section > ul > li:nth-child(odd) {
+		background: #ECECEC;
+	}

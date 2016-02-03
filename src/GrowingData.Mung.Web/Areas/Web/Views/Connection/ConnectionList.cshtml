@@ -1,5 +1,5 @@
 ﻿@{
-	ViewBag.Title = "Dashboard";
+	ViewBag.Title = "Connections";
 
 	var connections = ViewBag.Connections as List<Connection>;
 }
@@ -17,6 +17,7 @@
 			<ul class="link-list list-unstyled">
 				@foreach (var cn in connections) {
 				<li>
+					<a href="#" class="btn btn-sm blue-bg edit-connection" data-connection="@JsonConvert.SerializeObject(cn)">Edit</a>
 					@cn.Name (@cn.Provider.Name)
 
 				</li>
@@ -31,4 +32,4 @@
 
 </div>
 
-@Html.Partial("Templates/DashboardModal")
+@Html.Partial("Templates/ConnectionModal")

@@ -5,12 +5,13 @@ using System.Linq;
 using System.Data.Common;
 using System.Data.SqlClient;
 using Npgsql;
+using GrowingData.Mung.Core;
 using GrowingData.Utilities.DnxCore;
 
 namespace GrowingData.Mung.Web.Models {
 	public class Connection {
-		private const string MungSqlEventsConnectionName = "Mung Events (SQL)";
-		private const string MungRealtimeEventsConnectionName = "Mung Events (Real Time)";
+		private const string MungSqlEventsConnectionName = "mung_events";
+
 
 
 		public int ConnectionId;
@@ -28,18 +29,16 @@ namespace GrowingData.Mung.Web.Models {
 			var connections = List();
 			var mungConnection = connections.FirstOrDefault(x => x.Name == MungSqlEventsConnectionName);
 
-			string eventsConnectionString = null;
-			using (var events = DatabaseContext.Db.Events()) {
-				eventsConnectionString = events.ConnectionString;
-			}
+			string eventsConnectionString = DatabaseContext.Db.EventsConnectionString;
+
 			if (mungConnection == null) {
 				mungConnection = new Connection() {
 					ConnectionId = -1,
 					Name = MungSqlEventsConnectionName,
 					ConnectionString = eventsConnectionString,
 					ProviderId = Provider.Providers.FirstOrDefault(x => x.Name == "PostgreSQL").ProviderId,
-					CreatedByMunger=-1,
-					UpdatedByMunger=-1
+					CreatedByMunger = -1,
+					UpdatedByMunger = -1
 				};
 
 				mungConnection.Insert();
@@ -51,14 +50,26 @@ namespace GrowingData.Mung.Web.Models {
 				mungConnection.ConnectionString = eventsConnectionString;
 				mungConnection.Update();
 			}
-			
-
 		}
 
 		public Provider Provider {
 			get {
 				return Provider.Providers.FirstOrDefault(x => x.ProviderId == ProviderId);
 			}
+		}
+
+		public List<DbTable> GetTables() {
+			var reader = Provider.GetSchemaReader(GetConnection);
+			return reader.GetTables();
+		}
+		public List<DbTable> GetTables(string schema) {
+			var reader = Provider.GetSchemaReader(GetConnection);
+			return reader.GetTables();
+
+		}
+		public DbTable GetTable(string schema, string table) {
+			var reader = Provider.GetSchemaReader(GetConnection);
+			return reader.GetTables().FirstOrDefault();
 		}
 
 		public DbConnection GetConnection() {
@@ -80,7 +91,51 @@ namespace GrowingData.Mung.Web.Models {
 			}
 
 			throw new Exception("Unable to find connection provider with type: " + provider.Name);
+		}
 
+
+		/// <summary>
+		/// Executes 'sourceCommand' against this connection, outputting the
+		/// results to the targetConnection.
+		/// the table given by 'targetSchema' and 'targetTable' in the current connection
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="command"></param>
+		/// <param name="parameters"></param>
+		/// <param name="desintationSchema"></param>
+		/// <param name="desginationTable"></param>
+		public void BulkInsertTo(string sourceCommand,
+			Connection destinationConnection, string desintationSchema, string desginationTable,
+			Dictionary<string, object> parameters, Action<DbDataReader> eachRow) {
+
+			var inserter = destinationConnection.Provider.GetBulkInserter(destinationConnection.GetConnection, desintationSchema, desginationTable);
+
+			using (var sourceCn = GetConnection()) {
+
+				using (var cmd = sourceCn.CreateCommand(sourceCommand, parameters)) {
+					using (var reader = cmd.ExecuteReader()) {
+						inserter.BulkInsert(reader, eachRow);
+					}
+
+				}
+
+			}
+
+		}
+
+		public void Execute(string sql, Dictionary<string, object> parameters, Action<DbDataReader> eachRow) {
+
+			using (var sourceCn = GetConnection()) {
+				using (var cmd = sourceCn.CreateCommand(sql, parameters)) {
+					using (var reader = cmd.ExecuteReader()) {
+						while (reader.Read()) {
+							eachRow(reader);
+						}
+
+					}
+				}
+
+			}
 		}
 
 
@@ -99,7 +154,21 @@ namespace GrowingData.Mung.Web.Models {
 				return connection;
 			}
 		}
-
+		/// <summary>
+		/// Get a connection
+		/// </summary>
+		/// <param name="connectionId"></param>
+		/// <returns></returns>
+		public static Connection Get(string connectionName) {
+			using (var cn = DatabaseContext.Db.Mung()) {
+				var connection = cn.ExecuteAnonymousSql<Connection>(@"
+					SELECT * FROM connection WHERE name = @connectionName",
+					new { connectionName = connectionName }
+				)
+				.FirstOrDefault();
+				return connection;
+			}
+		}
 		/// <summary>
 		/// List all connections
 		/// </summary>

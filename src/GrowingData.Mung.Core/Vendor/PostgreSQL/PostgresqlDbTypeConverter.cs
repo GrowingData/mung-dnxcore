@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Data;
-using Newtonsoft.Json.Linq;
 using NpgsqlTypes;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace GrowingData.Mung.Core {
 	public class PostgresqlType {
@@ -26,7 +24,19 @@ namespace GrowingData.Mung.Core {
 	}
 	public class PostgresqlDbTypeConverter : DbTypeConverter {
 
+		public static HashSet<string> IgnoreTypes = new HashSet<string>() {
+			"json"
+		};
 
+
+		public static PostgresqlType Get(MungType type) {
+			var t = Types.FirstOrDefault(p => p.MungType.Code == type.Code);
+			if (t == null) {
+				throw new Exception($"Unable to find PostgresqlType for: '{type.Code.ToString()}' ({type.DotNetType})");
+			}
+
+			return t;
+		}
 		/// <summary>
 		///  The ordering of these type sis important, as most lookups of this table
 		///  will use .FirstOrDefault
@@ -63,7 +73,7 @@ namespace GrowingData.Mung.Core {
 		};
 
 		public override string GetCreateColumnDefinition(MungType type) {
-			var t = Types.FirstOrDefault(x => x.MungType == type);
+			var t = Get(type);
 			if (t == null) {
 				throw new InvalidOperationException($"MungType for {type.DotNetType} is unknown to PostgresqlDbTypeConverter");
 			}
@@ -72,6 +82,10 @@ namespace GrowingData.Mung.Core {
 
 
 		public override MungType GetTypeFromInformationSchema(string infoSchemaName) {
+			if (IgnoreTypes.Contains(infoSchemaName)) {
+				return null;
+			}
+
 			var t = Types.FirstOrDefault(x => x.InfoSchemaName == infoSchemaName);
 			if (t == null) {
 				throw new InvalidOperationException($"MungType for {infoSchemaName} is unknown to PostgresqlDbTypeConverter");

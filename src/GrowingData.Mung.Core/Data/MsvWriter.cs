@@ -19,7 +19,7 @@ namespace GrowingData.Mung.Core {
 		public void WriteHeader(IEnumerable<DbColumn> columns) {
 
 			_columns = columns.ToList();
-			_writer.Write(string.Join("\t", _columns.Select(c => $"{c.ColumnName}:{c.ColumnType}")));
+			_writer.Write(string.Join("\t", _columns.Select(c => $"{c.ColumnName}:{c.MungType}")));
 			_writer.Write("\n");
 		}
 

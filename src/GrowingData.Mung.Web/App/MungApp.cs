@@ -125,7 +125,7 @@ namespace GrowingData.Mung.Web {
 
 			BackgroundWorker.Start(new TimeSpan(0, 1, 0), () => {
 				try {
-					
+
 					SqlBatchChecker.Check(_dataPath, pg);
 				} catch (Exception ex) {
 					Console.WriteLine(ex.Message);

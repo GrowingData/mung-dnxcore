@@ -79,14 +79,14 @@ namespace GrowingData.Mung.Relationizer {
 					// Check to see if anything has changed...
 					foreach (var s in evt.Schema) {
 						if (_schema.ContainsKey(s.ColumnName)) {
-							if (_schema[s.ColumnName].ColumnType != s.ColumnType) {
-								var oldType = _schema[s.ColumnName].ColumnType;
-								var newType = s.ColumnType;
+							if (_schema[s.ColumnName].MungType != s.MungType) {
+								var oldType = _schema[s.ColumnName].MungType;
+								var newType = s.MungType;
 
 
 
 								// Try to expand the type without losing fidelity
-								_schema[s.ColumnName].ColumnType = MungType.ExpandType(oldType, newType);
+								_schema[s.ColumnName].MungType = MungType.ExpandType(oldType, newType);
 							}
 						} else {
 							// There is a new field

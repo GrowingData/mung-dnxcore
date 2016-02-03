@@ -6,39 +6,33 @@ using System.Linq;
 using System.Text;
 using GrowingData.Mung.Core;
 
-namespace GrowingData.Mung.SqlBatch {
-	public abstract class BulkInserter {
+namespace GrowingData.Mung.Core {
+	public abstract class DbBulkInserter {
 
 		public abstract bool CreateTable(DbTable tbl);
 		public abstract bool BulkInsert(DbTable schema, MsvReader reader);
+		public abstract bool BulkInsert(DbDataReader reader, Action<DbDataReader> eachRow);
 		public abstract bool ModifySchema(DbTable oldSchema, DbTable newSchema);
+
+
 		public abstract DbTable GetDbSchema();
 
-		protected string _schema;
-		protected string _table;
-		protected string _filename;
+		protected string _targetSchema;
+		protected string _targetTable;
 
-		public string Schema { get { return _schema; } }
-		public string TableName { get { return _table; } }
+		public string Schema { get { return _targetSchema; } }
+		public string TableName { get { return _targetTable; } }
 
-		protected BulkInserter(string schema, string filename) {
-			var info = new FileInfo(filename);
+		protected DbBulkInserter(Func<DbConnection> targetConnection, string targetSchema, string targetTable) {
+			_targetSchema = targetSchema;
+			_targetTable = targetTable;
 
-
-			_schema = schema;
-			_table = info.Name.Split('.').First()
-				.Replace("complete-", "")
-				.Replace("active-", "")
-				.Replace("failed-", "");
-
-			_filename = filename;
 		}
 
-		public bool Execute() {
-
-			using (var stream = File.OpenText(_filename)) {
+		public bool Execute(string filename) {
+			using (var stream = File.OpenText(filename)) {
 				using (var reader = new MsvReader(stream)) {
-					var currentSchema = new DbTable(_table, _schema, reader.Columns);
+					var currentSchema = new DbTable(_targetTable, _targetSchema, reader.Columns);
 					var oldSchema = GetDbSchema();
 
 					// Check / Update the schema in the DB

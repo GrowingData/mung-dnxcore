@@ -4,10 +4,10 @@
 	},
 	"Data": {
 		"mung": {
-			"Connectionstring": "Server=mung-pgsql;Port=5432;Database=mung;User Id=postgres;Password=postgres;"
+			"Connectionstring": "Server=localhost;Port=5433;Database=mung;User Id=postgres;Password=postgres;CommandTimeout=0"
 		},
 		"mung_events": {
-			"Connectionstring": "Server=mung-pgsql;Port=5432;Database=mung_events;User Id=postgres;Password=postgres;"
+			"Connectionstring": "Server=localhost;Port=5433;Database=mung_events;User Id=postgres;Password=postgres;CommandTimeout=0"
 		}
 	},
 	"Logging": {

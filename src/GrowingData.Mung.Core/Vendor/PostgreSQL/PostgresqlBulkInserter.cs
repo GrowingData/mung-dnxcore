@@ -2,75 +2,45 @@
 using System.Collections.Generic;
 using Npgsql;
 using NpgsqlTypes;
-using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
-using GrowingData.Mung.Core;
 
-namespace GrowingData.Mung.SqlBatch {
-	public class PostgresqlBulkInserter : BulkInserter {
+namespace GrowingData.Mung.Core {
+	public class PostgresqlBulkInserter : DbBulkInserter {
 
-		protected Func<NpgsqlConnection> _getConnection;
-		//private static Dictionary<MungType, PostgresqlType> _lookup = PostgresqlDbTypeConverter.Types.ToDictionary(k => k.MungType);
+		protected Func<NpgsqlConnection> _connectionFactory;
 
-		public PostgresqlBulkInserter(string schema, string filename, Func<NpgsqlConnection> cn)
-			: base(schema, filename) {
+		public PostgresqlBulkInserter(Func<DbConnection> targetConnection, string targetSchema, string targetTable)
+			: base(targetConnection, targetSchema, targetTable) {
 
-			_getConnection = cn;
+			_connectionFactory = () => {
+				return targetConnection() as NpgsqlConnection;
+			};
+
 
 			// Make sure that the schema exists
-			CreateSchemaIfRequired(schema);
+			CreateSchemaIfRequired(targetSchema);
 		}
 
 		public override DbTable GetDbSchema() {
-			string sql = @"
-					SELECT table_schema, table_name, column_name, data_type
-					FROM information_schema.columns C
-					WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
-					AND		table_schema = @Schema
-					AND		table_name = @Table
-					ORDER BY table_schema, ordinal_position
-				";
-			using (var cn = _getConnection()) {
-				using (var cmd = new NpgsqlCommand(sql, cn)) {
-					cmd.Parameters.AddWithValue("Schema", _schema);
-					cmd.Parameters.AddWithValue("Table", _table);
-					using (var reader = cmd.ExecuteReader()) {
-						bool hasData = false;
-						var tbl = new DbTable(_table, _schema);
-						while (reader.Read()) {
-							hasData = true;
-							var columnName = reader["column_name"] as string;
-							var sqlType = reader["data_type"] as string;
+			var schemaReader = new PostgresqlDbSchemaReader(_connectionFactory);
+			return schemaReader.GetTables(_targetSchema, _targetTable).FirstOrDefault();
 
-							tbl.Columns.Add(new DbColumn(columnName, DbTypeConverter.Postgresql.GetTypeFromInformationSchema(sqlType)));
-
-						}
-						if (!hasData) {
-							return null;
-						}
-
-						return tbl;
-					}
-				}
-			}
 		}
 
 		public override bool BulkInsert(DbTable table, MsvReader reader) {
-			using (var cn = _getConnection()) {
+			using (var cn = _connectionFactory()) {
 				// Make a little cache of the pgTypes
 				var pgTypes = table.Columns
-					.Select(x => PostgresqlDbTypeConverter.Types.FirstOrDefault(p => p.MungType == x.ColumnType).PostgresqlDbType).ToList();
-
+					.Select(x => PostgresqlDbTypeConverter.Get(x.MungType).PostgresqlDbType)
+					.ToList();
 
 				// Not all the columns in the table may be present in the actual reader, so
 				// we insert null if they are missing.  
 				HashSet<string> actualColumns = new HashSet<string>(reader.Columns.Select(c => c.ColumnName));
-
 				using (var writer = cn.BeginBinaryImport(CopyCommand(table))) {
-
 					while (reader.Read()) {
-
 						writer.StartRow();
 						for (var i = 0; i < table.Columns.Count; i++) {
 							var col = table.Columns[i];
@@ -80,20 +50,68 @@ namespace GrowingData.Mung.SqlBatch {
 								writer.WriteNull();
 							}
 						}
-
-
 					}
-
-
 				}
-
 			}
-
 			return true;
 		}
 
+		public override bool BulkInsert(DbDataReader reader, Action<DbDataReader> eachRow) {
+			// Read the first row to get the information on the schema
+
+			if (reader.Read()) {
+				var table = new DbTable(_targetTable, _targetSchema);
+				var pgTypes = new List<NpgsqlDbType>();
+				for (var i = 0; i < reader.FieldCount; i++) {
+					var col = new DbColumn(reader.GetName(i), reader.GetFieldType(i));
+					table.Columns.Add(col);
+
+					var type = PostgresqlDbTypeConverter.Get(col.MungType);
+
+					if (type == null) {
+						throw new Exception($"Unable to load Postgres type for type: {col.MungType.Code}, Column: {col.ColumnName}");
+					}
+					pgTypes.Add(type.PostgresqlDbType);
+				}
+
+				//Make sure that the table exists, and has the right schema
+				var oldSchema = GetDbSchema();
+				if (oldSchema == null) {
+					CreateTable(table);
+				} else {
+					ModifySchema(oldSchema, table);
+				}
+
+				using (var cn = _connectionFactory()) {
+					using (var writer = cn.BeginBinaryImport(CopyCommand(table))) {
+						do {
+
+							writer.StartRow();
+							for (var i = 0; i < table.Columns.Count; i++) {
+								var col = table.Columns[i];
+								var val = reader[col.ColumnName];
+								if (val == DBNull.Value) {
+									writer.WriteNull();
+								} else {
+									writer.Write(reader[col.ColumnName], pgTypes[i]);
+								}
+							}
+							if (eachRow != null) {
+								eachRow(reader);
+							}
+
+						} while (reader.Read());
+					}
+				}
+
+			}
+			return true;
+		}
+
+
 		public static string CopyCommand(DbTable table) {
-			var columns = string.Join(",\n\t", table.Columns.Select(x => x.ColumnName));
+			var columns = string.Join(",\n\t", table.Columns.Select(x => $"\"{x.ColumnName}\""));
+
 			return $"COPY \"{table.SchemaName}\".\"{table.TableName}\"(\n\t{columns}\n) FROM STDIN BINARY";
 		}
 
@@ -104,7 +122,7 @@ namespace GrowingData.Mung.SqlBatch {
 			ddl.Append($"CREATE TABLE \"{tbl.SchemaName}\".\"{tbl.TableName}\" (\r\n");
 
 			foreach (var c in tbl.Columns) {
-				var pgType = PostgresqlDbTypeConverter.Types.FirstOrDefault(x => x.MungType == c.ColumnType);
+				var pgType = PostgresqlDbTypeConverter.Get(c.MungType);
 
 				if (c.ColumnName == tbl.TableName + "_id") {
 					ddl.Append($"	\"{c.ColumnName}\" {pgType.CreateColumnDefinition} NOT NULL PRIMARY KEY,\n");
@@ -123,19 +141,23 @@ namespace GrowingData.Mung.SqlBatch {
 					continue;
 				}
 
-				ddl.Append($"	{c.ColumnName} {pgType.CreateColumnDefinition} NULL,\n");
+				ddl.Append($"	\"{c.ColumnName}\" {pgType.CreateColumnDefinition} NULL,\n");
 
 			}
 			// Remove the trailing ","
 			ddl.Length -= 2;
 
-			ddl.Append("\n)");
+			ddl.Append("\n);");
+
+			// Create a BRIN index on it for fast range queries (since thats what we do most of)
+			ddl.Append($"CREATE INDEX \"idx_{tbl.TableName}\" ON \"{tbl.SchemaName}\".\"{tbl.TableName}\" USING BRIN (\"{tbl.TableName}_at\");");
+
 
 			return ExecuteCommand(ddl.ToString());
 		}
 
 		public bool ExecuteCommand(string sql) {
-			using (var cn = _getConnection()) {
+			using (var cn = _connectionFactory()) {
 				using (var cmd = new NpgsqlCommand(sql, cn)) {
 					cmd.ExecuteNonQuery();
 				}
@@ -166,13 +188,13 @@ namespace GrowingData.Mung.SqlBatch {
 				// Add the new column...
 				if (existing == null) {
 					fromTbl.Columns.Add(c);
-					var pgType = PostgresqlDbTypeConverter.Types.FirstOrDefault(t => t.MungType == c.ColumnType);
+					var pgType = PostgresqlDbTypeConverter.Get(c.MungType);
 					string ddl = $"ALTER TABLE \"{Schema}\".\"{fromTbl.TableName}\" ADD \"{c.ColumnName}\" {pgType.CreateColumnDefinition} NULL";
 					ExecuteCommand(ddl);
 				} else {
-					if (c.ColumnType != existing.ColumnType) {
-						var newType = MungType.ExpandType(existing.ColumnType, c.ColumnType);
-						var pgType = PostgresqlDbTypeConverter.Types.FirstOrDefault(t => t.MungType == newType);
+					if (c.MungType != existing.MungType) {
+						var newType = MungType.ExpandType(existing.MungType, c.MungType);
+						var pgType = PostgresqlDbTypeConverter.Get(newType);
 						string ddl = $"ALTER TABLE \"{Schema}\".\"{fromTbl.TableName}\" ALTER COLUMN \"{c.ColumnName}\" TYPE {pgType.CreateColumnDefinition}";
 
 						ExecuteCommand(ddl);

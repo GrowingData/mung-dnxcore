@@ -1,0 +1,72 @@
+﻿@{
+	ViewBag.Title = "Queries";
+
+	var queries = ViewBag.Queries as List<Query>;
+}
+<div class="row">
+	<div class="col-sm-12">
+		<div class="mung-section">
+			<div class="section-header">
+				<button type="button" class="btn btn-md green-bg pull-right add-query-button">+ Add query</button>
+				<h2> Queries</h2>
+				<p>
+					Create references to SQL queries which you can then reuse in
+					Dashboards &amp; Notifications.
+				</p>
+			</div>
+
+			<ul class="link-list list-unstyled">
+				@foreach (var n in queries) {
+				<li>
+					<a href="/mung?open=@n.ResourceUrl" class="btn btn-sm blue-bg">Edit</a>
+
+					@n.Name
+
+				</li>
+
+				}
+			</ul>
+
+
+		</div>
+
+	</div>
+
+</div>
+<div class="query-template" style="display:none;">
+USE mung_events;
+
+SELECT * 
+FROM mung.all
+ORDER BY at DESC
+LIMIT 100;
+
+</div>
+
+
+<script type="text/javascript">
+	MUNG.ready(function () {
+
+		$(".add-query-button").click(function () {
+			var r = Math.random().toString().split(".")[1].substr(0, 6);
+			var resourceUrl = "/Query/new-query-" + r + ".sql";
+
+			$.ajax({
+				url: "/api/file-system" + resourceUrl,
+				data: {
+					"data": $(".query-template").html()
+				},
+				method: "PUT",
+				success: function (response) {
+					if (response.Success) {
+						document.location = "/mung?open=" + response.ResourceUrl;
+					}
+				}
+			});
+
+		});
+
+
+	});
+
+</script>

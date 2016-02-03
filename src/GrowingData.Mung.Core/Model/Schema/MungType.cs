@@ -40,19 +40,19 @@ namespace GrowingData.Mung.Core {
 		}
 
 		public bool Equals(MungType x, MungType y) {
-			return x.DatabaseType == y.DatabaseType;
+			return x.Code == y.Code;
 		}
 
 		public int GetHashCode(MungType obj) {
-			return obj.DatabaseType.GetHashCode();
+			return obj.Code.GetHashCode();
 		}
 
 		public int CompareTo(object obj) {
-			return DatabaseType.CompareTo((obj as MungType).DatabaseType);
+			return Code.CompareTo((obj as MungType).Code);
 		}
 
 		public int CompareTo(MungType other) {
-			return DatabaseType.CompareTo(other.DatabaseType);
+			return Code.CompareTo(other.Code);
 		}
 
 
@@ -98,7 +98,11 @@ namespace GrowingData.Mung.Core {
 			new MungType(MungTypeCode.Double, typeof(double), DbType.Double ),
 			new MungType(MungTypeCode.Decimal, typeof(decimal), DbType.Decimal ),
 
+			new MungType(MungTypeCode.Double, typeof(float), DbType.Single ),
 			new MungType(MungTypeCode.Integer, typeof(long), DbType.Int64 ),
+			new MungType(MungTypeCode.Integer, typeof(byte), DbType.Byte ),
+			new MungType(MungTypeCode.Integer, typeof(short), DbType.Int32 ),
+			new MungType(MungTypeCode.Integer, typeof(int), DbType.Int32 ),
 			new MungType(MungTypeCode.Guid, typeof(Guid), DbType.Guid )
 		};
 

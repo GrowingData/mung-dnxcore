@@ -111,7 +111,7 @@ namespace GrowingData.Mung.Core {
 				FieldNumber = fieldIndex
 			};
 
-			return MsvConverter.Read(val, _columns[fieldIndex].ColumnType.DatabaseType, readerState);
+			return MsvConverter.Read(val, _columns[fieldIndex].MungType.DatabaseType, readerState);
 
 		}
 
@@ -138,7 +138,7 @@ namespace GrowingData.Mung.Core {
 		}
 
 		public override string GetDataTypeName(int ordinal) {
-			return _columns[ordinal].ColumnType.ToString();
+			return _columns[ordinal].MungType.ToString();
 		}
 
 		public override DateTime GetDateTime(int ordinal) {
