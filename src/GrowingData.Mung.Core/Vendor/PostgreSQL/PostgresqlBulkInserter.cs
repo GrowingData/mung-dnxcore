@@ -124,19 +124,19 @@ namespace GrowingData.Mung.Core {
 			foreach (var c in tbl.Columns) {
 				var pgType = PostgresqlDbTypeConverter.Get(c.MungType);
 
-				if (c.ColumnName == tbl.TableName + "_id") {
+				if (c.ColumnName == "_id_") {
 					ddl.Append($"	\"{c.ColumnName}\" {pgType.CreateColumnDefinition} NOT NULL PRIMARY KEY,\n");
 					continue;
 				}
-				if (c.ColumnName == tbl.TableName + "_at") {
+				if (c.ColumnName == "_at_") {
 					ddl.Append($"	\"{c.ColumnName}\" {pgType.CreateColumnDefinition} NOT NULL,\n");
 					continue;
 				}
-				if (c.ColumnName == tbl.TableName + "_source") {
+				if (c.ColumnName == "_source_") {
 					ddl.Append($"	\"{c.ColumnName}\" {pgType.CreateColumnDefinition} NOT NULL,\n");
 					continue;
 				}
-				if (c.ColumnName == tbl.TableName + "_app") {
+				if (c.ColumnName == "_app_") {
 					ddl.Append($"	\"{c.ColumnName}\" {pgType.CreateColumnDefinition} NOT NULL,\n");
 					continue;
 				}
