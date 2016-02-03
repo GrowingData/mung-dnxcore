@@ -38,7 +38,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 			var connections = Connection.List();
 			var oldMung = connections.FirstOrDefault(c => c.Name == "gooroo_log");
 			var newMung = connections.FirstOrDefault(c => c.Name == "mung_events");
-			var sql = @"SELECT 'SELECT ' + mung.column_list(t.object_id) + ' FROM dyn.' + t.name AS query, t.name as name
+			var sql = @"SELECT 'SELECT ' + mung.column_list(t.object_id) + ' FROM dyn.[' + t.name + ']' AS query, t.name as name
 FROM sys.tables t
 WHERE schema_id=5
 ORDER BY t.name";

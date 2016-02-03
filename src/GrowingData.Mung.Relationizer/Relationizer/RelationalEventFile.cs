@@ -97,14 +97,14 @@ namespace GrowingData.Mung.Relationizer {
 
 		public void WriteHeader(StreamWriter writer, SortedList<string, DbColumn> schema) {
 			var columns = new List<DbColumn>();
-			columns.Add(new DbColumn(_eventName + "_id", MungType.Get(typeof(string))));
+			columns.Add(new DbColumn("_id_", MungType.Get(typeof(string))));
 			if (_parentEvent != null) {
-				columns.Add(new DbColumn(_parentEvent + "_id", MungType.Get(typeof(string))));
+				columns.Add(new DbColumn("_pid_", MungType.Get(typeof(string))));
 			}
 
-			columns.Add(new DbColumn(_eventName + "_at", MungType.Get(typeof(DateTime))));
-			columns.Add(new DbColumn(_eventName + "_source", MungType.Get(typeof(string))));
-			columns.Add(new DbColumn(_eventName + "_app", MungType.Get(typeof(string))));
+			columns.Add(new DbColumn("_at_", MungType.Get(typeof(DateTime))));
+			columns.Add(new DbColumn("_source_", MungType.Get(typeof(string))));
+			columns.Add(new DbColumn("_app_", MungType.Get(typeof(string))));
 
 
 			foreach (var c in schema.Values) {
@@ -117,14 +117,14 @@ namespace GrowingData.Mung.Relationizer {
 		public void WriteRow(StreamWriter writer, SortedList<string, DbColumn> schema, RelationalEvent evt) {
 			lock (_locker) {
 				var values = new Dictionary<string, object>();
-				values.Add(evt.Name + "_id", evt.Id);
+				values.Add("_id_", evt.Id);
 				if (evt.ParentType != null) {
-					values.Add(evt.ParentType + "_id", evt.ParentId);
+					values.Add("_pid_", evt.ParentId);
 
 				}
-				values.Add(evt.Name + "_at", evt.LogTime);
-				values.Add(evt.Name + "_source", evt.Source);
-				values.Add(evt.Name + "_app", evt.AppId);
+				values.Add("_at_", evt.LogTime);
+				values.Add("_source_", evt.Source);
+				values.Add("_app_", evt.AppId);
 
 				foreach (var kv in evt.Values) {
 					values.Add(kv.Key, kv.Value);
