@@ -97,7 +97,7 @@ namespace GrowingData.Mung.Web.Models {
 					SELECT *, D.name AS DashboardName
 					FROM graph G 
 					INNER JOIN dashboard D
-					ON G.dashboard_id = G.dashboard_id
+					ON G.dashboard_id = D.dashboard_id
 					WHERE D.dashboard_id = @DashboardId";
 				var components = cn.ExecuteAnonymousSql<Graph>(sql, this);
 				return components;

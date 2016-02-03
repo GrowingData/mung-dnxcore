@@ -41,7 +41,7 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 		}
 
 		[Route("api/query")]
-		//[HttpPost]
+		[HttpPost]
 		public ActionResult Query(string sql, string format) {
 
 			var parameters = Request.Query.ToDictionary(q => q.Key, q => q.Value as object);
@@ -115,6 +115,8 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 		public void WriteJson(string sql, Dictionary<string, object> parameters) {
 
 			Response.ContentType = "application/json";
+			int rowNumber = 0;
+
 			using (var writer = new StreamWriter(Response.Body)) {
 				using (var jsonWriter = new JsonTextWriter(writer)) {
 					jsonWriter.WriteStartObject();
@@ -122,10 +124,24 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 					jsonWriter.WritePropertyName("Success");
 					jsonWriter.WriteValue(true);
 
-					jsonWriter.WritePropertyName("Rows");
-					jsonWriter.WriteStartArray();
 
 					var query = MungQuery.Execute(sql, parameters, (row) => {
+						if (rowNumber == 0) {
+
+							jsonWriter.WritePropertyName("ColumnNames");
+							jsonWriter.WriteStartArray();
+
+							for(var i =0; i < row.FieldCount; i++) {
+								jsonWriter.WriteValue(row.GetName(i));
+							}
+							jsonWriter.WriteEndArray();
+
+							jsonWriter.WritePropertyName("Rows");
+							jsonWriter.WriteStartArray();
+						}
+						
+						rowNumber++;
+
 						jsonWriter.WriteStartObject();
 
 						for (var i = 0; i < row.FieldCount; i++) {

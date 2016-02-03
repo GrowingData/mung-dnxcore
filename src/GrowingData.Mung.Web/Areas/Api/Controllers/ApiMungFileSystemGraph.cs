@@ -134,8 +134,8 @@ namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 			var newPath = Request.Form["newPath"].ToString();
 			var newPathParts = newPath.Split('/');
 
-			var newDashboardName = newPathParts[4];
-			var newGraphName = newPathParts[5];
+			var newDashboardName = newPathParts[2];
+			var newGraphName = newPathParts[3];
 
 			var newDashboard = Dashboard.Get(newDashboardName);
 			if (newDashboard == null) {
@@ -143,7 +143,7 @@ namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 			}
 
 			graph.DashboardId = newDashboard.DashboardId;
-			graph.Name = newDashboard.Name;
+			graph.Name = newGraphName;
 
 			graph.Save(newDashboard);
 			return Json(new { Success = true, Message = "Success", IsNew = false });

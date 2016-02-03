@@ -16,7 +16,7 @@ ORDER BY date ASC
 
 <script type="text/javascript">    
     MUNG.graphReady(function($graph, dashboard){
-        MUNG.Sql.execute( $graph.find("sql").text(), "Mung Events (SQL)", function(data){
+    	MUNG.Query.execute($graph.find("sql").text(), null, function (data) {
             
             $graph.find(".chart-holder").mungChartDateLine(data, {
                 dateColumn: "date", 
@@ -24,7 +24,8 @@ ORDER BY date ASC
                   {name: "cpu_percent", color: "#659eeb"},
                   {name: "ram_percent", color: "#87b56c"}
                 ], 
-                yFormatter: function(d) { return parseInt(d); }
+                yFormatter: function (d) { return parseInt(d); },
+                xFormatter: d3.time.format("%Y-%m-%d")
             });
             
         });

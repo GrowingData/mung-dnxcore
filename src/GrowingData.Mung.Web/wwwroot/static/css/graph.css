@@ -49,9 +49,15 @@
 		line-height: 24px;
 	}
 
-	.graph sql{
-		display:none;
-	}
+.graph sql {
+	display: none;
+}
+
+.graph-inner-scroll {
+	overflow: scroll;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
 
 .grid-stack > .grid-stack-item > .grid-stack-item-content {
 	overflow-y: hidden;

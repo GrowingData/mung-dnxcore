@@ -11,7 +11,7 @@
 
 <script type="text/javascript">    
     MUNG.graphReady(function($graph, dashboard){
-        MUNG.Sql.execute( $graph.find("sql").text(), "Mung Events (SQL)", function(r){
+        MUNG.Query.execute( $graph.find("sql").text(), null, function(r){
 	       $graph.find(".mung-table-binder").mungTableBinder(r);
         });
     });

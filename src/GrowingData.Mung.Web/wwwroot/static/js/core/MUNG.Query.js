@@ -24,6 +24,30 @@ MUNG.Query = new function () {
 			iframe.contents().find("." + callbackPrefix).submit();
 		});
 	}
+	
+	self.execute = function (sql, parameters, callback, errorCallback) {
+		$.ajax({
+			url: "/api/query",
+			data: { 
+				sql: sql, 
+				parameters: parameters, 
+				format: "json"
+			},
+			method: "POST",
+			success: function (r) {
+				if (r.ErrorMessage) {
+					if (errorCallback) {
+						errorCallback(r);
+					}
+				} else {
+					callback(r);
+				}
+			},
+			error: function (r) {
+
+			}
+		});
+	}
 
 	self.stream = function (sql, rowCallback, completeCallback, errorCallback) {
 		var r = getRandomString();
@@ -31,12 +55,14 @@ MUNG.Query = new function () {
 		MUNG.Callbacks.bind(callbackPrefix, rowCallback, completeCallback);
 		iFrameAjax(sql, format);
 	}
-	self.countRows = function (sql, rowCallback, completeCallback, errorCallback) {
+
+	self.streamRowCount = function (sql, rowCallback, completeCallback, errorCallback) {
 		var r = getRandomString();
 		var format = "jsonp_count_" + r;
 		MUNG.Callbacks.bind(callbackPrefix, rowCallback, completeCallback);
 		iFrameAjax(sql, format);
 	}
+
 }();
 
 MUNG.Callbacks = new function () {

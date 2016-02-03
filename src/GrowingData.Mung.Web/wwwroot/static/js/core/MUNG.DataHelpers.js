@@ -41,15 +41,27 @@ MUNG.DataHelpers = {
 
 	parseDate: function (input) {
 		if (input.indexOf('T') > 0) {
+			//	"2015-11-06T00:00:00+11:00"
 			var dateInput = input.split('T')[0];
 			var timeInput = input.split('T')[1];
 
 			var dateParts = dateInput.split('-');
 			var timeParts = timeInput.split(":");
 
+			var year = parseInt(dateParts[0]);
+			var month = parseInt(dateParts[1]);
+			var day = parseInt(dateParts[2]);
+
+			var hour = parseInt(timeParts[0].split("+")[0]); // No time zone thanks
+			var minute = parseInt(timeParts[1]);
+			var second = parseInt(timeParts[2]);
 			// Note: months are 0-based
-			return new Date(dateParts[0], dateParts[1] - 1, dateParts[2], timeParts[0], timeParts[1], timeParts[2]); 
+			return new Date(
+				year, month - 1, day,
+				hour, minute, second
+			);
 		}
+
 		var parts = input.split('-');
 		// new Date(year, month [, day [, hours[, minutes[, seconds[, ms]]]]])
 		return new Date(parts[0], parts[1] - 1, parts[2]); // Note: months are 0-based

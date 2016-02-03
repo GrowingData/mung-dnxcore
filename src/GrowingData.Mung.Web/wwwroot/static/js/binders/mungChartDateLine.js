@@ -89,6 +89,13 @@
 				chart.yAxis.tickFormat(function (d) {
 					return settings.yFormatter(d);
 				});
+
+				if (settings.xFormatter) {
+					chart.xAxis.tickFormat(function (d) {
+						return settings.xFormatter(new Date(d));
+					});
+				}
+
 				//chart.showLegend(0);
 				chart.margin({ top: 8, right: 24, bottom: 24, left: 48 })
 
