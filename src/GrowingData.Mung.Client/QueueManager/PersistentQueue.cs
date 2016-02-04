@@ -7,22 +7,21 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Diagnostics;
 
 namespace GrowingData.Mung.Client {
 	internal class PersistentQueueEvent {
 		public MungEvent Event;
-		public string FileName;
-		public long FilePosition;
 		public int RetryCount = 0;
 	}
 
 	internal class PersistentQueue {
 		private object _fileLock = new object();
+		private const string FailedBatchPrefix = "failed-batch";
 
 		private string _basePath;
 		private MungTransport _connection;
 		private ConcurrentQueue<PersistentQueueEvent> _eventQueue;
-		private Dictionary<string, PersistentFileHandle> _files;
 
 		internal PersistentQueue(MungTransport connection) {
 			_connection = connection;
@@ -37,95 +36,70 @@ namespace GrowingData.Mung.Client {
 				Directory.CreateDirectory(logPath);
 			}
 			_basePath = logPath;
-			_files = new Dictionary<string, PersistentFileHandle>();
 
 			Task.Run(() => ProcessQueue());
+			Task.Run(() => CheckFailedEvents());
 			//Task.Run(() => CheckOldOpenFiles());
 		}
 
-		public static string GetFilename(string name) {
-
-			var fileName = string.Format("{0}-{1}.log",
-				name,
-				DateTime.UtcNow.ToString("yyyy-MM-dd.HH")
+		public static string GetErrorFilename() {
+			var fileName = string.Format("{0}-{1}-{2}.log",
+				FailedBatchPrefix,
+				DateTime.UtcNow.ToString("yyyy-MM-ddTHH-mm-ss"),
+				RandomString.Get(6)
 			);
 
 			return fileName;
-		}
-		public static string GetFilename() {
-			return GetFilename("mung-events");
 		}
 
 
 		public void Send(MungEvent evt) {
 			var wrapped = new PersistentQueueEvent() {
 				Event = evt,
-				FileName = Path.Combine(_basePath, GetFilename()),
-				FilePosition = -1
+				RetryCount = 0
 			};
-			// Write it to our log
-			WriteEvent(wrapped);
+
 
 			// Then write it to the actual queue.
 			_eventQueue.Enqueue(wrapped);
 
 		}
 
-		public void WriteEvent(PersistentQueueEvent evt) {
-			PersistentFileHandle handle = GetFileHandleLocked(evt);
-			handle.WriteEvent(evt);
-		}
-
-		public void SetEventComplete(PersistentQueueEvent evt) {
-			PersistentFileHandle handle = GetFileHandleLocked(evt);
-			handle.SetEventComplete(evt);
-		}
-
-		private PersistentFileHandle GetFileHandleLocked(PersistentQueueEvent evt) {
-			PersistentFileHandle handle = null;
-			lock (_fileLock) {
-				if (_files.ContainsKey(evt.FileName)) {
-					handle = _files[evt.FileName];
-				} else {
-					handle = new PersistentFileHandle(evt.FileName);
-					_files[evt.FileName] = handle;
-				}
-			}
-			return handle;
-		}
-
 		public void WaitUntilQueueEmpty() {
 			while (_eventQueue.Count > 0) {
-				Thread.Sleep(10);
+				Thread.Sleep(100);
 			}
 		}
-
-
-		private void CheckOldOpenFiles() {
-
+		private void CheckFailedEvents() {
 			while (true) {
-				var currentFile = GetFilename();
-				var toRemove = new List<string>();
-				foreach (var k in _files.Keys) {
-					if (k != currentFile) {
-						toRemove.Add(k);
-					}
-				}
-				lock (_fileLock) {
-					foreach (var key in toRemove) {
-						_files.Remove(key);
-					}
-				}
+				Thread.Sleep(60 * 1000);
+
+				try {
+					var failedFiles = Directory.GetFiles(_basePath, FailedBatchPrefix + "*");
+					foreach (var file in failedFiles) {
+						Debug.WriteLine("Found failed events at: " + _basePath);
+
+						var json = File.ReadAllText(file);
+
+						List<PersistentQueueEvent> retryEvents = JsonConvert.DeserializeObject<List<PersistentQueueEvent>>(json);
 
 
-				Thread.Sleep(1000 * 60);
+						foreach (var evt in retryEvents) {
+							evt.RetryCount = 0;
+							_eventQueue.Enqueue(evt);
+						}
+						File.Delete(file);
+
+						Debug.WriteLine("Queued old events and deleted: " + _basePath);
+					}
+				} catch (Exception ex) {
+
+				}
 			}
-
-
 		}
 
 		private void ProcessQueue() {
-			Console.WriteLine("Processing queue on thread: " + Thread.CurrentThread.ManagedThreadId);
+			Debug.WriteLine("Processing queue on thread: " + Thread.CurrentThread.ManagedThreadId);
 			while (true) {
 				PersistentQueueEvent msg;
 
@@ -135,23 +109,37 @@ namespace GrowingData.Mung.Client {
 				}
 				if (batch.Count > 0) {
 					try {
-						Console.WriteLine("Sending batch of: " + batch.Count.ToString() + " events:");
+						Debug.WriteLine("Sending batch of: " + batch.Count.ToString() + " events:");
 
 						if (_connection.Send(batch.Select(x => x.Event))) {
-							// Mark these events as having been sent
-							foreach (var evt in batch) {
-								SetEventComplete(evt);
-							}
-							Console.WriteLine("Batch sent and marked complete.");
+							Debug.WriteLine(string.Format("Sent batch of {0} events", batch.Count));
 						} else {
-							foreach (var evt in batch) {
-								_eventQueue.Enqueue(evt);
+							var retry = batch.Where(e => e.RetryCount < 10).ToList();
+							var failed = batch.Where(e => e.RetryCount >= 10).ToList();
+							if (retry.Count > 0) {
+								foreach (var evt in retry) {
+									evt.RetryCount++;
+									_eventQueue.Enqueue(evt);
+								}
+								Debug.WriteLine(string.Format("Batch send failed, requeued {0} events", retry.Count));
 							}
-							Console.WriteLine("Batch send failed, re-queuing for later");
+
+							if (failed.Count > 0) {
+								foreach (var evt in retry) {
+									evt.RetryCount++;
+								}
+								var failedJson = JsonConvert.SerializeObject(failed);
+								var failedPath = Path.Combine(_basePath, GetErrorFilename());
+
+								File.WriteAllText(failedPath, failedJson);
+								Debug.WriteLine(string.Format("Batch send failed, wrote {0} events to file {1}", retry.Count, failedPath));
+							}
+
 						}
 
 					} catch (Exception ex) {
-						Console.WriteLine(string.Format("MUNG: Unable to send event: {0}", ex.Message));
+						// Write the 
+						Debug.WriteLine(string.Format("MUNG: Unable to send event: {0}", ex.Message));
 					}
 				}
 				Thread.Sleep(100);

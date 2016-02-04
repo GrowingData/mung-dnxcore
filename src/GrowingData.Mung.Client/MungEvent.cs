@@ -9,7 +9,7 @@ namespace GrowingData.Mung.Client {
 
 
 		public DateTime LogTime;
-		public object Data;
+		public dynamic Data;
 		public string Type;
 		public string Source;
 

@@ -4,12 +4,30 @@ using System.Linq;
 using System.Net;
 using System.IO;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using JWT;
 
 namespace GrowingData.Mung.Client {
+	public class NewtonsoftJsonSerializer : IJsonSerializer {
+		public static NewtonsoftJsonSerializer Instance = new NewtonsoftJsonSerializer();
+
+		public string Serialize(object obj) {
+			// Implement using favorite JSON Serializer
+			return JsonConvert.SerializeObject(obj);
+		}
+
+		public T Deserialize<T>(string json) {
+			// Implement using favorite JSON Serializer
+			return JsonConvert.DeserializeObject<T>(json);
+		}
+	}
+
 	internal class MungJwtTransport : MungTransport {
 		public MungJwtTransport(string host, string appKey, string appSecret) :
-		base(host, appKey, appSecret) {
+			base(host, appKey, appSecret) {
+
+			JsonWebToken.JsonSerializer = NewtonsoftJsonSerializer.Instance;
+
 			_Host = host;
 			_AppKey = appKey;
 			_AppSecret = appSecret;
@@ -29,8 +47,8 @@ namespace GrowingData.Mung.Client {
 
 
 		private bool SendRequest(string jwt) {
-		
-			
+
+
 			try {
 				byte[] bytes = System.Text.Encoding.UTF8.GetBytes(jwt);
 
@@ -73,7 +91,7 @@ namespace GrowingData.Mung.Client {
 				} catch {
 					// Ignore an exception trying to get the data
 				}
-				
+
 
 				return false;
 			}

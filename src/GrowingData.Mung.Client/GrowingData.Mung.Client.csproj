@@ -56,9 +56,8 @@
     <Compile Include="MungClient.cs" />
     <Compile Include="MungEvent.cs" />
     <Compile Include="Performance\AppPerformance.cs" />
-    <Compile Include="QueueManager\PersistentFileHandle.cs" />
     <Compile Include="QueueManager\PersistentQueue.cs" />
-    <Compile Include="QueueManager\TimeStampedFile.cs" />
+    <Compile Include="RandomString.cs" />
     <Compile Include="Worker\BackgroundWorker.cs" />
     <Compile Include="Transports\MungSignalRTransport.cs" />
     <Compile Include="Transports\MungJwtTransport.cs" />

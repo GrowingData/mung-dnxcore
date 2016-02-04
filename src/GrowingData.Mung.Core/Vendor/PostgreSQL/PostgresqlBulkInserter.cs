@@ -45,7 +45,12 @@ namespace GrowingData.Mung.Core {
 						for (var i = 0; i < table.Columns.Count; i++) {
 							var col = table.Columns[i];
 							if (actualColumns.Contains(col.ColumnName)) {
-								writer.Write(reader[col.ColumnName], pgTypes[i]);
+								var val = reader[col.ColumnName];
+								if (val == DBNull.Value) {
+									writer.WriteNull();
+								} else {
+									writer.Write(reader[col.ColumnName], pgTypes[i]);
+								}
 							} else {
 								writer.WriteNull();
 							}

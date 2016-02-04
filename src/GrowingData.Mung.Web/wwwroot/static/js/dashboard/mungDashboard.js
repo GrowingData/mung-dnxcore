@@ -7,7 +7,7 @@
 		var self = this;
 
 		self.model = model;
-		self.poller = MUNG.LongPoll();
+		self.streamer = MUNG.LongPoll();
 		self.graphMap = {};
 
 		//self.componentPopup = $("#edit-graph").mungGraphEditor(self);
