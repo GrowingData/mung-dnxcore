@@ -24,21 +24,6 @@ namespace GrowingData.Mung.Web.Areas.Auth.Controllers {
 			return View();
 		}
 
-		[Route("apps/create")]
-		[HttpPost]
-		public ActionResult Create(string name) {
-
-			if (CurrentUser == null || !CurrentUser.IsAdmin) {
-				return Redirect(Urls.LOGIN);
-			}
-
-			var app = new App(name, CurrentUser.MungerId);
-
-			app.Insert();
-
-			return Redirect("/apps");
-		}
-
 
 	}
 }

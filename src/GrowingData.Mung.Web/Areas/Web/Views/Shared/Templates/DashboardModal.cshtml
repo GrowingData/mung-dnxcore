@@ -50,6 +50,11 @@
 					$("#add-dashboard-modal").modal('hide');
 				});
 
+				$('#add-dashboard-modal').on('shown.bs.modal', function () {
+					$("#add-dashboard-modal .dashboard-title").focus();
+				})
+
+
 				$(".add-dashboard-button").click(function () {
 					$("#add-dashboard-modal").modal('show');
 				});

@@ -11,31 +11,53 @@
 
 				</h4>
 			</div>
-			<form method="post" action="/app/create" id="form-create-app">
-				<div class="modal-body">
-					<input type="text" class="dashboard-title" placeholder="Enter a name for your app" />
-				</div>
-				<div class="modal-footer">
-					<button type="button" class="btn btn-default left btn-close">Close</button>
-					<button type="button" class="btn right btn-save green-bg">Create app</button>
-				</div>
-			</form>
+			<div class="modal-body">
+				<input type="text" class="app-title" placeholder="Enter a name for your app" />
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default left btn-close">Close</button>
+				<button type="button" class="btn right btn-save green-bg">Create app</button>
+			</div>
 		</div>
 
 
 		<script type="text/javascript">
 			MUNG.ready(function () {
 				$("#add-app-modal .btn-save").click(function () {
-					$("#form-create-app").submit();
+
+					$(this).text("Saving...");
+					$.ajax({
+						url: "/api/app/create",
+						data: {
+							"name": $(".app-title").val()
+						},
+						method: "POST",
+						success: function (response) {
+							document.location.reload()
+							$(this).text("Saved! Preparing...");
+							setTimeout(function () { $("#add-app-modal").modal('hide'); }, 1000);
+
+						},
+						error: function (a, b, c, d) {
+							$(this).text("Oops...");
+							console.error("Error: mungGraph.appSave", { a: a, b: b, c: c, d: d });
+						}
+					});
+
+
 				});
 
 				$("#add-app-modal .btn-close").click(function () {
-					$("#add-dashboard-modal").modal('hide');
+					$("#add-app-modal").modal('hide');
 					return false;
 				});
 
+				$('#add-app-modal').on('shown.bs.modal', function () {
+					$("#add-app-modal .app-title").focus();
+				})
+
 				$(".add-app-button").click(function () {
-					$("#add-dashboard-modal").modal('show');
+					$("#add-app-modal").modal('show');
 				});
 			});
 		</script>
