@@ -71,13 +71,35 @@ define(function (require, exports, module) {
 		var code = _editor.document.getText();
 		$queryResultsHolder.empty();
 
-		MUNG.Query.stream(code, function (r) {
-				$queryResultsHolder.html(JSON.stringify(r));
-			},
-			function () {
-				alert("complete")
+
+		var table = $("<table>")
+			.addClass("mung-table table")
+			.appendTo($queryResultsHolder);
+
+		var isFirst = true;
+		MUNG.Query.stream(code, function (row) {
+			if (isFirst) {
+				var header = $("<tr>").appendTo(table);
+				for (var k in row) {
+					$("<th>").text(k).appendTo(header);
+				}
+				isFirst = false;
 			}
-		);
+
+			var tr = $("<tr>").appendTo(table);
+			for (var k in row) {
+				$("<td>").text(row[k]).appendTo(tr);
+			}
+		},
+		function () {
+
+		},
+		function (err) {
+			$queryResultsHolder.empty();
+
+			$("<div>").addClass("error").text(err.Message).appendTo($queryResultsHolder);
+
+		});
 
 		//$.ajax({
 		//	url: "/api/query",

@@ -129,7 +129,9 @@ namespace GrowingData.Mung.Web.Models {
 				using (var cmd = sourceCn.CreateCommand(sql, parameters)) {
 					using (var reader = cmd.ExecuteReader()) {
 						while (reader.Read()) {
-							eachRow(reader);
+							if (eachRow != null) {
+								eachRow(reader);
+							}
 						}
 
 					}

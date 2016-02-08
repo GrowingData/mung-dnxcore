@@ -69,14 +69,19 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 				writer.Write("<html><body>");
 
 				int rowCount = 0;
-				var query = MungQuery.Execute(sql, parameters, (row) => {
-					rowCount++;
-					if (rowCount % mod == 0) {
-						writer.Write($"<script type=\"text/javascript\">parent.MUNG.Callbacks.get(\"{format}\").row({rowCount});</script>\n");
-						Response.Body.Flush();
+				try {
+					var query = MungQuery.Execute(sql, parameters, (row) => {
+						rowCount++;
+						if (rowCount % mod == 0) {
+							writer.Write($"<script type=\"text/javascript\">parent.MUNG.Callbacks.get(\"{format}\").row({rowCount});</script>\n");
+							Response.Body.Flush();
 
-					}
-				});
+						}
+					});
+				} catch (Exception ex) {
+					WriteStreamException(sql, format, ex, writer);
+					return;
+				}
 
 				writer.Write($"<script type=\"text/javascript\">parent.MUNG.Callbacks.get(\"{format}\").complete();</script>\n");
 				writer.Write("</body></html>");
@@ -89,29 +94,49 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 			using (var writer = new StreamWriter(Response.Body)) {
 				using (var jsonWriter = new JsonTextWriter(writer)) {
 					writer.Write("<html><body>");
-					var query = MungQuery.Execute(sql, parameters, (row) => {
+					try {
+						var query = MungQuery.Execute(sql, parameters, (row) => {
 
-						writer.Write($"<script type=\"text/javascript\">parent.MUNG.Callbacks.get(\"{format}\").row(");
-						jsonWriter.WriteStartObject();
-						for (var i = 0; i < row.FieldCount; i++) {
-							jsonWriter.WritePropertyName(row.GetName(i));
-							var val = row[i];
-							if (val == DBNull.Value) {
+							writer.Write($"<script type=\"text/javascript\">parent.MUNG.Callbacks.get(\"{format}\").row(");
+							jsonWriter.WriteStartObject();
+							for (var i = 0; i < row.FieldCount; i++) {
+								jsonWriter.WritePropertyName(row.GetName(i));
+								var val = row[i];
+								if (val == DBNull.Value) {
 
-								jsonWriter.WriteNull();
-							} else {
-								jsonWriter.WriteValue(val);
+									jsonWriter.WriteNull();
+								} else {
+									jsonWriter.WriteValue(val);
+								}
 							}
-						}
-						jsonWriter.WriteEndObject();
-						writer.Write(");</script>\n");
-						Response.Body.Flush();
-					});
+							jsonWriter.WriteEndObject();
+							writer.Write(");</script>\n");
+							Response.Body.Flush();
+						});
+					} catch (Exception ex) {
+						WriteStreamException(sql, format, ex, writer);
+						return;
+					}
 					writer.Write($"<script type=\"text/javascript\">parent.MUNG.Callbacks.get(\"{format}\").complete();</script>\n");
 					writer.Write("</body></html>");
 				}
 			}
 		}
+
+		public void WriteStreamException(string sql, string format, Exception ex, StreamWriter writer) {
+			var errorObj = new {
+				Message = ex.Message,
+				Sql = sql
+			};
+			var errorJson = JsonConvert.SerializeObject(errorObj);
+
+			writer.Write($"<script type=\"text/javascript\">parent.MUNG.Callbacks.get(\"{format}\").error({errorJson});</script>\n");
+			Response.Body.Flush();
+			writer.Write("</body></html>");
+			writer.Write("</body></html>");
+			return;
+		}
+
 		public void WriteJson(string sql, Dictionary<string, object> parameters) {
 
 			Response.ContentType = "application/json";
@@ -131,7 +156,7 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 							jsonWriter.WritePropertyName("ColumnNames");
 							jsonWriter.WriteStartArray();
 
-							for(var i =0; i < row.FieldCount; i++) {
+							for (var i = 0; i < row.FieldCount; i++) {
 								jsonWriter.WriteValue(row.GetName(i));
 							}
 							jsonWriter.WriteEndArray();
@@ -139,7 +164,7 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 							jsonWriter.WritePropertyName("Rows");
 							jsonWriter.WriteStartArray();
 						}
-						
+
 						rowNumber++;
 
 						jsonWriter.WriteStartObject();

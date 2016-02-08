@@ -45,12 +45,14 @@ namespace GrowingData.Mung.Web {
 		private NotificationProcessor _notificationsProcessor;
 		private JsonPostgresProcessor _jsonPostgresProcessor;
 		private RelationalEventProcessor _relationalEventProcessor;
+		private QueryEventProcessor _queryEventProcessor;
 
 		public EventPipeline Pipeline { get { return _pipeline; } }
 		public LongPollingProcessor LongPollProcessor { get { return _longPollProcessor; } }
 		public NotificationProcessor NotificationProcessor { get { return _notificationsProcessor; } }
 		public JsonPostgresProcessor JsonPostgresProcessor { get { return _jsonPostgresProcessor; } }
 		public RelationalEventProcessor RelationalEventProcessor { get { return _relationalEventProcessor; } }
+		public QueryEventProcessor QueryEventProcessor { get { return _queryEventProcessor; } }
 
 		private IHostingEnvironment _env;
 		private string _dataPath;
@@ -98,24 +100,35 @@ namespace GrowingData.Mung.Web {
 			_notificationsProcessor = new NotificationProcessor();
 			_longPollProcessor = new LongPollingProcessor();
 			_jsonPostgresProcessor = new JsonPostgresProcessor(() => DatabaseContext.Db.Events() as NpgsqlConnection);
+			_queryEventProcessor = new QueryEventProcessor();
 
 			_pipeline.AddProcessor(_relationalEventProcessor);
 			_pipeline.AddProcessor(_longPollProcessor);
 			_pipeline.AddProcessor(_notificationsProcessor);
 			_pipeline.AddProcessor(_jsonPostgresProcessor);
+			_pipeline.AddProcessor(_queryEventProcessor);
+
+
+			// Make sure that we have loaded all the settings the app needs
+			Setting.InitializeSettings();
+
+
+			// Check to see if we have an "apps" yet, if not create one
+			App.InitializeApps();
 
 
 			// Set the serializer for our JWT
 			JwtHelper.InitializeJsonSerialization();
 
-			// Make sure that we have loaded all the settings the app needs
-			Setting.InitializeSettings();
-
-			// Check to see if we have an "apps" yet, if not create one
-			App.InitializeApps();
-
 			// Make sure that we have a reference to the Mung Events connection
 			Connection.InitializeConnection();
+
+
+			ProcessInternalEvent("mung_init", new {
+				message = "Pipelines initialized",
+				data_path = _dataPath,
+				base_path = _basePath
+			});
 
 			Func<NpgsqlConnection> pg = () => { return DatabaseContext.Db.Events() as NpgsqlConnection; };
 
@@ -131,6 +144,22 @@ namespace GrowingData.Mung.Web {
 					Console.WriteLine(ex.Message);
 				}
 			});
+
+			BackgroundWorker.Start(new TimeSpan(0, 0, 0, 60), () => {
+				// Fire an event each minute to be used for running periodic EventProcessors
+				var now = DateTime.UtcNow;
+				ProcessInternalEvent("clock_tick", new {
+					Year = now.Year,
+					Month = now.Month,
+					Day = now.Day,
+					Hour = now.Year,
+					DayOfWeek = now.DayOfWeek.ToString(),
+					DayOfYear = now.DayOfYear,
+					Minute = now.Minute,
+					Second = 0
+				});
+			});
+
 		}
 
 

@@ -36,10 +36,7 @@ namespace GrowingData.Mung.Web {
 			_query = query;
 			ParseQuery();
 		}
-
-		//public void BeginExecute(Dictionary<string, object> parameters) {
-		//	_execution = Task.Run(() => Execute(parameters));
-		//}
+		
 
 		public void Execute(Dictionary<string, object> parameters, Action<DbDataReader> eachRow) {
 			_isComplete = false;
@@ -64,7 +61,11 @@ namespace GrowingData.Mung.Web {
 
 			for (var i = 0; i < lines.Length; i++) {
 				var line = lines[i].Trim();
-				var addToQuery = !ParseInput(line) && !ParseOutput(line);
+				var addToQuery = 
+					!ParseInput(line) 
+					&& !ParseOutput(line)
+					&& !IsMungDirective(line);
+
 				if (addToQuery) {
 					newQuery.AppendLine(line);
 				}
@@ -74,7 +75,7 @@ namespace GrowingData.Mung.Web {
 			if (_connection == null) {
 				throw new Exception(
 @"Please specify a connection to run this query on with a line:
-	INPUT <connection_name>;
+	@MUNG_INPUT <connection_name>;
 
 Command at the start of the query.");
 			}
@@ -82,8 +83,14 @@ Command at the start of the query.");
 
 		}
 
+		private bool IsMungDirective(string line) {
+			if (line.ToLower().StartsWith("@mung_")) {
+				return true;
+			}
+			return false;
+		}
 		private bool ParseInput(string line) {
-			if (line.ToLower().StartsWith("input ")) {
+			if (line.ToLower().StartsWith("@mung_input ")) {
 				var connectionName = line.Split(' ').Last().Replace(";", "");
 				_connection = _connections.FirstOrDefault(c => c.Name.ToLower() == connectionName.ToLower());
 
@@ -97,7 +104,7 @@ Command at the start of the query.");
 		}
 
 		private bool ParseOutput(string line) {
-			if (line.ToLower().StartsWith("output ")) {
+			if (line.ToLower().StartsWith("@mung_output ")) {
 				var copyToDestination = line.Substring(7)
 					.Replace(";", "")
 					.Split('.')
@@ -105,8 +112,8 @@ Command at the start of the query.");
 					.ToArray();
 				if (copyToDestination.Length != 3) {
 					throw new Exception(
-@"If specifying OUTPUT please ensure that the destination contains 3 parts:
-	OUTPUT <destination_connection>.<destination_schema>.<destination_table>;
+@"If specifying @MUNG_OUTPUT please ensure that the destination contains 3 parts:
+	@MUNG_OUTPUT <destination_connection>.<destination_schema>.<destination_table>;
 
 Command at the start of the query.");
 				}

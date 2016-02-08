@@ -15,13 +15,13 @@ MUNG.Query = new function () {
 		iframe.ready(function () {
 			iframe.contents().find("body").append(
 					$("<form>")
-						.addClass(callbackPrefix)
+						.addClass(format)
 						.attr("method", "POST")
 						.attr("action", "/api/query")
 						.append($("<input>").attr("type", "hidden").attr("name", "sql").val(sql))
 						.append($("<input>").attr("type", "hidden").attr("name", "format").val(format))
 			);
-			iframe.contents().find("." + callbackPrefix).submit();
+			iframe.contents().find("." + format).submit();
 		});
 	}
 	
@@ -52,14 +52,14 @@ MUNG.Query = new function () {
 	self.stream = function (sql, rowCallback, completeCallback, errorCallback) {
 		var r = getRandomString();
 		var format = "jsonp_row_" + r;
-		MUNG.Callbacks.bind(callbackPrefix, rowCallback, completeCallback);
+		MUNG.Callbacks.bind(format, rowCallback, completeCallback, errorCallback);
 		iFrameAjax(sql, format);
 	}
 
 	self.streamRowCount = function (sql, rowCallback, completeCallback, errorCallback) {
 		var r = getRandomString();
 		var format = "jsonp_count_" + r;
-		MUNG.Callbacks.bind(callbackPrefix, rowCallback, completeCallback);
+		MUNG.Callbacks.bind(format, rowCallback, completeCallback, errorCallback);
 		iFrameAjax(sql, format);
 	}
 
@@ -69,10 +69,13 @@ MUNG.Callbacks = new function () {
 	var self = this;
 	var callbacks = {};
 
-	this.bind = function (r, row, complete) {
+	this.bind = function (r, row, complete, error) {
 		callbacks[r] = {
 			row: row,
-			complete: complete
+			complete: complete,
+			error: error || function (m) {
+				console.error(m);
+			}
 		};
 	}
 

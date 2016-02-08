@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using GrowingData.Utilities.DnxCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GrowingData.Mung.Web.Models {
 	public class Query : IBracketsEditable {
+		public const string DirectiveEventName = "@MUNG_EVENT_NAME";
+		public const string DirectiveEventFilter = "@MUNG_EVENT_FILTER";
+
 		public int QueryId;
-		
+
 		public string Name;
 		public string Path;
 		public string Code;
@@ -21,6 +26,31 @@ namespace GrowingData.Mung.Web.Models {
 		public string EncodedName { get { return WebUtility.UrlEncode(Name); } }
 
 		public string ResourceUrl { get { return $"/{MungFileSystem.QueryRootUrlPart}/{EncodedName}"; } }
+
+		public string EventType {
+			get {
+				var lines = Code.Split('\n').Select(x => x.Trim());
+				var eventTypeLine = lines.FirstOrDefault(x => x.StartsWith(DirectiveEventName));
+
+				if (eventTypeLine != null) {
+					return eventTypeLine.Replace(DirectiveEventName, "").Trim();
+				}
+				return null;
+			}
+		}
+
+		public JToken Filter {
+			get {
+				var lines = Code.Split('\n').Select(x => x.Trim());
+				var filterLine = lines.FirstOrDefault(x => x.StartsWith(DirectiveEventFilter));
+
+				if (filterLine != null) {
+					return JToken.Parse(filterLine.Replace(DirectiveEventFilter, ""));
+				}
+
+				return null;
+			}
+		}
 
 		public static Query Get(string name) {
 			using (var cn = DatabaseContext.Db.Mung()) {
@@ -50,11 +80,14 @@ namespace GrowingData.Mung.Web.Models {
 		}
 
 		public Query Save() {
+			Query q = null;
 			if (QueryId <= 0) {
-				return Insert();
+				q = Insert();
 			} else {
-				return Update();
+				q = Update();
 			}
+			MungApp.Current.QueryEventProcessor.ReloadQueries();
+			return q;
 		}
 
 		public Query Insert() {
@@ -93,6 +126,7 @@ namespace GrowingData.Mung.Web.Models {
 				var sql = @"DELETE FROM query WHERE query_id = @QueryId";
 				cn.ExecuteSql(sql, this);
 			}
+			MungApp.Current.QueryEventProcessor.ReloadQueries();
 		}
 	}
 }
