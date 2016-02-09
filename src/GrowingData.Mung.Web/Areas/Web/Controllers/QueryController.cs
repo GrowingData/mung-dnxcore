@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GrowingData.Mung.Web.Models;
 using GrowingData.Mung.Core;
+using GrowingData.Utilities.DnxCore;
 using System.IO;
 
 
@@ -73,7 +74,7 @@ ORDER BY t.name";
 						} catch (Exception exx) {
 							error = $"\tBulk Insert Exception:\r\n\t\t{exx.Message}\r\n\r\n{exx.StackTrace}\r\n\r\n{query}";
 							throw new Exception(error);
-                        }
+						}
 						writer.WriteLine($"Copy of {name} Complete!");
 						Console.WriteLine($"Copy of {name} Complete!");
 						writer.WriteLine("");
@@ -90,5 +91,31 @@ ORDER BY t.name";
 
 		}
 
+		[Route("re-relationize")]
+		public ActionResult Migrate(string eventType, DateTime since) {
+
+			using (var cn = DatabaseContext.Db.Events()) {
+				var sql = @"SELECT * FROM mung.all WHERE event_type = @eventType AND at > @since";
+				using (var reader = cn.DumpReader(sql, new { eventType = eventType, since = since })) {
+					if (!reader.Read()) {
+						return Json(new {
+							Success = false,
+							Message = $"The event type \"{eventType}\" does not yet exist.  Fire off a test event to enable live preview.",
+							highlight = "mung-event-type"
+						});
+					}
+
+					MungApp.Current.RelationalEventProcessor.EnqueueEvent(new MungServerEvent() {
+						LogTime = (DateTime)reader["at"],
+						Source = (string)reader["source"],
+						AppId = (int)reader["app_id"],
+						Type = (string)reader["event_type"],
+						Data = JToken.Parse((string)reader["json_data"])
+					});
+				}
+			}
+
+			return Content("Success!");
+		}
 	}
 }
