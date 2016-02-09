@@ -25,7 +25,7 @@ namespace GrowingData.Mung.Core {
 		}
 
 		public void EnqueueEvent(MungServerEvent evt) {
-			if (_events.Count < 100) {
+			if (_events.Count < 10000) {
 				_events.Enqueue(evt);
 			}
 		}
@@ -47,7 +47,7 @@ namespace GrowingData.Mung.Core {
 						}
 					}
 				}
-				Thread.Sleep(100);
+				Thread.Sleep(10);
 
 			}
 
