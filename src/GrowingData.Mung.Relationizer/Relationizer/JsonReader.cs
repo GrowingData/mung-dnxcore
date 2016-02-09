@@ -65,7 +65,7 @@ namespace GrowingData.Mung.Relationizer {
 			var relation = new RelationalEvent(evt);
 
 			relation.Id = RelationalEvent.GetKey();
-			relation.LogTime = DateTime.UtcNow;
+			relation.LogTime = evt.LogTime;
 			relation.Name = eventName.ToLowerInvariant();
 
 
