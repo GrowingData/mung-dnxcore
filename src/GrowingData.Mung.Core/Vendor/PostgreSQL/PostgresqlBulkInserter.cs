@@ -154,8 +154,12 @@ namespace GrowingData.Mung.Core {
 
 			ddl.Append("\n);");
 
-			// Create a BRIN index on it for fast range queries (since thats what we do most of)
-			ddl.Append($"CREATE INDEX \"idx_{tbl.TableName}\" ON \"{tbl.SchemaName}\".\"{tbl.TableName}\" USING BRIN (\"_at_\");");
+			if (tbl.Columns.FirstOrDefault(c => c.ColumnName == "_at_") != null) {
+				// Create a BRIN index on it for fast range queries (since thats what we do most of)
+				ddl.Append($"CREATE INDEX \"idx_{tbl.TableName}\" ON \"{tbl.SchemaName}\".\"{tbl.TableName}\" USING BRIN (\"_at_\");");
+
+
+			}
 
 
 			return ExecuteCommand(ddl.ToString());

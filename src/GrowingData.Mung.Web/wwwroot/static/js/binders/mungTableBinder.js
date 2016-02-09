@@ -33,10 +33,13 @@
 				var tr = $("<tr>").appendTo(table);
 				_.each(data.ColumnNames, function (column) {
 					var val = row[column];
+
+					val = val.replace(/\n/g, "<br>").replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;" )
+
 					if (formatMap && formatMap[column]) {
 						val = formatMap[column](val);
 					}
-					$("<td>").text(val).appendTo(tr);
+					$("<td>").html(val).appendTo(tr);
 				});
 			});
 

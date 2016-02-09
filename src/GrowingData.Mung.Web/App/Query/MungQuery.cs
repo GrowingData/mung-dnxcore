@@ -105,7 +105,7 @@ Command at the start of the query.");
 
 		private bool ParseOutput(string line) {
 			if (line.ToLower().StartsWith("@mung_output ")) {
-				var copyToDestination = line.Substring(7)
+				var copyToDestination = line.Substring("@mung_output ".Length)
 					.Replace(";", "")
 					.Split('.')
 					.Select(x => x.Trim())

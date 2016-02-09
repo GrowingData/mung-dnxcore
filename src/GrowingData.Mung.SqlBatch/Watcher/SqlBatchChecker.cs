@@ -5,17 +5,52 @@ using Npgsql;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using GrowingData.Mung.Core;
 
 namespace GrowingData.Mung.SqlBatch {
 	public static class SqlBatchChecker {
 
-		public static void ResetLock(string dataPath) {
-			var lockFilePath = Path.Combine(dataPath, "sql-batch.lock");
+		private const string _lockFilename = "sql-batch.lock";
 
+		/// <summary>
+		/// Create a file letting the system know that `Check` is currently running
+		/// so as to guarantee that only a single process is running at one time.
+		/// </summary>
+		/// <param name="dataPath"></param>
+		/// <returns></returns>
+		private static bool CreateLock(string dataPath) {
+
+			File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "Start: " + DateTime.UtcNow.ToString() + "\r\n");
+			var lockFilePath = Path.Combine(dataPath, _lockFilename);
+
+			// Make sure we aren't already running...
 			if (File.Exists(lockFilePath)) {
-				File.Delete(lockFilePath);
+				File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "End (skipped due to lock): " + DateTime.UtcNow.ToString() + "\r\n");
+				return false;
+			}
+
+			File.WriteAllText(lockFilePath, DateTime.Now.ToString());
+			return true;
+
+		}
+
+		private static void ResetLock(string dataPath) {
+			var lockFilePath = Path.Combine(dataPath, _lockFilename);
+			bool deleteSuccess = false;
+
+			while (!deleteSuccess) {
+				try {
+
+					if (File.Exists(lockFilePath)) {
+						File.Delete(lockFilePath);
+					}
+					deleteSuccess = true;
+				} catch (Exception ex) {
+					// Exception will be that we can't access the file because its being used by 
+					// another process, so wait for that process to go away and try again
+					Thread.Sleep(500);
+				}
 			}
 		}
 
@@ -23,6 +58,7 @@ namespace GrowingData.Mung.SqlBatch {
 			try {
 				Console.WriteLine("SqlBatchChecker ->  Cleaning up old files");
 				File.AppendAllText(Path.Combine(dataPath, "cleanup-running.log"), "Start: " + DateTime.UtcNow.ToString());
+
 				ResetLock(dataPath);
 
 				foreach (var file in Directory.EnumerateFiles(dataPath, "loaded-*")) {
@@ -65,17 +101,9 @@ namespace GrowingData.Mung.SqlBatch {
 		public static void Check(string prefix, string dataPath, Func<NpgsqlConnection> fnConnection) {
 
 			try {
-				File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "Start: " + DateTime.UtcNow.ToString() + "\r\n");
-
-				var lockFilePath = Path.Combine(dataPath, "sql-batch.lock");
-
-				// Make sure we aren't already running...
-				if (File.Exists(lockFilePath)) {
-					File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "End (skipped due to lock): " + DateTime.UtcNow.ToString() + "\r\n");
+				if (!CreateLock(dataPath)) {
 					return;
 				}
-
-				File.WriteAllText(lockFilePath, DateTime.Now.ToString());
 
 				foreach (var file in Directory.EnumerateFiles(dataPath, prefix + "*")) {
 					try {
@@ -121,6 +149,7 @@ namespace GrowingData.Mung.SqlBatch {
 				}
 
 				File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "Finished: " + DateTime.UtcNow.ToString() + "\r\n");
+				
 			} catch (Exception ex) {
 				var exceptionLogPath = Path.Combine(dataPath, "sql-batch-exceptions.log");
 				var errorDetails = string.Format("{0}	{1}: {2}\r\n{3}",
