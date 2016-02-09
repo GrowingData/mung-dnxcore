@@ -87,26 +87,25 @@ namespace GrowingData.Mung.Relationizer {
 				foreach (var child in t.Children()) {
 					if (child.Type == JTokenType.Property) {
 						var property = child as JProperty;
-						if (property.Value.Type != JTokenType.Object) {
-							// Ignore null object fields;
-							if (property.Value.Type != JTokenType.Null) {
-								var mungType = MungType.Get(property.Value.Type);
-								relation.AddField(property.Name, mungType, GetValue(property, mungType));
-							}
-						} else {
-							if (property.Value.Type == JTokenType.Array) {
-								foreach (var r in ProcessJsonArray(evt, property.Value, property.Name, relation)) {
-									yield return r;
-								}
-							}
 
-							if (property.Value.Type == JTokenType.Object) {
-								foreach (var r in ProcessJsonObject(evt, property.Value, property.Name, relation)) {
-									yield return r;
-								}
-
+						if (property.Value.Type == JTokenType.Array) {
+							foreach (var r in ProcessJsonArray(evt, property.Value, property.Name, relation)) {
+								yield return r;
 							}
+							continue;
+						}
+						if (property.Value.Type == JTokenType.Object) {
+							foreach (var r in ProcessJsonObject(evt, property.Value, property.Name, relation)) {
+								yield return r;
+							}
+							continue;
 
+						}
+
+						// Base type, add it as a field
+						if (property.Value.Type != JTokenType.Null) {
+							var mungType = MungType.Get(property.Value.Type);
+							relation.AddField(property.Name, mungType, GetValue(property, mungType));
 						}
 					}
 				}
