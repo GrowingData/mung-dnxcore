@@ -104,14 +104,15 @@ ORDER BY t.name";
 							highlight = "mung-event-type"
 						});
 					}
-
-					MungApp.Current.RelationalEventProcessor.EnqueueEvent(new MungServerEvent() {
-						LogTime = (DateTime)reader["at"],
-						Source = (string)reader["source"],
-						AppId = (int)reader["app_id"],
-						Type = (string)reader["event_type"],
-						Data = JToken.Parse((string)reader["json_data"])
-					});
+					while (reader.Read()) {
+						MungApp.Current.RelationalEventProcessor.EnqueueEvent(new MungServerEvent() {
+							LogTime = (DateTime)reader["at"],
+							Source = (string)reader["source"],
+							AppId = (int)reader["app_id"],
+							Type = (string)reader["event_type"],
+							Data = JToken.Parse((string)reader["json_data"])
+						});
+					}
 				}
 			}
 
