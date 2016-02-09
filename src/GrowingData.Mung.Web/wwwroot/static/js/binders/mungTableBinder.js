@@ -34,7 +34,7 @@
 				_.each(data.ColumnNames, function (column) {
 					var val = row[column];
 
-					val = val.replace(/\n/g, "<br>").replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;" )
+					val = val.toString().replace(/\n/g, "<br>").replace(/\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;" )
 
 					if (formatMap && formatMap[column]) {
 						val = formatMap[column](val);
