@@ -169,7 +169,7 @@
 				underScore = true;
 			}
 		}
-		// "goorooselfskill" => "GS"
+		// "table_name" => "TN"
 		if (underscores.length > 0) {
 			uscore = tableName[0].toUpperCase() + underscores.join("")
 			if (!(uscore in self.tableAliases)) {
@@ -177,7 +177,7 @@
 			}
 		}
 
-		// "GoorooSkill" => "GS"
+		// "TableName" => "TN"
 		if (uppers.length > 0 && hasLower) {
 			camel = uppers.join("").toUpperCase();
 			if (!(camel in self.tableAliases)) {
