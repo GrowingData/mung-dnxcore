@@ -1,4 +1,4 @@
-
+﻿
 
 CREATE TABLE munger (
 	munger_id serial PRIMARY KEY,
@@ -23,7 +23,7 @@ CREATE TABLE provider (
 CREATE TABLE connection (
 	connection_id serial PRIMARY KEY,
 	provider_id INT NOT NULL REFERENCES provider(provider_id),
-	name TEXT NOT NULL,
+	name TEXT NOT NULL UNIQUE,
 	connection_string TEXT NOT NULL,
 	created_at timestamp NOT NULL DEFAULT (now() at time zone 'utc'),
 	updated_at timestamp NOT NULL DEFAULT (now() at time zone 'utc'),
@@ -48,6 +48,20 @@ CREATE TABLE dashboard (
 	dashboard_id serial PRIMARY KEY,
 	name TEXT NOT NULL UNIQUE,
 	css TEXT NULL,
+	
+	created_at timestamp NOT NULL DEFAULT (now() at time zone 'utc'),
+	updated_at timestamp NOT NULL DEFAULT (now() at time zone 'utc'),
+	
+	created_by_munger INT NOT NULL REFERENCES munger(munger_id),
+	updated_by_munger INT NOT NULL REFERENCES munger(munger_id)
+);
+
+
+CREATE TABLE query (
+	query_id serial PRIMARY KEY,
+	path TEXT NOT NULL,
+	name TEXT NOT NULL,
+	code TEXT NOT NULL,
 	
 	created_at timestamp NOT NULL DEFAULT (now() at time zone 'utc'),
 	updated_at timestamp NOT NULL DEFAULT (now() at time zone 'utc'),
@@ -95,3 +109,9 @@ INSERT INTO munger(munger_id, email, name, is_admin)
 INSERT INTO provider(name)
 	VALUES ('SQL Server'), ('PostgreSQL')
 ;
+
+UPDATE connection
+	SET connection_string  = 'Host=localhost;Port=5433;Database=mung_events;Username=postgres;Password=postgres'
+	WHERE connection_id=1
+	
+SELECT * FROM connection
