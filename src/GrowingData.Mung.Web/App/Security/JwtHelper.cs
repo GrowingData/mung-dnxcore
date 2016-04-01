@@ -11,7 +11,20 @@ using GrowingData.Utilities.DnxCore;
 
 namespace GrowingData.Mung.Web {
 	public class JwtHelper {
+		public static NewtonsoftJsonSerializer Serializer = new NewtonsoftJsonSerializer();
 
+		public class NewtonsoftJsonSerializer : IJsonSerializer {
+
+			public string Serialize(object obj) {
+				// Implement using favorite JSON Serializer
+				return JsonConvert.SerializeObject(obj);
+			}
+
+			public T Deserialize<T>(string json) {
+				// Implement using favorite JSON Serializer
+				return JsonConvert.DeserializeObject<T>(json);
+			}
+		}
 
 		//public static void CreateCertificate(string outPath) {
 
