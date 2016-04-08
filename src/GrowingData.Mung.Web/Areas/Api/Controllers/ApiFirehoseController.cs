@@ -15,7 +15,7 @@ namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 		public ActionResult Poll(string eventTypes) {
 			using (var request = MungApp.Current.LongPollProcessor.Listen(eventTypes.Split(','))) {
 
-				var mungEvent = request.WaitForEvent();
+				var mungEvent = request.WaitForEvent(5000);
 				return Json(new { Event = mungEvent, Success = true });
 			}
 

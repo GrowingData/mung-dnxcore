@@ -62,26 +62,30 @@
 			var pathParts = parts.splice(3, parts.length - 2);
 			return "/" + pathParts.join("/");
 		}
+		function convertHex(hex, opacity) {
+			hex = hex.replace('#', '');
+			r = parseInt(hex.substring(0, 2), 16);
+			g = parseInt(hex.substring(2, 4), 16);
+			b = parseInt(hex.substring(4, 6), 16);
+
+			result = 'rgba(' + r + ',' + g + ',' + b + ',' + opacity + ')';
+			return result;
+		}
+
 	</script>
 
 	<title>Another one - Gooroo.io</title>
 
 </head>
 <body>
-
-
-
-
-
 	<div class="map">
-
-		<div class="map-grouping">
+		<h1 style="margin:0">Gooroo Today</h1>
+		<div class="map-grouping anonymous" data-color="ffe8af">
 			<h1>Anonymous activites</h1>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return x == "/api/authentication/ping"; },
-						url_referrer: function (x) { return getUrlPath(x) == "/"; },
+						url: function (x) { return getUrlPath(x) == "/"; },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
@@ -89,319 +93,270 @@
 				<pre class="filter">{"url": "__.match('^/$')", "gooroo_id": "__ == -1" }</pre>
 				<h2>Landing page</h2>
 				<i class="fa fa-home"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return x == "/api/authentication/ping"; },
-						url_referrer: function (x) {
-							return new RegExp("^/gooroothink/article/", "i").test(getUrlPath(x));
-						},
+						url: function (x) { return new RegExp("^/gooroothink/article/", "i").test(getUrlPath(x)); },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
 				<h2>Articles</h2>
 				<i class="fa fa-newspaper-o"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return x == "/api/authentication/ping"; },
-						url_referrer: function (x) { return new RegExp("^/analytics", "i").test(getUrlPath(x)); },
+						url: function (x) { return new RegExp("^/analytics", "i").test(getUrlPath(x)); },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
-				<pre class="filter">{"url": "__.match('^/api/authentication/ping$')", "url_referrer": "__.match('/analytics')", "gooroo_id": "__ == -1" }</pre>
 				<h2>Skill Analytics</h2>
 				<i class="fa fa-bar-chart"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return x == "/api/authentication/ping"; },
-						url_referrer: function (x) { return new RegExp("^/analytics", "i").test(getUrlPath(x)); },
+						url: function (x) { return new RegExp("^/g/", "i").test(getUrlPath(x)); },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
-				<pre class="filter">{"url": "__.match('^/api/authentication/ping$')", "url_referrer": "__.match('/analytics')", "gooroo_id": "__ == -1" }</pre>
 				<h2>Bio View</h2>
 				<i class="fa fa-user-secret"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
 			<div class="clearfix"></div>
 		</div>
 
-		<div class="map-grouping">
+		<div class="map-grouping onboard " data-color="add5d7">
 			<h1>Onboarding</h1>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return new RegExp("^/join$").test(x); },
+						url: function (x) { return new RegExp("^/join$").test(getUrlPath(x)); },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
 				<pre class="filter">{"url": "__.match('^/join$')", "gooroo_id": "__ == -1"}</pre>
 				<h2>Join</h2>
 				<i class="fa fa-user-plus"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return new RegExp("^/onboard/select-areas$").test(x); },
+						url: function (x) { return new RegExp("^/onboard/select-areas$").test(getUrlPath(x)); },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
 				<h2>Select areas</h2>
 				<i class="fa fa-tags"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return new RegExp("^/onboard/select-skills$").test(x); },
+						url: function (x) { return new RegExp("^/onboard/select-skills$").test(getUrlPath(x)); },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
 				<h2>Select skills</h2>
 				<i class="fa fa-briefcase"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return new RegExp("^/onboard/refine-skills$").test(x); },
+						url: function (x) { return new RegExp("^/onboard/refine-skills$").test(getUrlPath(x)); },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
 				<h2>Refine skills</h2>
 				<i class="fa fa-edit"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return new RegExp("^/onboard/select-cities$").test(x); },
+						url: function (x) { return new RegExp("^/onboard/select-cities$").test(getUrlPath(x)); },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
 				<h2>Cities</h2>
 				<i class="fa fa-map-marker"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
-			<div class="location" data-event-types="request">
+			<div class="location" data-event-types="ping">
 				<script type="text/javascript">
 					MUNG.filterReady({
-						url: function (x) { return new RegExp("^/onboard/finalize$").test(x); },
+						url: function (x) { return new RegExp("^/onboard/finalize$").test(getUrlPath(x)); },
 						gooroo_id: function (x) { return x == -1; }
 					});
 				</script>
 				<h2>Finalize</h2>
 				<i class="fa fa-trophy"></i>
-				<div class="counter" data-count="0">
-					0
-				</div>
 			</div>
-			<div class="clearfi__"></div>
+			<div class="clearfix"></div>
 		</div>
-		-->
-
-		<div class="map-grouping">
-			<h1>Logged in users</h1>
-			<div class="map-grouping">
+		<div class="clearfix">
+			<div class="map-grouping" data-color="ffcd34">
 				<h1>GoorooMATCH</h1>
-
-				<div class="location" data-event-types="request">
+				<div class="location" data-event-types="ping">
 					<script type="text/javascript">
 						MUNG.filterReady({
-							url: function (x) { return x == "/api/authentication/ping"; },
-							url_referrer: function (x) { return new RegExp("/dashboard", "i").test(x); },
-							gooroo_id: function (x) { return x != -1; }
-						});
-					</script>
-					<h2>Dashboard</h2>
-					<i class="fa fa-dashboard"></i>
-					<div class="counter" data-count="0">
-						0
-					</div>
-				</div>
-
-				<div class="location" data-event-types="request">
-					<script type="text/javascript">
-						MUNG.filterReady({
-							url: function (x) { return new RegExp("^/match$", "i").test(x) || new RegExp("^/match/profile", "i").test(x); },
+							url: function (x) { return new RegExp("^/match$", "i").test(getUrlPath(x)) || new RegExp("^/match/profile", "i").test(getUrlPath(x)); },
 							gooroo_id: function (x) { return x != -1; }
 						});
 					</script>
 					<h2>Match</h2>
 					<i class="fa fa-industry"></i>
-					<div class="counter" data-count="0">
-						0
-					</div>
 				</div>
-
-				<div class="location" data-event-types="request">
+				<div class="location" data-event-types="ping">
 					<script type="text/javascript">
 						MUNG.filterReady({
 							url: function (x) {
-								return new RegExp("^/match/ad/", "i").test(x)
+								return new RegExp("^/match/ad/", "i").test(getUrlPath(x))
 							},
 							gooroo_id: function (x) { return x != -1; }
 						});
 					</script>
 					<h2>Job view</h2>
 					<i class="fa fa-street-view"></i>
-					<div class="counter" data-count="0">
-						0
-					</div>
+				</div>
+			</div>
+			<div class="map-grouping" data-color="47acb1">
+				<h1>Analytics</h1>
+				<div class="location" data-event-types="ping">
+					<script type="text/javascript">
+						MUNG.filterReady({
+							url: function (x) { return new RegExp("^/dashboard", "i").test(getUrlPath(x)); },
+							gooroo_id: function (x) { return x != -1; }
+						});
+					</script>
+					<h2>Dashboard</h2>
+					<i class="fa fa-dashboard"></i>
+				</div>
+				<div class="location" data-event-types="ping">
+					<script type="text/javascript">
+						MUNG.filterReady({
+							url: function (x) { return new RegExp("^/analytics", "i").test(getUrlPath(x)); },
+							gooroo_id: function (x) { return x != -1; }
+						});
+					</script>
+					<h2>Skill Analytics</h2>
+					<i class="fa fa-bar-chart"></i>
 				</div>
 			</div>
 
-			<div class="map-grouping">
-				<h1>Gooroo THINK</h1>
-				<div class="location" data-event-types="request">
+			<div class="map-grouping" data-color="f26522">
+				<h1>GoorooTHINK</h1>
+				<div class="location" data-event-types="ping">
+					<script type="text/javascript">
+						MUNG.filterReady({
+							url: function (x) { return new RegExp("/gooroothink/article/", "i").test(getUrlPath(x)); },
+							gooroo_id: function (x) { return x != -1; }
+						});
+					</script>
+					<h2>View Article</h2>
+					<i class="fa fa-newspaper-o"></i>
+				</div>
+				<div class="location" data-event-types="ping">
 					<script type="text/javascript">
 						MUNG.filterReady({
 							url: function (x) {
-								return new RegExp("/GoorooThink/Article/.+/Edit/.+", "i").test(x);
+								return new RegExp("/GoorooThink/Article/.+/Edit/.+", "i").test(getUrlPath(x));
 							},
 							gooroo_id: function (x) { return x != -1; }
 						});
 					</script>
 					<h2>Edit Article</h2>
 					<i class="fa fa-user-md"></i>
-					<div class="counter" data-count="0">
-						0
-					</div>
-				</div>
-				<div class="location" data-event-types="request">
-					<script type="text/javascript">
-						MUNG.filterReady({
-							url: function (x) { return x == "/api/authentication/ping"; },
-							url_referrer: function (x) { return new RegExp("/gooroothink/article/", "i").test(x); },
-							gooroo_id: function (x) { return x != -1; }
-						});
-					</script>
-					<h2>View Article</h2>
-					<i class="fa fa-user-md"></i>
-					<div class="counter" data-count="0">
-						0
-					</div>
 				</div>
 			</div>
 
-			<div class="map-grouping">
+			<div class="map-grouping" data-color="676766">
 				<h1>Bio</h1>
-				<div class="location" data-event-types="request">
+				<div class="location" data-event-types="ping">
 					<script type="text/javascript">
 						MUNG.filterReady({
-							url: function (x) { return x == "/api/authentication/ping"; },
-							url_referrer: function (x) { return new RegExp("/g/", "i").test(x); },
+							url_referrer: function (x) { return new RegExp("^/g/", "i").test(getUrlPath(x)); },
 							gooroo_id: function (x) { return x != -1; }
 						});
 					</script>
 					<h2>Bio view</h2>
 					<i class="fa fa-user"></i>
-					<div class="counter" data-count="0">
-						0
-					</div>
 				</div>
-				<div class="location" data-event-types="request">
+				<div class="location" data-event-types="ping">
 					<script type="text/javascript">
 						MUNG.filterReady({
-							url: function (x) { return x == "/api/authentication/ping"; },
-							url_referrer: function (x) { return new RegExp("/g/me", "i").test(x); },
+							url_referrer: function (x) { return new RegExp("^/g/me", "i").test(getUrlPath(x)); },
 							gooroo_id: function (x) { return x != -1; }
 						});
 					</script>
 					<h2>Bio edit</h2>
 					<i class="fa fa-user-md"></i>
-					<div class="counter" data-count="0">
-						0
-					</div>
 				</div>
 			</div>
 
 		</div>
 
+		<div class="map-grouping" data-color="add5d7">
+			<h1>Active users</h1>
+			<div class="users-ticker" data-event-types="ping">
+				<ul class="user-list list-inline">
+					<li class="template user-template user">
+						<div class="user-photo"></div>
+						<div class="user-name"></div>
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</div>
 
 
-		<script src="/static/js/core/MUNG.Events.js"></script>
-		<script src="/static/js/core/MUNG.Utilities.js"></script>
-		<script src="/static/js/core/MUNG.DataHelpers.js"></script>
+	<script src="/static/js/core/MUNG.Events.js"></script>
+	<script src="/static/js/core/MUNG.Utilities.js"></script>
+	<script src="/static/js/core/MUNG.DataHelpers.js"></script>
+	<script src="/iconGraph.js"></script>
+	<script src="/tickerUsers.js"></script>
 
-		<script type="text/javascript">
-			MUNG.ready(function () {
-				var now = new Date();
-				var connection = MUNG.Events({ since: new Date(now.getFullYear(), now.getMonth(), now.getDate()) });
+	<script type="text/javascript">
+		MUNG.ready(function () {
+			var now = new Date();
+			var dateStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+			var dateEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
-				$(".location").each(function () {
-					var l = $(this);
-					var eventTypes = l.data("event-types").split(',');
-
-					if (eventTypes) {
-						connection.registerCallback(eventTypes, function (evt) {
-							var filterFns = l.data("filter");
-							if (filterFns != null) {
-								for (var k in filterFns) {
-									if (!evt.Data[k]) {
-										console.log("Filter failed: '" + k + "'is unknown in " + JSON.stringify(evt.Data));
-										return;
-									}
-
-
-									if (!filterFns[k](evt.Data[k])) {
-										console.log("Filter failed", k, evt.Data[k], filterFns[k]);
-										return;
-									}
-								}
-							}
-
-							var counter = l.find(".counter");
-							var count = parseInt(counter.data("count")) + 1;
-							counter.data("count", count);
-							counter.text(count);
-
-							if (evt.RealTime) {
-								l.addClass("flash");
-								setTimeout(function () { l.removeClass("flash"); }, 200);
-							}
-						});
-					}
-
-				});
-
-
-			});
-		</script>
-
-		<script type="text/javascript">
-			$(document).ready(function () {
-				MUNG.Loader.fire();
+			var connection = MUNG.Events({
+				since: dateStart,
+				apiHost: "http://mung.gooroo.io"
 			});
 
-		</script>
+
+
+			$(".location").each(function () {
+				$(this).iconGraph(connection);
+			});
+			$(".users-ticker").each(function () {
+				$(this).tickerUsers(connection);
+			});
+
+			$(".map-grouping").each(function () {
+				var group = $(this);
+				var color = group.data("color").toString();
+				if (color) {
+					group.css({ "border-color": convertHex(color, 0.2) });
+					group.find("i").css({ "color": convertHex(color, 1) });
+					group.find(".chart-background").css({ "background": convertHex(color, 0.1), "border-color": convertHex(color, 0.4) });
+					group.find(".chart-background i").css({ "background": convertHex(color, 0.4) });
+					group.find(".chart-background i.active").css({ "background": convertHex(color, 1) });
+				}
+			});
+
+
+		});
+	</script>
+
+	<script type="text/javascript">
+		$(document).ready(function () {
+			MUNG.Loader.fire();
+		});
+
+	</script>
 
 </body>
 </html>

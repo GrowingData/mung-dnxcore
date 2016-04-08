@@ -37,8 +37,8 @@ namespace GrowingData.Mung.Web {
 
 		}
 
-		public MungServerEvent WaitForEvent() {
-			_reset.WaitOne();
+		public MungServerEvent WaitForEvent(int timeoutMS) {
+			_reset.WaitOne(timeoutMS);
 			return _event;
 		}
 

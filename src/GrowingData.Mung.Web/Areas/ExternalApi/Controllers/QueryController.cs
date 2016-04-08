@@ -43,6 +43,30 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 		[Route("ext/v1/query/events")]
 		[HttpGet]
 		public ActionResult Events(string eventTypes, DateTime? since) {
+
+			var appKey = Request.Query["appKey"];
+			if (!string.IsNullOrEmpty(appKey)) {
+				var app = App.Get(appKey);
+
+				JWT.JsonWebToken.JsonSerializer = JwtHelper.Serializer;
+
+				using (var reader = new StreamReader(Request.Body)) {
+					var tokenString = reader.ReadToEnd();
+
+					try {
+						string jsonPayload = JWT.JsonWebToken.Decode(tokenString, app.AppSecret);
+						var obj = JToken.Parse(jsonPayload);
+					} catch (JWT.SignatureVerificationException) {
+						return new ApiResult(new {
+							Events = new MungServerEvent[] { },
+							Success = false,
+							RealTime = false,
+							Message = "Invalid token"
+						});
+					}
+				}
+			}
+
 			if (since.HasValue) {
 				// Firstly go to the database and get everything after, since.
 				using (var cn = DatabaseContext.Db.Events()) {
@@ -66,8 +90,13 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 			}
 			using (var request = MungApp.Current.LongPollProcessor.Listen(eventTypes.Split(','))) {
 
-				var mungEvent = request.WaitForEvent();
-				return new ApiResult(new { Events = new MungServerEvent[] { mungEvent }, Success = true, RealTime = true });
+				var mungEvent = request.WaitForEvent(30 * 1000);
+				if (mungEvent != null) {
+					return new ApiResult(new { Events = new MungServerEvent[] { mungEvent }, Success = true, RealTime = true });
+				}
+
+				// Nothing to see here actually.
+				return new ApiResult(new { Events = new MungServerEvent[] { }, Success = true, RealTime = false });
 			}
 
 		}

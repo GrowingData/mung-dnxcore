@@ -8,7 +8,7 @@ MUNG.Events = function (settings) {
 	this.watchers = [];
 	this.allEventTypes = {};
 	this.lastSince = settings.since ? settings.since.toISOString() : null;
-	this.apiHost = settings.host;
+	this.apiHost = settings.apiHost;
 
 	this.hasStarted = false;
 
@@ -51,7 +51,7 @@ MUNG.Events = function (settings) {
 				if (r.Success) {
 					for (var i = 0; i < r.Events.length; i++) {
 						r.Events[i].RealTime = r.RealTime;
-						console.log("Events:", r.Events[i]);
+						//console.log("Events:", r.Events[i]);
 						fireEventCallback(r.Events[i])
 
 						self.lastSince = r.Events[i].LogTime;
