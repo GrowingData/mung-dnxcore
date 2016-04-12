@@ -78,6 +78,23 @@
 			return bar;
 		}
 
+		this.checkFilter = function (evt) {
+			var filterFns = self.data("filter");
+			if (filterFns != null) {
+				for (var k in filterFns) {
+					if (!evt.Data[k]) {
+						//console.log("Filter failed: '" + k + "'is unknown in " + JSON.stringify(evt.Data));
+						return false;
+					}
+
+					if (!filterFns[k](evt.Data[k])) {
+						//console.log("Filter failed", k, evt.Data[k], filterFns[k]);
+						return false;
+					}
+				}
+			}
+			return true;
+		}
 
 		function init() {
 
@@ -94,20 +111,8 @@
 
 			if (eventTypes) {
 				connection.registerCallback(eventTypes, function (evt) {
-					var filterFns = self.data("filter");
-					if (filterFns != null) {
-						for (var k in filterFns) {
-							if (!evt.Data[k]) {
-								//console.log("Filter failed: '" + k + "'is unknown in " + JSON.stringify(evt.Data));
-								return;
-							}
-
-
-							if (!filterFns[k](evt.Data[k])) {
-								//console.log("Filter failed", k, evt.Data[k], filterFns[k]);
-								return;
-							}
-						}
+					if (!self.checkFilter(evt)) {
+						return;
 					}
 					var counter = self.find(".counter");
 					var count = parseInt(counter.data("count")) + 1;
@@ -130,8 +135,8 @@
 		}
 
 		init();
+		return self;
 
 	}
-
 }(jQuery));
 

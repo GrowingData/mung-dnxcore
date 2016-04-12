@@ -128,7 +128,7 @@ body {
 .users-ticker {
 	clear: both;
 	width: 100%;
-	height: 142px;
+	height: 200px;
 	overflow: hidden;
 	margin-top: 8px;
 }
@@ -164,3 +164,26 @@ body {
 			background-repeat: no-repeat;
 			float: left;
 		}
+
+
+	.users-ticker .mini-icons {
+		max-width: 128px;
+		max-height: 32px;
+		overflow: hidden;
+		margin: 0;
+		padding: 0;
+	}
+
+		.users-ticker .mini-icons li {
+			list-style-type: none;
+			float: left;
+			width: 12px;
+    padding: 2px;
+    margin: 0;
+    line-height: 10px;
+		}
+
+			.users-ticker .mini-icons li i.fa {
+				font-size: 10px;
+				text-align: center;
+			}

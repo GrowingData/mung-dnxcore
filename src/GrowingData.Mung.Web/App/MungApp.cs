@@ -30,6 +30,7 @@ namespace GrowingData.Mung.Web {
 		public static void Initialize(IHostingEnvironment env) {
 			_app = new MungApp(env);
 
+			App.InitializeApps();
 
 			_app.ProcessInternalEvent("mung_init", new {
 				environment = env.EnvironmentName,

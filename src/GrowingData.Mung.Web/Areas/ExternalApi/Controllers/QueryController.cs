@@ -23,11 +23,38 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 				return DatabaseContext.Db.Events();
 			}
 		}
+		
 
-		// Add security stuff later
 		[Route("ext/v1/query/sql")]
 		[HttpPost]
-		public ActionResult Sql(string sql, int? connectionId) {
+		public ActionResult Sql(string appKey, string appToken) {
+
+
+
+			var sql = Request.Query["sql"].ToString();
+			int? connectionId = new int?();
+			var connectionIdString = Request.Query["connectionId"];
+			if (!string.IsNullOrEmpty(connectionIdString)) {
+				int d;
+				if (int.TryParse(connectionIdString, out d)) {
+					connectionId = d;
+				}
+			}
+			var app = App.Get(appKey);
+			JWT.JsonWebToken.JsonSerializer = JwtHelper.Serializer;
+			try {
+				string jsonPayload = JWT.JsonWebToken.Decode(appToken, app.AppSecret);
+				var obj = JToken.Parse(jsonPayload);
+			} catch (JWT.SignatureVerificationException) {
+				return new ApiResult(new {
+					Events = new MungServerEvent[] { },
+					Success = false,
+					RealTime = false,
+					Message = "Invalid token"
+				});
+			}
+
+
 
 			Response.ContentType = "application/json";
 			try {
@@ -41,31 +68,32 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 
 		}
 		[Route("ext/v1/query/events")]
-		[HttpGet]
-		public ActionResult Events(string eventTypes, DateTime? since) {
-
-			var appKey = Request.Query["appKey"];
-			if (!string.IsNullOrEmpty(appKey)) {
-				var app = App.Get(appKey);
-
-				JWT.JsonWebToken.JsonSerializer = JwtHelper.Serializer;
-
-				using (var reader = new StreamReader(Request.Body)) {
-					var tokenString = reader.ReadToEnd();
-
-					try {
-						string jsonPayload = JWT.JsonWebToken.Decode(tokenString, app.AppSecret);
-						var obj = JToken.Parse(jsonPayload);
-					} catch (JWT.SignatureVerificationException) {
-						return new ApiResult(new {
-							Events = new MungServerEvent[] { },
-							Success = false,
-							RealTime = false,
-							Message = "Invalid token"
-						});
-					}
+		[HttpPost]
+		public ActionResult Events(string appKey, string accessToken) {
+			var eventTypes = Request.Query["eventTypes"].ToString();
+			DateTime? since = new DateTime?();
+			var sinceString = Request.Query["since"];
+			if (!string.IsNullOrEmpty(sinceString)) {
+				DateTime d;
+				if (DateTime.TryParse(sinceString, out d)) {
+					since = d;
 				}
 			}
+
+			var app = App.Get(appKey);
+			JWT.JsonWebToken.JsonSerializer = JwtHelper.Serializer;
+			try {
+				string jsonPayload = JWT.JsonWebToken.Decode(accessToken, app.AppSecret);
+				var obj = JToken.Parse(jsonPayload);
+			} catch (JWT.SignatureVerificationException) {
+				return new ApiResult(new {
+					Events = new MungServerEvent[] { },
+					Success = false,
+					RealTime = false,
+					Message = "Invalid token"
+				});
+			}
+
 
 			if (since.HasValue) {
 				// Firstly go to the database and get everything after, since.

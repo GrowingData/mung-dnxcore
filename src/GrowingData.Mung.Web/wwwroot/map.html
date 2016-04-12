@@ -293,14 +293,17 @@
 			</div>
 
 		</div>
-
-		<div class="map-grouping" data-color="add5d7">
+		<div class="clearfix"></div>
+		<div class="map-grouping" data-color="add5d7" style="width:100%;">
 			<h1>Active users</h1>
 			<div class="users-ticker" data-event-types="ping">
 				<ul class="user-list list-inline">
 					<li class="template user-template user">
 						<div class="user-photo"></div>
 						<div class="user-name"></div>
+						<ul class="mini-icons">
+
+						</ul>
 					</li>
 				</ul>
 
@@ -323,16 +326,17 @@
 
 			var connection = MUNG.Events({
 				since: dateStart,
-				apiHost: "http://mung.gooroo.io"
+				apiHost: "http://localhost:5000",
+				appKey: "1XcN8GCd4WfmbB3N"
 			});
 
 
-
+			var icons = [];
 			$(".location").each(function () {
-				$(this).iconGraph(connection);
+				icons.push($(this).iconGraph(connection));
 			});
 			$(".users-ticker").each(function () {
-				$(this).tickerUsers(connection);
+				$(this).tickerUsers(connection, icons);
 			});
 
 			$(".map-grouping").each(function () {

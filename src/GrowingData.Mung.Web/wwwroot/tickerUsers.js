@@ -1,6 +1,6 @@
 ﻿
 (function ($) {
-	$.fn.tickerUsers = function (connection) {
+	$.fn.tickerUsers = function (connection, icons) {
 
 		var self = this;
 		var gooroos = {};
@@ -16,6 +16,7 @@
 				} else {
 					userNode = self.find(".user-template")
 						.clone()
+						.addClass("gooroo-" + gid)
 						.removeClass("template")
 						.removeClass("user-template")
 						.prependTo(self.find("ul.user-list"));
@@ -35,11 +36,22 @@
 
 					}
 
-
 					gooroos[gid] = userNode;
-
-
 				}
+				
+
+				var iconsHolder = self.find(".gooroo-" + gid + " .mini-icons");
+				for (var i = 0; i < icons.length; i++) {
+					if (icons[i].checkFilter(evt)) {
+						console.log("yo")
+						iconsHolder.prepend(
+							$("<li>").append(
+								icons[i].find("i.fa").clone()
+							)
+						);
+					}
+				}
+
 
 
 			});
