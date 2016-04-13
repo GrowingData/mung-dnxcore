@@ -10,12 +10,17 @@ using Microsoft.AspNet.Cors;
 using JWT;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNet.Mvc.Filters;
 
 namespace GrowingData.Mung.Web {
 
 	public class ExternalApiController : Controller {
 
 
+		public override void OnActionExecuting(ActionExecutingContext context) {
+			base.OnActionExecuting(context);
+			
+		}
 
 
 

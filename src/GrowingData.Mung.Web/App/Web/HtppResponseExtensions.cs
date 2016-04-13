@@ -14,7 +14,7 @@ namespace GrowingData.Mung.Web {
 		}
 
 		public static void AllowCors(this HttpResponse resp) {
-			resp.Headers.Add("Access-Control-Allow-Origin", "*");
+			resp.Headers["Access-Control-Allow-Origin"] = "*";
 		}
 
 

@@ -8,8 +8,6 @@ using GrowingData.Mung.Web.Models;
 using System.IO;
 using System.Collections.Generic;
 using JWT;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 
