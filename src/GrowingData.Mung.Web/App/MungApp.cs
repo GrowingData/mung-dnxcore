@@ -153,7 +153,7 @@ namespace GrowingData.Mung.Web {
 					Year = now.Year,
 					Month = now.Month,
 					Day = now.Day,
-					Hour = now.Year,
+					Hour = now.Hour,
 					DayOfWeek = now.DayOfWeek.ToString(),
 					DayOfYear = now.DayOfYear,
 					Minute = now.Minute,

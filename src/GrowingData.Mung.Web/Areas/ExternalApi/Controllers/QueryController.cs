@@ -27,8 +27,13 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 
 		[Route("ext/v1/query/sql")]
 		[HttpPost]
-		public ActionResult Sql(string appKey, string appToken) {
-
+		public ActionResult Sql(string appKey, string accessToken) {
+			if (!VerifyToken(appKey, accessToken)) {
+				return new ApiResult(new {
+					Success = false,
+					Message = "Invalid token"
+				});
+			}
 
 
 			var sql = Request.Query["sql"].ToString();
@@ -39,19 +44,6 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 				if (int.TryParse(connectionIdString, out d)) {
 					connectionId = d;
 				}
-			}
-			var app = App.Get(appKey);
-			JWT.JsonWebToken.JsonSerializer = JwtHelper.Serializer;
-			try {
-				string jsonPayload = JWT.JsonWebToken.Decode(appToken, app.AppSecret);
-				var obj = JToken.Parse(jsonPayload);
-			} catch (JWT.SignatureVerificationException) {
-				return new ApiResult(new {
-					Events = new MungServerEvent[] { },
-					Success = false,
-					RealTime = false,
-					Message = "Invalid token"
-				});
 			}
 
 
@@ -70,6 +62,13 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 		[Route("ext/v1/query/events")]
 		[HttpPost]
 		public ActionResult Events(string appKey, string accessToken) {
+			if (!VerifyToken(appKey, accessToken)) {
+				return new ApiResult(new {
+					Success = false,
+					Message = "Invalid token"
+				});
+			}
+
 			var eventTypes = Request.Query["eventTypes"].ToString();
 			DateTime? since = new DateTime?();
 			var sinceString = Request.Query["since"];
@@ -79,22 +78,7 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 					since = d;
 				}
 			}
-
-			var app = App.Get(appKey);
-			JWT.JsonWebToken.JsonSerializer = JwtHelper.Serializer;
-			try {
-				System.Diagnostics.Debug.WriteLine($"App secret: {app.AppSecret}");
-				string jsonPayload = JWT.JsonWebToken.Decode(accessToken, app.AppSecret);
-				var obj = JToken.Parse(jsonPayload);
-			} catch (JWT.SignatureVerificationException) {
-				return new ApiResult(new {
-					Events = new MungServerEvent[] { },
-					Success = false,
-					RealTime = false,
-					Message = "Invalid token"
-				});
-			}
-
+			
 
 			if (since.HasValue) {
 				// Firstly go to the database and get everything after, since.

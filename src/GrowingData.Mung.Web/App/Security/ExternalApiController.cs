@@ -19,10 +19,34 @@ namespace GrowingData.Mung.Web {
 
 		public override void OnActionExecuting(ActionExecutingContext context) {
 			base.OnActionExecuting(context);
-			
+
 		}
 
 
+		public bool VerifyToken(string appKey, string token) {
+			JWT.JsonWebToken.JsonSerializer = JwtHelper.Serializer;
+
+			var app = App.Get(appKey);
+			if (app == null) {
+				return false;
+			}
+
+			using (var reader = new StreamReader(Request.Body)) {
+				var tokenString = reader.ReadToEnd();
+
+				try {
+					string jsonPayload = JWT.JsonWebToken.Decode(tokenString, app.AppSecret);
+
+
+					return true;
+
+				} catch (JWT.SignatureVerificationException) {
+					return false;
+					Console.WriteLine("Invalid token!");
+				}
+
+			}
+		}
 
 		public T VerifyToken<T>(string appKey, string token) where T : class {
 			JWT.JsonWebToken.JsonSerializer = JwtHelper.Serializer;
