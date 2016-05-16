@@ -31,21 +31,21 @@ namespace GrowingData.Mung.Web {
 				return false;
 			}
 
-			using (var reader = new StreamReader(Request.Body)) {
-				var tokenString = reader.ReadToEnd();
+			//using (var reader = new StreamReader(Request.Body)) {
+			//	var tokenString = reader.ReadToEnd();
 
-				try {
-					string jsonPayload = JWT.JsonWebToken.Decode(tokenString, app.AppSecret);
+			try {
+				string jsonPayload = JWT.JsonWebToken.Decode(token, app.AppSecret);
 
 
-					return true;
+				return true;
 
-				} catch (JWT.SignatureVerificationException) {
-					return false;
-					Console.WriteLine("Invalid token!");
-				}
-
+			} catch (JWT.SignatureVerificationException) {
+				return false;
+				Console.WriteLine("Invalid token!");
 			}
+
+			//}
 		}
 
 		public T VerifyToken<T>(string appKey, string token) where T : class {
@@ -53,22 +53,22 @@ namespace GrowingData.Mung.Web {
 
 			var app = App.Get(appKey);
 
-			using (var reader = new StreamReader(Request.Body)) {
-				var tokenString = reader.ReadToEnd();
+			//using (var reader = new StreamReader(Request.Body)) {
+			//	var tokenString = reader.ReadToEnd();
 
-				try {
-					string jsonPayload = JWT.JsonWebToken.Decode(tokenString, app.AppSecret);
+			try {
+				string jsonPayload = JWT.JsonWebToken.Decode(token, app.AppSecret);
 
-					var obj = JToken.Parse(jsonPayload);
-					return obj.ToObject<T>();
+				var obj = JToken.Parse(jsonPayload);
+				return obj.ToObject<T>();
 
 
-				} catch (JWT.SignatureVerificationException) {
-					return null;
-					Console.WriteLine("Invalid token!");
-				}
-
+			} catch (JWT.SignatureVerificationException) {
+				return null;
+				Console.WriteLine("Invalid token!");
 			}
+
+			//}
 
 
 		}
