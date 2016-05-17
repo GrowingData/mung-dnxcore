@@ -53,7 +53,7 @@ namespace GrowingData.Mung.Web {
 									break;
 								}
 
-								if (filterValue.Value?.ToString() == eventValue.Value?.ToString()) {
+								if (filterValue.Value?.ToString() != eventValue.Value?.ToString()) {
 									// Nope, no match, so no notification
 									passedFilter = false;
 									break;
