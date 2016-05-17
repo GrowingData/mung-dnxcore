@@ -33,6 +33,7 @@ namespace GrowingData.Mung.Web.Models {
 		public DateTime UpdatedAt;
 
 		private string _eventType;
+		private string _eventTypeFilter;
 
 		public string EventType {
 			get {
@@ -42,9 +43,26 @@ namespace GrowingData.Mung.Web.Models {
 
 				var doc = new HtmlDocument();
 				doc.LoadHtml(Template);
-				_eventType = doc.DocumentNode.SelectNodes("//mung-event-type").FirstOrDefault()?.InnerText;
+				_eventType = doc.DocumentNode.SelectNodes("//mung-event-type")?.FirstOrDefault()?.InnerText;
 
 				return _eventType;
+			}
+			set {
+				// Don't do anything here, but we need the setter because the
+				// DbBinder will try to get this from the cached version.
+			}
+		}
+		public string EventFilter {
+			get {
+				if (_eventTypeFilter != null) {
+					return _eventTypeFilter;
+				}
+
+				var doc = new HtmlDocument();
+				doc.LoadHtml(Template);
+				_eventTypeFilter = doc.DocumentNode.SelectNodes("//mung-event-filter")?.FirstOrDefault()?.InnerText;
+
+				return _eventTypeFilter;
 			}
 			set {
 				// Don't do anything here, but we need the setter because the
