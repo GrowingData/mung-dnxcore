@@ -3,7 +3,7 @@ using System.Linq;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Hosting;
 
-namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
+namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 	public class ApiNotificationController : MungSecureController {
 		public ApiNotificationController(IHostingEnvironment env) : base(env) {
 		}

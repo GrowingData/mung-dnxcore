@@ -109,8 +109,8 @@ namespace GrowingData.Mung.Web {
 
 			var destination = new Destination() {
 				ToAddresses = toList,
-				BccAddresses = ccList,
-				CcAddresses = bccList
+				BccAddresses = bccList,
+				CcAddresses = ccList
 			};
 
 
@@ -145,6 +145,7 @@ namespace GrowingData.Mung.Web {
 				});
 				return false;
 			}
+			
 
 
 			var emailRequest = CreateEmailRequest(content, SesNotificationSettings.SesFromAddress);
@@ -165,6 +166,11 @@ namespace GrowingData.Mung.Web {
 				});
 				return true;
 			} catch (Exception ex) {
+				var agg = ex as AggregateException;
+				if (agg != null && agg.InnerExceptions.Count > 0) {
+					ex = agg.InnerExceptions.FirstOrDefault();
+				}
+
 				MungApp.Current.ProcessInternalEvent("notification_send_exception", new {
 					Notification = notification,
 					NotificationId = notification.NotificationId,

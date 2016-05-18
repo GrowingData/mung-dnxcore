@@ -11,7 +11,7 @@ using GrowingData.Utilities;
 
 using Newtonsoft.Json;
 
-namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
+namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 	public class ApiDashboardController : MungSecureController {
 		public ApiDashboardController(IHostingEnvironment env) : base(env) {
 		}

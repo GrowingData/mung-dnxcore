@@ -10,7 +10,7 @@ using GrowingData.Utilities.DnxCore;
 
 using Newtonsoft.Json;
 
-namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
+namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 	public class ApiMungFileSystemController : MungSecureController {
 
 

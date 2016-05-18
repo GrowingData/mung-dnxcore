@@ -12,7 +12,7 @@ using GrowingData.Utilities.DnxCore;
 using GrowingData.Mung.Web;
 using GrowingData.Mung.Web.Models;
 
-namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
+namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 	public class ApiQueryController : MungSecureController {
 		public ApiQueryController(IHostingEnvironment env) : base(env) {
 		}
