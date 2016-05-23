@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Data.Common;
 using GrowingData.Mung.Core;
-using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Web.Models {
 	public class Provider {
@@ -17,7 +17,7 @@ namespace GrowingData.Mung.Web.Models {
 				if (_providers == null) {
 					using (var cn = DatabaseContext.Db.Mung()) {
 						var sql = @"SELECT * FROM provider";
-						_providers = cn.ExecuteAnonymousSql<Provider>(sql, null);
+						_providers = cn.SelectAnonymous<Provider>(sql, null);
 					}
 				}
 				return _providers;

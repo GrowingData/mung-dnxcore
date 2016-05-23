@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data;
 
-namespace GrowingData.Mung.Core {
-	public class DbColumn
-	 {
+namespace GrowingData.Utilities.Database {
+	public class DbColumn {
 		public string ColumnName;
 		public MungType MungType;
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Data.Common;
 using System.Data.SqlClient;
 
-using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Web.Models {
 	public class Setting {
@@ -49,7 +49,7 @@ namespace GrowingData.Mung.Web.Models {
 		/// <returns></returns>
 		public static List<Setting> List() {
 			using (var cn = DatabaseContext.Db.Mung()) {
-				var apps = cn.ExecuteAnonymousSql<Setting>(@"SELECT * FROM setting", null);
+				var apps = cn.SelectAnonymous<Setting>(@"SELECT * FROM setting", null);
 				return apps;
 			}
 		}
@@ -61,7 +61,7 @@ namespace GrowingData.Mung.Web.Models {
 		public bool Insert() {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"INSERT INTO setting(key, value) VALUES (@Key, @Value)";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 				_AppSettings = List().ToDictionary(x => x.Key);
 				return true;
 			}
@@ -83,7 +83,7 @@ namespace GrowingData.Mung.Web.Models {
 		public bool Delete() {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"DELETE FROM setting WHERE key = @Key";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 				return true;
 			}
 		}

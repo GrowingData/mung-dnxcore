@@ -3,8 +3,9 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Data;
-using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities;
 using GrowingData.Mung.Core;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Relationizer {
 

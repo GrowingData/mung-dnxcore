@@ -6,12 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CsvToolkit;
-using CsvToolkit.Read;
 using System.Collections;
 using GrowingData.Utilities.Database;
 
-namespace GrowingData.Mung.Core {
+namespace GrowingData.Utilities.Csv {
 
 	/// <summary>
 	/// A munged data file is a 
@@ -21,7 +19,7 @@ namespace GrowingData.Mung.Core {
 		public int FieldNumber;
 	}
 
-	public class MsvReader : DbDataReader {
+	public class CsvReader : DbDataReader {
 
 		private LineReader _lineReader;
 		private IEnumerator<string[]> _cursor;
@@ -29,17 +27,12 @@ namespace GrowingData.Mung.Core {
 
 		private List<DbColumn> _columns;
 		public List<DbColumn> Columns { get { return _columns; } }
-		
+
 		public int RowNumber { get { return _lineReader.LineNumber; } }
 
 
-		public MsvReader(TextReader reader) {
-			_lineReader = new LineReader(new CsvReaderOptions() {
-				SeparatorChar = '\t',
-				FirstLineContainsHeaders = true,
-				InvalidTextAction = InvalidTextMode.Throw,
-				QuoteChar = '\"'
-			}, reader);
+		public CsvReader(TextReader reader, CsvReaderOptions options) {
+			_lineReader = new LineReader(options, reader);
 
 			_cursor = _lineReader.GetLines().GetEnumerator();
 
@@ -53,10 +46,11 @@ namespace GrowingData.Mung.Core {
 
 			var columns = new DbColumn[columnHeaders.Length];
 
-			
+
 
 			for (var i = 0; i < columnHeaders.Length; i++) {
-				var header = columnHeaders[i];
+				// Unquote headers
+				var header = columnHeaders[i].Replace("\"", "");
 				var splitHeader = header.Split(':');
 
 
@@ -68,9 +62,23 @@ namespace GrowingData.Mung.Core {
 					var mungType = MungType.Parse(typeHeader);
 
 					columns[i] = new DbColumn(columnName, mungType);
+				} else {
+					columns[i] = new DbColumn(header, MungType.Get(MungTypeCode.String));
+
 				}
 			}
 			_columns = columns.ToList();
+
+		}
+
+		public CsvReader(TextReader reader) : this(reader, new CsvReaderOptions() {
+			SeparatorChar = '\t',
+			FirstLineContainsHeaders = true,
+			InvalidTextAction = InvalidTextMode.Throw,
+			QuoteChar = '\"'
+		}) {
+
+
 		}
 		public override bool NextResult() {
 			return false;
@@ -112,11 +120,17 @@ namespace GrowingData.Mung.Core {
 				FieldNumber = fieldIndex
 			};
 
-			return MsvConverter.Read(val, _columns[fieldIndex].MungType.DatabaseType, readerState);
+			return CsvConverter.Read(val, _columns[fieldIndex].MungType.DatabaseType, readerState);
 
 		}
 
+		public  void Close() {
+			_lineReader.Dispose();
+		}
 
+		//public override DataTable GetSchemaTable() {
+		//	throw new NotImplementedException();
+		//}
 
 		public override bool GetBoolean(int ordinal) {
 			return (bool)GetValue(ordinal);
@@ -212,7 +226,7 @@ namespace GrowingData.Mung.Core {
 
 		public override bool IsDBNull(int ordinal) {
 			var val = _cursor.Current[ordinal].ToLower();
-			return MsvConverter.IsDBNull(val);
+			return CsvConverter.IsDBNull(val);
 
 		}
 

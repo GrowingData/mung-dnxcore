@@ -2,7 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
-using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities.Database;
 using System.Net;
 
 namespace GrowingData.Mung.Web.Models {
@@ -38,7 +38,7 @@ namespace GrowingData.Mung.Web.Models {
 					FROM graph G 
 					INNER JOIN dashboard D
 					ON G.dashboard_id = D.dashboard_id";
-				var graphs = cn.ExecuteAnonymousSql<Graph>(sql, null);
+				var graphs = cn.SelectAnonymous<Graph>(sql, null);
 
 				var grouped = graphs.GroupBy(g => g.DashboardId);
 
@@ -59,7 +59,7 @@ namespace GrowingData.Mung.Web.Models {
 						VALUES (@DashboardId, @Name, @Html, @X, @Y, @Width, @Height)
 						RETURNING graph_id";
 
-				GraphId = cn.DumpList<int>(sql, this).FirstOrDefault();
+				GraphId = cn.SelectList<int>(sql, this).FirstOrDefault();
 
 				return this;
 			}
@@ -80,7 +80,7 @@ namespace GrowingData.Mung.Web.Models {
 							width = @Width, 
 							height = @Height
 						WHERE graph_id = @GraphId";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 
 				return this;
 			}
@@ -109,7 +109,7 @@ namespace GrowingData.Mung.Web.Models {
 							WHERE graph_id = @GraphId
 							AND		dashboard_id = @DashboardId";
 
-					cn.ExecuteSql(sql, new {
+					cn.ExecuteNonQuery(sql, new {
 						ComponentId = GraphId,
 						DashboardId = dashboard.DashboardId
 					});

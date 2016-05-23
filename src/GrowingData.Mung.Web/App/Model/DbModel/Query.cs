@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities.Database;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -55,7 +55,7 @@ namespace GrowingData.Mung.Web.Models {
 		public static Query Get(string name) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM query WHERE name = @Name OR name = @DecodedName";
-				var query = cn.ExecuteAnonymousSql<Query>(sql, new { Name = name, DecodedName = WebUtility.UrlDecode(name) })
+				var query = cn.SelectAnonymous<Query>(sql, new { Name = name, DecodedName = WebUtility.UrlDecode(name) })
 					.FirstOrDefault();
 
 				return query;
@@ -65,7 +65,7 @@ namespace GrowingData.Mung.Web.Models {
 			using (var cn = DatabaseContext.Db.Mung()) {
 
 				var sql = @"SELECT * FROM query WHERE query_id = @QueryId";
-				var query = cn.ExecuteAnonymousSql<Query>(sql, new { QueryId = queryId })
+				var query = cn.SelectAnonymous<Query>(sql, new { QueryId = queryId })
 					.FirstOrDefault();
 
 				return query;
@@ -74,7 +74,7 @@ namespace GrowingData.Mung.Web.Models {
 		public static List<Query> List(int mungerId) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM query";
-				var queries = cn.ExecuteAnonymousSql<Query>(sql, null);
+				var queries = cn.SelectAnonymous<Query>(sql, null);
 				return queries;
 			}
 		}
@@ -98,7 +98,7 @@ namespace GrowingData.Mung.Web.Models {
 						RETURNING query_id
 					";
 
-				QueryId = cn.DumpList<int>(sql, this).FirstOrDefault();
+				QueryId = cn.SelectList<int>(sql, this).FirstOrDefault();
 				return this;
 			}
 		}
@@ -115,7 +115,7 @@ namespace GrowingData.Mung.Web.Models {
 							updated_at = @UpdatedAt
 						WHERE query_id = @QueryId
 					";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 
 				return this;
 			}
@@ -124,7 +124,7 @@ namespace GrowingData.Mung.Web.Models {
 		public void Delete() {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"DELETE FROM query WHERE query_id = @QueryId";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 			}
 			MungApp.Current.QueryEventProcessor.ReloadQueries();
 		}

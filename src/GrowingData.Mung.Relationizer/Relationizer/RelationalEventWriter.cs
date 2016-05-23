@@ -5,6 +5,7 @@ using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 using GrowingData.Mung.Core;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Relationizer {
 	/// <summary>

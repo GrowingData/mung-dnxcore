@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using GrowingData.Mung.Web.Models;
 using GrowingData.Mung.Core;
-using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities.Database;
 using System.IO;
 
 
@@ -96,7 +96,7 @@ ORDER BY t.name";
 
 			using (var cn = DatabaseContext.Db.Events()) {
 				var sql = @"SELECT * FROM mung.all WHERE event_type = @eventType AND at > @since";
-				using (var reader = cn.DumpReader(sql, new { eventType = eventType, since = since })) {
+				using (var reader = cn.ExecuteReader(sql, new { eventType = eventType, since = since })) {
 					if (!reader.Read()) {
 						return Json(new {
 							Success = false,

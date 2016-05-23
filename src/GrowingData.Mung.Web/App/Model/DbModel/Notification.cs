@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GrowingData.Utilities.DnxCore;
 using HtmlAgilityPack;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Web.Models {
 
@@ -76,27 +77,27 @@ namespace GrowingData.Mung.Web.Models {
 		public static List<Notification> List(int mungerId) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM notification ORDER BY name";
-				return cn.ExecuteAnonymousSql<Notification>(sql, null);
+				return cn.SelectAnonymous<Notification>(sql, null);
 			}
 		}
 
 		public static Notification Get(int notificationId) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM notification WHERE notification_id = @NotificationId";
-				return cn.ExecuteAnonymousSql<Notification>(sql, new { NotificationId = notificationId }).FirstOrDefault();
+				return cn.SelectAnonymous<Notification>(sql, new { NotificationId = notificationId }).FirstOrDefault();
 			}
 		}
 		public static Notification Get(string name) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM notification WHERE name = @Name";
-				return cn.ExecuteAnonymousSql<Notification>(sql, new { Name = name }).FirstOrDefault();
+				return cn.SelectAnonymous<Notification>(sql, new { Name = name }).FirstOrDefault();
 			}
 		}
 
 		public void Delete() {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"DELETE FROM notification WHERE name = @Name";
-				cn.ExecuteSql<Notification>(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 			}
 		}
 
@@ -118,7 +119,7 @@ namespace GrowingData.Mung.Web.Models {
 						VALUES (@Name, @EventType, @Template, @CreatedByMunger, @CreatedByMunger, @IsPaused)
 						RETURNING notification_id";
 
-				NotificationId = cn.DumpList<int>(sql, this).FirstOrDefault();
+				NotificationId = cn.SelectList<int>(sql, this).FirstOrDefault();
 
 				MungApp.Current.NotificationProcessor.ReloadNotifications();
 				return this;
@@ -136,7 +137,7 @@ namespace GrowingData.Mung.Web.Models {
 							updated_by_munger = @UpdatedByMunger,
 							updated_at = now() at time zone 'utc'
 						WHERE notification_id = @NotificationId";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 
 				MungApp.Current.NotificationProcessor.ReloadNotifications();
 				return this;

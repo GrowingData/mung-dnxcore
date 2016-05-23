@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Security.Cryptography;
 using System.IO;
 using System.Threading.Tasks;
-using System.Security.Cryptography;
 
-namespace GrowingData.Utilities.DnxCore {
+namespace GrowingData.Utilities {
 	public static class RandomString {
 		public static string Get(int length, string allowedChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789") {
 			if (length < 0) throw new ArgumentOutOfRangeException("length", "length cannot be less than zero.");
@@ -19,7 +19,6 @@ namespace GrowingData.Utilities.DnxCore {
 			// Guid.NewGuid and System.Random are not particularly random. By using a
 			// cryptographically-secure random number generator, the caller is always
 			// protected, regardless of use.
-            
 			using (var rng = RandomNumberGenerator.Create()) {
 				var result = new StringBuilder();
 				var buf = new byte[128];

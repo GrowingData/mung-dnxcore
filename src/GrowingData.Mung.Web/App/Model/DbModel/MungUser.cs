@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GrowingData.Mung;
 using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Web.Models {
 	public class Munger {
@@ -31,7 +32,7 @@ namespace GrowingData.Mung.Web.Models {
 				if (!_mungersAtStartupChecked) {
 					using (var cn = DatabaseContext.Db.Mung()) {
 						var sql = @"SELECT COUNT(*) FROM munger";
-						_mungersAtStartup = (int)cn.DumpList<long>(sql, null).FirstOrDefault();
+						_mungersAtStartup = (int)cn.SelectList<long>(sql, null).FirstOrDefault();
 						_mungersAtStartupChecked = true;
 					}
 				}
@@ -45,7 +46,7 @@ namespace GrowingData.Mung.Web.Models {
 		public static Munger Get(string email) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM munger WHERE email = @Email";
-				var munger = cn.ExecuteAnonymousSql<Munger>(sql, new { Email = email })
+				var munger = cn.SelectAnonymous<Munger>(sql, new { Email = email })
 					.FirstOrDefault();
 
 				return munger;
@@ -55,7 +56,7 @@ namespace GrowingData.Mung.Web.Models {
 		public static Munger Get(int mungerId) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM munger WHERE munger_id = @MungerId";
-				var munger = cn.ExecuteAnonymousSql<Munger>(sql, new { MungerId = mungerId })
+				var munger = cn.SelectAnonymous<Munger>(sql, new { MungerId = mungerId })
 					.FirstOrDefault();
 				return munger;
 			}
@@ -64,7 +65,7 @@ namespace GrowingData.Mung.Web.Models {
 		public bool Delete() {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"DELETE FROM munger WHERE munger_id = @MungerId ";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 			}
 			return true;
 		}
@@ -89,7 +90,7 @@ namespace GrowingData.Mung.Web.Models {
                         VALUES (@Name, @Email, @PasswordHash, @PasswordSalt, @IsAdmin)
 						RETURNING munger_id";
 
-				MungerId = cn.DumpList<int>(sql, this).FirstOrDefault();
+				MungerId = cn.SelectList<int>(sql, this).FirstOrDefault();
 
 				_mungersAtStartupChecked = false;
 
@@ -109,7 +110,7 @@ namespace GrowingData.Mung.Web.Models {
 							is_admin = @IsAdmin,
 							seen_at = @SeenAt
 						WHERE munger_id = @MungerId";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 				return this;
 
 			}

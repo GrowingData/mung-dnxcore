@@ -2,9 +2,9 @@
 using System.Data.Common;
 using System.Linq;
 using Microsoft.AspNet.Mvc;
-using GrowingData.Utilities.DnxCore;
 using GrowingData.Mung.Core;
 using GrowingData.Mung.Web.Models;
+using GrowingData.Utilities.Database;
 using System.IO;
 using System.Collections.Generic;
 using JWT;
@@ -51,7 +51,11 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 			Response.ContentType = "application/json";
 			try {
 				using (var cn = GetConnection(connectionId)) {
-					return Content(cn.DumpJsonRows(sql, null));
+					return new ApiResult(new {
+						Success = true,
+						Rows = cn.SelectRowsList(sql, null)
+					});
+
 				}
 			} catch (Exception ex) {
 				return new ApiResult(new { ErrorMessage = ex.Message });
@@ -78,7 +82,7 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 					since = d;
 				}
 			}
-			
+
 
 			if (since.HasValue) {
 				// Firstly go to the database and get everything after, since.
@@ -86,7 +90,7 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 					var sqlEventTypes = string.Join(",", eventTypes.Split(',').Select(x => $"'{x.Replace("'", "''")}'"));
 					var sql = $"SELECT * FROM mung.all WHERE at > @at AND event_type IN ({sqlEventTypes}) ORDER BY at ASC LIMIT 100";
 					List<MungServerEvent> events = new List<MungServerEvent>();
-					cn.ExecuteRow(sql, new { at = since.Value }, (reader) => {
+					cn.SelectForEach(sql, new { at = since.Value }, (reader) => {
 						events.Add(new MungServerEvent() {
 							LogTime = ((DateTime)reader["at"]).ToUniversalTime(),
 							Source = (string)reader["source"],

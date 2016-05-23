@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GrowingData.Mung.Core {
+namespace GrowingData.Utilities.Database {
 	public class MungTypeUnknownException : Exception {
 		public MungTypeUnknownException(string message) : base(message) { }
 	}

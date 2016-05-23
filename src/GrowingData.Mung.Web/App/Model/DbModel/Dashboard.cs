@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Web.Models {
 	public class Dashboard : IBracketsEditable {
@@ -23,7 +24,7 @@ namespace GrowingData.Mung.Web.Models {
 		public static Dashboard Get(string name) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM dashboard WHERE name = @Name OR name = @DecodedName";
-				var dashboard = cn.ExecuteAnonymousSql<Dashboard>(sql, new { Name = name, DecodedName = WebUtility.UrlDecode(name) })
+				var dashboard = cn.SelectAnonymous<Dashboard>(sql, new { Name = name, DecodedName = WebUtility.UrlDecode(name) })
 					.FirstOrDefault();
 
 				return dashboard;
@@ -33,7 +34,7 @@ namespace GrowingData.Mung.Web.Models {
 			using (var cn = DatabaseContext.Db.Mung()) {
 
 				var sql = @"SELECT * FROM dashboard WHERE dashboard_id = @DashboardId";
-				var dashboard = cn.ExecuteAnonymousSql<Dashboard>(sql, new { DashboardId = dashboardId })
+				var dashboard = cn.SelectAnonymous<Dashboard>(sql, new { DashboardId = dashboardId })
 					.FirstOrDefault();
 
 				return dashboard;
@@ -42,7 +43,7 @@ namespace GrowingData.Mung.Web.Models {
 		public static List<Dashboard> List(int mungerId) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM dashboard";
-				var dashboards = cn.ExecuteAnonymousSql<Dashboard>(sql, null);
+				var dashboards = cn.SelectAnonymous<Dashboard>(sql, null);
 				return dashboards;
 			}
 		}
@@ -63,7 +64,7 @@ namespace GrowingData.Mung.Web.Models {
 						RETURNING dashboard_id
 					";
 
-				DashboardId = cn.DumpList<int>(sql, this).FirstOrDefault();
+				DashboardId = cn.SelectList<int>(sql, this).FirstOrDefault();
 				return this;
 			}
 		}
@@ -77,7 +78,7 @@ namespace GrowingData.Mung.Web.Models {
 							updated_by_munger = @UpdatedByMungerId
 						WHERE dashboard_id = @DashboardId
 					";
-				cn.ExecuteSql(sql, null);
+				cn.ExecuteNonQuery(sql, null);
 
 				return this;
 			}
@@ -86,7 +87,7 @@ namespace GrowingData.Mung.Web.Models {
 		public void Delete() {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"DELETE FROM dashboard WHERE dashboard_id = @DashboardId";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 			}
 		}
 
@@ -99,7 +100,7 @@ namespace GrowingData.Mung.Web.Models {
 					INNER JOIN dashboard D
 					ON G.dashboard_id = D.dashboard_id
 					WHERE D.dashboard_id = @DashboardId";
-				var components = cn.ExecuteAnonymousSql<Graph>(sql, this);
+				var components = cn.SelectAnonymous<Graph>(sql, this);
 				return components;
 			}
 		}

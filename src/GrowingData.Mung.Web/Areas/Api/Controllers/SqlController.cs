@@ -3,9 +3,10 @@ using System.Data.Common;
 using Microsoft.AspNet.Mvc;
 using Microsoft.AspNet.Hosting;
 
-using GrowingData.Utilities.DnxCore;
 using GrowingData.Mung.Web.Models;
+using GrowingData.Utilities.Database;
 using Microsoft.AspNet.Cors;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 	public class MungSqlController : MungSecureController {
@@ -30,7 +31,7 @@ namespace GrowingData.Mung.Web.Areas.ApiData.Controllers {
 			Response.ContentType = "application/json";
 			try {
 				using (var cn = GetConnection(connectionId)) {
-					return Content(cn.DumpJsonRows(sql, null));
+					return Content(cn.ExecuteJsonRows(sql, null));
 				}
 			} catch (Exception ex) {
 				return Json(new { ErrorMessage = ex.Message });

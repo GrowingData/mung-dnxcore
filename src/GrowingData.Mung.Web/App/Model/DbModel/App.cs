@@ -5,7 +5,8 @@ using System.Linq;
 using System.Data.Common;
 using System.Data.SqlClient;
 
-using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Web.Models {
 	public class App {
@@ -66,7 +67,7 @@ namespace GrowingData.Mung.Web.Models {
 		/// <returns></returns>
 		public static List<App> List() {
 			using (var cn = DatabaseContext.Db.Mung()) {
-				var apps = cn.ExecuteAnonymousSql<App>(@"SELECT * FROM app", null);
+				var apps = cn.SelectAnonymous<App>(@"SELECT * FROM app", null);
 				return apps;
 			}
 		}
@@ -83,7 +84,7 @@ namespace GrowingData.Mung.Web.Models {
 						VALUES (@Name, @AppSecret, @AppKey, @CreatedByMunger, @CreatedByMunger)
 						RETURNING app_id ";
 
-				AppId = cn.ExecuteSql(sql, this);
+				AppId = cn.SelectList<int>(sql, this).FirstOrDefault();
 				_AppCache = List().ToDictionary(x => x.AppKey);
 
 				return true;
@@ -100,7 +101,7 @@ namespace GrowingData.Mung.Web.Models {
 		public bool Delete() {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"DELETE FROM app WHERE app_id = @AppId";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 
 				return true;
 			}

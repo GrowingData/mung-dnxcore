@@ -3,6 +3,7 @@ using System.Data;
 using NpgsqlTypes;
 using System.Collections.Generic;
 using System.Linq;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Core {
 	public class PostgresqlType {

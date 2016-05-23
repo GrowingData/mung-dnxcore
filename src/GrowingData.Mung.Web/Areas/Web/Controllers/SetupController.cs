@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNet.Mvc;
-using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities;
 using GrowingData.Mung.Web;
 using GrowingData.Mung.Web.Models;
 

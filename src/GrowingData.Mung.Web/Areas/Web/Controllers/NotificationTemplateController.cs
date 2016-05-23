@@ -16,6 +16,7 @@ using System.IO;
 using HtmlAgilityPack;
 using GrowingData.Utilities.DnxCore;
 using Microsoft.AspNet.Mvc.Filters;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
@@ -80,7 +81,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 			}
 			using (var cn = DatabaseContext.Db.Events()) {
 				var sql = @"SELECT * FROM mung.all WHERE event_type = @eventType ORDER BY at DESC LIMIT 1";
-				using (var reader = cn.DumpReader(sql, new { eventType = eventType })) {
+				using (var reader = cn.ExecuteReader(sql, new { eventType = eventType })) {
 					if (!reader.Read()) {
 						return Json(new {
 							Success = false,

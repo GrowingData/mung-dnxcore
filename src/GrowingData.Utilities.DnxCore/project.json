@@ -1,4 +1,4 @@
-﻿{
+{
 	"authors": [ "Terence Siganakis" ],
 	"dependencies": {
 		"Newtonsoft.Json": "7.0.1",
@@ -9,7 +9,8 @@
 		"System.Reflection.TypeExtensions": "4.1.0-beta-23516",
 		"System.Security.Cryptography.Primitives": "4.0.0-beta-23516",
 		"System.Security.Cryptography.Algorithms": "4.0.0-beta-23516",
-		"System.Threading.Thread": "4.0.0-beta-23516"
+		"System.Threading.Thread": "4.0.0-beta-23516",
+		"Npgsql": "3.1.0-alpha6"
 	},
 	"description": "GrowingData.Utilities.DnxCore Class Library",
 	"frameworks": {

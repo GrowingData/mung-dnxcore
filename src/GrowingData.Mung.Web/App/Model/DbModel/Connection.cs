@@ -6,7 +6,9 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using Npgsql;
 using GrowingData.Mung.Core;
-using GrowingData.Utilities.DnxCore;
+using GrowingData.Utilities;
+using GrowingData.Utilities.Database;
+
 
 namespace GrowingData.Mung.Web.Models {
 	public class Connection {
@@ -148,7 +150,7 @@ namespace GrowingData.Mung.Web.Models {
 		/// <returns></returns>
 		public static Connection Get(int connectionId) {
 			using (var cn = DatabaseContext.Db.Mung()) {
-				var connection = cn.ExecuteAnonymousSql<Connection>(@"
+				var connection = cn.SelectAnonymous<Connection>(@"
 					SELECT * FROM connection WHERE connection_id = @connection_id",
 					new { connection_id = connectionId }
 				)
@@ -163,7 +165,7 @@ namespace GrowingData.Mung.Web.Models {
 		/// <returns></returns>
 		public static Connection Get(string connectionName) {
 			using (var cn = DatabaseContext.Db.Mung()) {
-				var connection = cn.ExecuteAnonymousSql<Connection>(@"
+				var connection = cn.SelectAnonymous<Connection>(@"
 					SELECT * FROM connection WHERE name = @connectionName",
 					new { connectionName = connectionName }
 				)
@@ -178,7 +180,7 @@ namespace GrowingData.Mung.Web.Models {
 		/// <returns></returns>
 		public static List<Connection> List() {
 			using (var cn = DatabaseContext.Db.Mung()) {
-				var connections = cn.ExecuteAnonymousSql<Connection>(
+				var connections = cn.SelectAnonymous<Connection>(
 					@"SELECT * FROM connection",
 					null
 				);
@@ -210,7 +212,7 @@ namespace GrowingData.Mung.Web.Models {
 							VALUES (@ProviderId, @Name, @ConnectionString, @CreatedByMunger, @UpdatedByMunger)
 							RETURNING connection_id";
 
-				ConnectionId = cn.ExecuteSql(sql, this);
+				ConnectionId = cn.SelectList<int>(sql, this).FirstOrDefault();
 				return this;
 
 			}
@@ -224,7 +226,7 @@ namespace GrowingData.Mung.Web.Models {
 								connection_string = @ConnectionString, 
 								updated_at = @UpdatedAt
 							WHERE connection_id = @ConnectionId";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 				return this;
 			}
 		}
@@ -236,7 +238,7 @@ namespace GrowingData.Mung.Web.Models {
 		public bool Delete() {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"DELETE FROM Connection WHERE ConnectionId = @ConnectionId";
-				cn.ExecuteSql(sql, this);
+				cn.ExecuteNonQuery(sql, this);
 
 				return true;
 			}

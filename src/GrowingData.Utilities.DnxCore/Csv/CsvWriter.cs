@@ -6,14 +6,14 @@ using System.IO;
 using System.Linq;
 using GrowingData.Utilities.Database;
 
-namespace GrowingData.Mung.Core {
-	public class MsvWriter : IDisposable {
+namespace GrowingData.Utilities.Csv {
+	public class CsvWriter : IDisposable {
 		private static HashSet<Type> _validTypes = new HashSet<Type>(MungType.ValidTypes.Select(x => x.DotNetType));
 
 
 		private TextWriter _writer;
 		private List<DbColumn> _columns;
-		public MsvWriter(TextWriter writer) {
+		public CsvWriter(TextWriter writer) {
 			_writer = writer;
 		}
 
@@ -35,7 +35,7 @@ namespace GrowingData.Mung.Core {
 			}
 
 			for (var i = 0; i < _columns.Count; i++) {
-				_writer.Write(MsvConverter.Serialize(reader[_columns[i].ColumnName]));
+				_writer.Write(CsvConverter.Serialize(reader[_columns[i].ColumnName]));
 				_writer.Write("\t");
 			}
 			_writer.Write("\n");
@@ -52,7 +52,7 @@ namespace GrowingData.Mung.Core {
 
 			for (var i = 0; i < _columns.Count; i++) {
 				if (reader.ContainsKey(_columns[i].ColumnName)) {
-					_writer.Write(MsvConverter.Serialize(reader[_columns[i].ColumnName]));
+					_writer.Write(CsvConverter.Serialize(reader[_columns[i].ColumnName]));
 					_writer.Write("\t");
 				} else {
 					_writer.Write("NULL\t");
@@ -82,7 +82,7 @@ namespace GrowingData.Mung.Core {
 		/// <returns>Number of rows written</returns>
 		public static int Write(DbDataReader reader, TextWriter writer) {
 			try {
-				using (MsvWriter msv = new MsvWriter(writer)) {
+				using (CsvWriter msv = new CsvWriter(writer)) {
 					int rowCount = 0;
 					while (reader.Read()) {
 

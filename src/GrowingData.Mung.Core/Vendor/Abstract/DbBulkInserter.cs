@@ -5,6 +5,7 @@ using System.Data.Common;
 using System.Linq;
 using System.Text;
 using GrowingData.Mung.Core;
+using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Core {
 	public abstract class DbBulkInserter {

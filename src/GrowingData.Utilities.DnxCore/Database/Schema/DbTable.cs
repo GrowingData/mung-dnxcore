@@ -3,7 +3,7 @@ using System.Data.Common;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GrowingData.Mung.Core {
+namespace GrowingData.Utilities.Database {
 	public class DbTable {
 		public string TableName;
 		public string SchemaName;
