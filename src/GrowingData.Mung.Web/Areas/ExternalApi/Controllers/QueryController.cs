@@ -36,7 +36,15 @@ namespace GrowingData.Mung.Web.Areas.ExternalApi.Controllers {
 			}
 
 
-			var sql = Request.Query["sql"].ToString();
+			var sql = Request.Form["sql"].ToString().Trim();
+			if (!sql.ToUpper().StartsWith("SELECT") || sql.Contains(";")) {
+				return new ApiResult(new {
+					Success = false,
+					Message = "Only SELECT queries are allowed"
+				});
+
+			}
+
 			int? connectionId = new int?();
 			var connectionIdString = Request.Query["connectionId"];
 			if (!string.IsNullOrEmpty(connectionIdString)) {
