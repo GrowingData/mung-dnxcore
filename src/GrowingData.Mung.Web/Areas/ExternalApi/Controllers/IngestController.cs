@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using GrowingData.Mung.Core;
 using GrowingData.Mung.Web.Models;
 using System.IO;

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Data.Common;
 using System.IO;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 
 using GrowingData.Utilities.DnxCore;
 using GrowingData.Mung.Web.Models;
-using Microsoft.AspNet.Cors;
+using Microsoft.AspNetCore.Cors;
 using JWT;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace GrowingData.Mung.Web {
 

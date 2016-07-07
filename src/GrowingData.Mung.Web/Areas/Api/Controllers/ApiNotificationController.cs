@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 	public class ApiNotificationController : MungSecureController {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Data.Common;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using System.Linq;
 using System.Text;
 using System.Data;
 using System.Threading.Tasks;
@@ -13,15 +13,15 @@ namespace GrowingData.Utilities.Database {
 	public static class DataReaderExtensions {
 
 
-		public static List<DbRow> SelectRows(this DbDataReader reader) {
+		public static List<SqlRow> SelectRows(this IDataReader reader) {
 
 			List<string> columnNames = Enumerable.Range(0, reader.FieldCount)
 					.Select(x => reader.GetName(x))
 					.ToList();
 
-			var rows = new List<DbRow>();
+			var rows = new List<SqlRow>();
 			while (reader.Read()) {
-				var row = new DbRow();
+				var row = new SqlRow();
 				for (var i = 0; i < columnNames.Count; i++) {
 					row[columnNames[i]] = reader[i];
 				}
@@ -32,13 +32,6 @@ namespace GrowingData.Utilities.Database {
 
 
 		}
-		private static string KeyFromColumnName(string columnName) {
-			return columnName.ToLower().Replace("_", "");
-		}
-		private static string KeyFromProperty(string propertyName) {
-			return propertyName.ToLower().Replace("_", "");
-		}
-
 
 		/// <summary>
 		/// Binds the current row in the reader to a new object of Type T
@@ -46,47 +39,57 @@ namespace GrowingData.Utilities.Database {
 		/// <typeparam name="T"></typeparam>
 		/// <param name="r"></param>
 		/// <returns></returns>
-		public static T ReflectResult<T>(this DbDataReader r) where T : new() {
-
+		public static T ReflectResult<T>(DbDataReader r) where T : new() {
 
 			var type = typeof(T);
-
 			var properties = type.GetProperties().ToDictionary(x => x.Name);
 			var fields = type.GetFields().ToDictionary(x => x.Name);
-			
+
+			HashSet<string> columnNames = null;
+
 			var obj = new T();
-
-			var columnNames = new Dictionary<string, string>();
-			for (var i = 0; i < r.FieldCount; i++) {
-				var name = r.GetName(i);
-				var key = KeyFromColumnName(name);
-
-				columnNames[key] = name;
+			if (columnNames == null) {
+				columnNames = new HashSet<string>();
+				for (var i = 0; i < r.FieldCount; i++) {
+					columnNames.Add(r.GetName(i));
+				}
 			}
-
 
 			foreach (var p in properties) {
-				var pKey = KeyFromProperty(p.Key);
-				if (columnNames.ContainsKey(pKey)) {
-					var columnName = columnNames[pKey];
-					if (r[columnName] != DBNull.Value) {
-						p.Value.SetValue(obj, r[columnName]);
+				if (columnNames.Contains(p.Key)) {
+					if (r[p.Key] != DBNull.Value) {
+						p.Value.SetValue(obj, r[p.Key]);
+					} else {
+						if (p.Value.PropertyType.GetTypeInfo().IsClass) {
+							p.Value.SetValue(obj, null);
+						}
+						// Nullable value like "int?"
+						if (Nullable.GetUnderlyingType(p.Value.PropertyType) != null) {
+							p.Value.SetValue(obj, null);
+
+						}
+					}
+				}
+			}
+			foreach (var p in fields) {
+				if (columnNames.Contains(p.Key)) {
+					if (r[p.Key] != DBNull.Value) {
+						p.Value.SetValue(obj, r[p.Key]);
+					} else {
+						if (p.Value.FieldType.GetTypeInfo().IsClass) {
+							p.Value.SetValue(obj, null);
+						}
+						// Nullable value like "int?"
+						if (Nullable.GetUnderlyingType(p.Value.FieldType) != null) {
+							p.Value.SetValue(obj, null);
+						}
+
 					}
 				}
 			}
 
-			foreach (var p in fields) {
-				var pKey = KeyFromProperty(p.Key);
-				if (columnNames.ContainsKey(pKey)) {
-					var columnName = columnNames[pKey];
-					if (r[columnName] != DBNull.Value) {
-						p.Value.SetValue(obj, r[columnName]);
-					}
-				}
-			}
 			return obj;
 		}
 
 	}
-
 }

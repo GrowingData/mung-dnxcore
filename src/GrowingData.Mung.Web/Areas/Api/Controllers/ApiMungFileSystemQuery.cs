@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 using GrowingData.Mung.Web.Models;
 using GrowingData.Utilities.DnxCore;
 
@@ -26,7 +26,7 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 
 			var query = Query.Get(name);
 			if (query == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 			query.Name = newQueryName;
 			query.Update();
@@ -44,7 +44,7 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 		public ActionResult Read(string name) {
 			var query = Query.Get(name);
 			if (query == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 
 			return Content(query.Code);

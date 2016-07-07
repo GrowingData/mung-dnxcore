@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Http;
-using Microsoft.AspNet;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore;
 using GrowingData.Mung;
 using GrowingData.Mung.Web.Models;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using GrowingData.Utilities;
 
 using Newtonsoft.Json;

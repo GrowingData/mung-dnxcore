@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GrowingData.Utilities.Database;
 
-namespace GrowingData.Mung.Core {
+namespace GrowingData.Utilities.Database {
 
 
 	public class SqlServerType {

@@ -24,13 +24,13 @@ namespace GrowingData.Mung.Web.Models {
 			}
 		}
 
-		public DbBulkInserter GetBulkInserter(Func<DbConnection> targetConnection, string targetSchema, string targetTable) {
+		public DbBulkInserter GetBulkInserter(Func<DbConnection> targetConnection) {
 
 			if (Name == "SQL Server") {
-				throw new NotImplementedException("SQL Server doesn't have a bulk inserter working in DNX Core");
+				return new SqlServerBulkInserter(targetConnection);
 			}
 			if (Name == "PostgreSQL") {
-				return new PostgresqlBulkInserter(targetConnection, targetSchema, targetTable);
+				return new PostgresqlBulkInserter(targetConnection);
 			}
 			throw new Exception($"Unable to load a DbBulkInserter for Provider: {Name}");
 		}

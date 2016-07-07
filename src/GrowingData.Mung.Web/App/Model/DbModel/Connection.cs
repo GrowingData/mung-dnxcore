@@ -60,16 +60,16 @@ namespace GrowingData.Mung.Web.Models {
 			}
 		}
 
-		public List<DbTable> GetTables() {
+		public List<SqlTable> GetTables() {
 			var reader = Provider.GetSchemaReader(GetConnection);
 			return reader.GetTables();
 		}
-		public List<DbTable> GetTables(string schema) {
+		public List<SqlTable> GetTables(string schema) {
 			var reader = Provider.GetSchemaReader(GetConnection);
 			return reader.GetTables();
 
 		}
-		public DbTable GetTable(string schema, string table) {
+		public SqlTable GetTable(string schema, string table) {
 			var reader = Provider.GetSchemaReader(GetConnection);
 			return reader.GetTables().FirstOrDefault();
 		}
@@ -105,18 +105,18 @@ namespace GrowingData.Mung.Web.Models {
 		/// <param name="command"></param>
 		/// <param name="parameters"></param>
 		/// <param name="desintationSchema"></param>
-		/// <param name="desginationTable"></param>
+		/// <param name="destinationTable"></param>
 		public void BulkInsertTo(string sourceCommand,
-			Connection destinationConnection, string desintationSchema, string desginationTable,
+			Connection destinationConnection, string desintationSchema, string destinationTable,
 			Dictionary<string, object> parameters, Action<DbDataReader> eachRow) {
 
-			var inserter = destinationConnection.Provider.GetBulkInserter(destinationConnection.GetConnection, desintationSchema, desginationTable);
+			var inserter = destinationConnection.Provider.GetBulkInserter(destinationConnection.GetConnection);
 
 			using (var sourceCn = GetConnection()) {
 
 				using (var cmd = sourceCn.CreateCommand(sourceCommand, parameters)) {
 					using (var reader = cmd.ExecuteReader()) {
-						inserter.BulkInsert(reader, eachRow);
+						inserter.BulkInsert(desintationSchema, destinationTable, reader, eachRow);
 					}
 
 				}

@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 using GrowingData.Mung.Web.Models;
 using GrowingData.Utilities.DnxCore;
 
@@ -21,11 +21,11 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 		public ActionResult Read(string dashboardName, string graphName) {
 			var dashboard = Dashboard.Get(dashboardName);
 			if (dashboard == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 			var graph = dashboard.GetGraphs().FirstOrDefault(g => g.Name == graphName);
 			if (graph == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 			return Content(graph.Html);
 
@@ -36,7 +36,7 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 		public ActionResult Write(string dashboardName, string graphName) {
 			var dashboard = Dashboard.Get(dashboardName);
 			if (dashboard == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 			var graphs = dashboard.GetGraphs();
 			var graph = graphs.FirstOrDefault(g => g.Name == graphName);
@@ -81,11 +81,11 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 		public ActionResult Delete(string dashboardName, string graphName) {
 			var dashboard = Dashboard.Get(dashboardName);
 			if (dashboard == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 			var graph = dashboard.GetGraphs().FirstOrDefault(g => g.Name == graphName);
 			if (graph == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 			graph.Delete(dashboard);
 
@@ -102,11 +102,11 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 		public ActionResult SaveGraphSize(string dashboardName, string graphName, float x, float y, float height, float width) {
 			var dashboard = Dashboard.Get(dashboardName);
 			if (dashboard == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 			var graph = dashboard.GetGraphs().FirstOrDefault(g => g.Name == graphName);
 			if (graph == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 
 			graph.X = x;
@@ -124,11 +124,11 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 		public ActionResult RenameGraph(string dashboardName, string graphName) {
 			var dashboard = Dashboard.Get(dashboardName);
 			if (dashboard == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 			var graph = dashboard.GetGraphs().FirstOrDefault(g => g.Name == graphName);
 			if (graph == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 
 			var newPath = Request.Form["newPath"].ToString();
@@ -139,7 +139,7 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 
 			var newDashboard = Dashboard.Get(newDashboardName);
 			if (newDashboard == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 
 			graph.DashboardId = newDashboard.DashboardId;

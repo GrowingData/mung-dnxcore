@@ -26,22 +26,22 @@ namespace GrowingData.Mung.Relationizer {
 		public int AppId;
 		public DateTime LogTime;
 
-		private List<DbColumn> _schema;
+		private List<SqlColumn> _schema;
 		private Dictionary<string, object> _values;
 
 		public Dictionary<string, object> Values { get { return _values; } }
 
-		public IEnumerable<DbColumn> Schema { get { return _schema; } }
+		public IEnumerable<SqlColumn> Schema { get { return _schema; } }
 
 		public void AddField(string name, MungType type, object value) {
-			var field = new DbColumn(name, type);
+			var field = new SqlColumn(name, type);
 			_schema.Add(field);
 			_values[field.ColumnName] = value;
 
 		}
 
 		public RelationalEvent(MungServerEvent evt) {
-			_schema = new List<DbColumn>();
+			_schema = new List<SqlColumn>();
 			_values = new Dictionary<string, object>();
 
 			Source = evt.Source;

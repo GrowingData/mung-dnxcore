@@ -5,12 +5,11 @@ using Newtonsoft.Json.Linq;
 using NpgsqlTypes;
 using System.Collections.Generic;
 using Npgsql;
-using GrowingData.Mung.Core;
-using GrowingData.Utilities.Database;
+using GrowingData.Utilities.Csv;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GrowingData.Mung.Core {
+namespace GrowingData.Utilities.Database {
 	public abstract class DbSchemaReader {
 
 		private Func<DbConnection> _connectionFactory;
@@ -38,18 +37,18 @@ namespace GrowingData.Mung.Core {
 			_connectionFactory = cn;
 		}
 
-		public List<DbTable> GetTables() {
+		public List<SqlTable> GetTables() {
 			return GetTables(null, null);
 		}
 
-		public List<DbTable> GetTables(string schema) {
+		public List<SqlTable> GetTables(string schema) {
 			return GetTables(schema, null);
 		}
 
-		public List<DbTable> GetTables(string schema, string table) {
+		public List<SqlTable> GetTables(string schema, string table) {
 
 
-			var tables = new Dictionary<string, DbTable>();
+			var tables = new Dictionary<string, SqlTable>();
 			using (var cn = _connectionFactory()) {
 				using (var cmd = cn.CreateCommand()) {
 					cmd.CommandText = SchemaSql;
@@ -64,17 +63,17 @@ namespace GrowingData.Mung.Core {
 							var columnName = (string)reader["column_name"];
 							var columnType = (string)reader["data_type"];
 
-							DbTable tbl = null;
+							SqlTable tbl = null;
 
 							if (!tables.ContainsKey(tableName)) {
-								tbl = new DbTable(tableName, tableSchema);
+								tbl = new SqlTable(tableName, tableSchema);
 								tables[tableName] = tbl;
 							} else {
 								tbl = tables[tableName];
 							}
 							var type = TypeConverter.GetTypeFromInformationSchema(columnType);
 							if (type != null) {
-								tbl.Columns.Add(new DbColumn(columnName, type));
+								tbl.Columns.Add(new SqlColumn(columnName, type));
 							}
 						}
 					}

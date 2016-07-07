@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+
 using System;
-using Microsoft.AspNet.StaticFiles;
-using Microsoft.AspNet.Builder;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Mvc.ViewEngines;
+using Microsoft.AspNetCore.StaticFiles;
+
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
 
 using GrowingData.Mung.Web.Areas.Dashboards.Controllers;
@@ -19,9 +21,9 @@ namespace GrowingData.Mung.Web {
 
 			// Set up configuration sources.
 			var builder = new ConfigurationBuilder()
-				.AddJsonFile("config.json")
-				//All environment variables in the process's context flow in as configuration values.
-				.AddEnvironmentVariables();
+				.AddJsonFile("config.json");
+			//All environment variables in the process's context flow in as configuration values.
+			//.AddEnvironmentVariables();
 
 			Configuration = builder.Build();
 
@@ -42,7 +44,7 @@ namespace GrowingData.Mung.Web {
 			Console.WriteLine("ConfigureServices");
 
 			services.AddAuthentication();
-			
+
 			var mvc = services.AddMvc();
 		}
 
@@ -60,10 +62,10 @@ namespace GrowingData.Mung.Web {
 				app.UseStatusCodePages();
 				app.UseDeveloperExceptionPage();
 			}
-			
 
 
-			app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
+
+			//app.UseIISPlatformHandler(options => options.AuthenticationDescriptions.Clear());
 
 			// Static file handlers and mime types
 			var sfo = new StaticFileOptions {
@@ -75,10 +77,10 @@ namespace GrowingData.Mung.Web {
 			app.UseStaticFiles(sfo);
 			// 
 
-			app.UseCookieAuthentication(options => {
-				options.AutomaticAuthenticate = true;
-				options.LoginPath = $"/{Urls.LOGIN}";
-				options.LogoutPath = $"/{Urls.LOGOUT}";
+			app.UseCookieAuthentication(new CookieAuthenticationOptions() {
+				AutomaticAuthenticate = true,
+				LoginPath = $"/{Urls.LOGIN}",
+				LogoutPath = $"/{Urls.LOGOUT}",
 			});
 
 			app.UseDeveloperExceptionPage();
@@ -90,9 +92,5 @@ namespace GrowingData.Mung.Web {
 
 		}
 
-		// Entry point for the application.
-		public static void Main(string[] args) {
-			WebApplication.Run<Startup>(args);
-		}
 	}
 }

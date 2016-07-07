@@ -6,6 +6,7 @@ using System.Data;
 using GrowingData.Utilities;
 using GrowingData.Mung.Core;
 using GrowingData.Utilities.Database;
+using GrowingData.Utilities.Csv;
 
 namespace GrowingData.Mung.Relationizer {
 
@@ -17,18 +18,18 @@ namespace GrowingData.Mung.Relationizer {
 		public const string FilePrefixActive = "active";
 		public const string FilePrefixComplete = "complete";
 
-		public static List<DbColumn> DefaultColumns = new List<DbColumn>() {
-			{new DbColumn("_id_", MungType.Get(typeof(string))) },
-			{new DbColumn("_parentId_",  MungType.Get(typeof(string))) },
-			{new DbColumn("_at_",  MungType.Get(typeof(DateTime))) },
-			{new DbColumn("_source_",  MungType.Get(typeof(string))) },
-			{new DbColumn("_appId_",  MungType.Get(typeof(int))) },
+		public static List<SqlColumn> DefaultColumns = new List<SqlColumn>() {
+			{new SqlColumn("_id_", MungType.Get(typeof(string))) },
+			{new SqlColumn("_parentId_",  MungType.Get(typeof(string))) },
+			{new SqlColumn("_at_",  MungType.Get(typeof(DateTime))) },
+			{new SqlColumn("_source_",  MungType.Get(typeof(string))) },
+			{new SqlColumn("_appId_",  MungType.Get(typeof(int))) },
 		};
 
 		private object _locker = new object();
 
 		private StreamWriter _currentStream;
-		private MsvWriter _writer;
+		private CsvWriter _writer;
 
 		private string _basePath;
 		private string _time;
@@ -36,7 +37,7 @@ namespace GrowingData.Mung.Relationizer {
 		private string _parentEvent;
 		private string _schemaHash;
 
-		private SortedList<string, DbColumn> _schema;
+		private SortedList<string, SqlColumn> _schema;
 
 		public string SchemaHash { get { return _schemaHash; } }
 		public string TimeString { get { return _time; } }
@@ -57,12 +58,12 @@ namespace GrowingData.Mung.Relationizer {
 			return fileName;
 		}
 
-		public RelationalEventFile(string basePath, string time, string eventName, string parentEvent, SortedList<string, DbColumn> schema) {
+		public RelationalEventFile(string basePath, string time, string eventName, string parentEvent, SortedList<string, SqlColumn> schema) {
 			_basePath = basePath;
 			_time = time;
 			_eventName = eventName;
 			_parentEvent = parentEvent;
-			_schema = new SortedList<string, DbColumn>(schema);
+			_schema = new SortedList<string, SqlColumn>(schema);
 
 			_schemaHash = GetSchemaHash(schema);
 
@@ -74,7 +75,7 @@ namespace GrowingData.Mung.Relationizer {
 				var fileStream = File.Open(GetFilepath(FilePrefixActive), FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
 				_currentStream = new StreamWriter(fileStream);
 
-				_writer = new MsvWriter(_currentStream);
+				_writer = new CsvWriter(_currentStream);
 
 				WriteHeader(_currentStream, _schema);
 			}
@@ -96,16 +97,16 @@ namespace GrowingData.Mung.Relationizer {
 		}
 
 
-		public void WriteHeader(StreamWriter writer, SortedList<string, DbColumn> schema) {
-			var columns = new List<DbColumn>();
-			columns.Add(new DbColumn("_id_", MungType.Get(typeof(string))));
+		public void WriteHeader(StreamWriter writer, SortedList<string, SqlColumn> schema) {
+			var columns = new List<SqlColumn>();
+			columns.Add(new SqlColumn("_id_", MungType.Get(typeof(string))));
 			if (_parentEvent != null) {
-				columns.Add(new DbColumn("_pid_", MungType.Get(typeof(string))));
+				columns.Add(new SqlColumn("_pid_", MungType.Get(typeof(string))));
 			}
 
-			columns.Add(new DbColumn("_at_", MungType.Get(typeof(DateTime))));
-			columns.Add(new DbColumn("_source_", MungType.Get(typeof(string))));
-			columns.Add(new DbColumn("_app_", MungType.Get(typeof(string))));
+			columns.Add(new SqlColumn("_at_", MungType.Get(typeof(DateTime))));
+			columns.Add(new SqlColumn("_source_", MungType.Get(typeof(string))));
+			columns.Add(new SqlColumn("_app_", MungType.Get(typeof(string))));
 
 
 			foreach (var c in schema.Values) {
@@ -115,7 +116,7 @@ namespace GrowingData.Mung.Relationizer {
 			_writer.WriteHeader(columns);
 		}
 
-		public void WriteRow(StreamWriter writer, SortedList<string, DbColumn> schema, RelationalEvent evt) {
+		public void WriteRow(StreamWriter writer, SortedList<string, SqlColumn> schema, RelationalEvent evt) {
 			lock (_locker) {
 				var values = new Dictionary<string, object>();
 				values.Add("_id_", evt.Id);
@@ -135,7 +136,7 @@ namespace GrowingData.Mung.Relationizer {
 			}
 		}
 
-		public static string GetSchemaHash(SortedList<string, DbColumn> schema) {
+		public static string GetSchemaHash(SortedList<string, SqlColumn> schema) {
 			var schemaString = string.Join("|", schema.Values.Select(x => string.Format("{0}:{1}", x.ColumnName, x.MungType)));
 			return schemaString.HashStringMD5();
 		}

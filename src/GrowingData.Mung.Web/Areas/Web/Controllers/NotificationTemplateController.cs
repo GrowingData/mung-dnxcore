@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Mvc.Rendering;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using GrowingData.Mung;
 using GrowingData.Utilities;
 using System.Net.Http;
@@ -15,7 +15,7 @@ using GrowingData.Mung.Core;
 using System.IO;
 using HtmlAgilityPack;
 using GrowingData.Utilities.DnxCore;
-using Microsoft.AspNet.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Filters;
 using GrowingData.Utilities.Database;
 
 namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
@@ -115,7 +115,7 @@ namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {
 
 		public string WriteTemplate(string name, string templateCode) {
 			var wwwRoot = _env.WebRootPath;
-			var appRoot = new DirectoryInfo(_env.MapPath("")).Parent.FullName;
+			var appRoot = new DirectoryInfo(wwwRoot).Parent.FullName;
 
 			string[] templateParts = new string[] { "Areas", "Web", "Views", "NotificationTemplate", "Email" };
 			

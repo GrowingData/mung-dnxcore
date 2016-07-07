@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GrowingData.Utilities.Database;
 
-namespace GrowingData.Mung.Core {
+namespace GrowingData.Utilities.Database {
 	public abstract class DbTypeConverter {
 
 		public abstract string GetCreateColumnDefinition(MungType type);
@@ -12,7 +11,7 @@ namespace GrowingData.Mung.Core {
 
 
 		public static SqlServerTypeConverter SqlServer = new SqlServerTypeConverter();
-		public static PostgresqlDbTypeConverter Postgresql = new PostgresqlDbTypeConverter();
+		public static PostgresqlTypeConverter Postgresql = new PostgresqlTypeConverter();
 
 	}
 }

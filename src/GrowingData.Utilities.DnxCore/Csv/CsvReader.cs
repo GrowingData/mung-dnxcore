@@ -25,8 +25,8 @@ namespace GrowingData.Utilities.Csv {
 		private IEnumerator<string[]> _cursor;
 
 
-		private List<DbColumn> _columns;
-		public List<DbColumn> Columns { get { return _columns; } }
+		private List<SqlColumn> _columns;
+		public List<SqlColumn> Columns { get { return _columns; } }
 
 		public int RowNumber { get { return _lineReader.LineNumber; } }
 
@@ -44,7 +44,7 @@ namespace GrowingData.Utilities.Csv {
 			// columnHeaders in the format "<name>:<type>"
 			var columnHeaders = _cursor.Current;
 
-			var columns = new DbColumn[columnHeaders.Length];
+			var columns = new SqlColumn[columnHeaders.Length];
 
 
 
@@ -61,9 +61,9 @@ namespace GrowingData.Utilities.Csv {
 
 					var mungType = MungType.Parse(typeHeader);
 
-					columns[i] = new DbColumn(columnName, mungType);
+					columns[i] = new SqlColumn(columnName, mungType);
 				} else {
-					columns[i] = new DbColumn(header, MungType.Get(MungTypeCode.String));
+					columns[i] = new SqlColumn(header, MungType.Get(MungTypeCode.String));
 
 				}
 			}
@@ -123,15 +123,7 @@ namespace GrowingData.Utilities.Csv {
 			return CsvConverter.Read(val, _columns[fieldIndex].MungType.DatabaseType, readerState);
 
 		}
-
-		public  void Close() {
-			_lineReader.Dispose();
-		}
-
-		//public override DataTable GetSchemaTable() {
-		//	throw new NotImplementedException();
-		//}
-
+		
 		public override bool GetBoolean(int ordinal) {
 			return (bool)GetValue(ordinal);
 		}

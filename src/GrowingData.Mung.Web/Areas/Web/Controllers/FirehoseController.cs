@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using GrowingData.Mung;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Hosting;
 using GrowingData.Mung.Web.Models;
 
 namespace GrowingData.Mung.Web.Areas.Dashboards.Controllers {

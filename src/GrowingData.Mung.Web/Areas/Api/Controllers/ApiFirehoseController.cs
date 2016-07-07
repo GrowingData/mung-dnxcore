@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Cors;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Cors;
 
 namespace GrowingData.Mung.Web.Areas.DashboardApi.Controllers {
 	public class ApiFirehoseController : MungSecureController {

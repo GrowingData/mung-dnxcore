@@ -12,12 +12,12 @@ namespace GrowingData.Utilities.Csv {
 
 
 		private TextWriter _writer;
-		private List<DbColumn> _columns;
+		private List<SqlColumn> _columns;
 		public CsvWriter(TextWriter writer) {
 			_writer = writer;
 		}
 
-		public void WriteHeader(IEnumerable<DbColumn> columns) {
+		public void WriteHeader(IEnumerable<SqlColumn> columns) {
 
 			_columns = columns.ToList();
 			_writer.Write(string.Join("\t", _columns.Select(c => $"{c.ColumnName}:{c.MungType}")));
@@ -87,7 +87,7 @@ namespace GrowingData.Utilities.Csv {
 					while (reader.Read()) {
 
 						if (rowCount == 0) {
-							List<DbColumn> columns = new List<DbColumn>();
+							List<SqlColumn> columns = new List<SqlColumn>();
 
 
 							List<string> names = new List<string>();
@@ -103,7 +103,7 @@ namespace GrowingData.Utilities.Csv {
 									throw new TypeLoadException($"Unable to work with Type: {type}");
 								}
 
-								columns.Add(new DbColumn(name, MungType.Get(type)));
+								columns.Add(new SqlColumn(name, MungType.Get(type)));
 							}
 							msv.WriteHeader(columns);
 						}

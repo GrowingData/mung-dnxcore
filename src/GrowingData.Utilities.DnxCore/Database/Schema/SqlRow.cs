@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace GrowingData.Utilities.Database {
-	public class DbRow : Dictionary<string, object> {
+	public class SqlRow : Dictionary<string, object> {
 
 	}
 }

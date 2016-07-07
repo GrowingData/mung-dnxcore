@@ -1,9 +1,9 @@
 ﻿using System;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IO;
 
-using Microsoft.AspNet.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace GrowingData.Mung.Web {
 	public static class HttpResponseExtenstions {

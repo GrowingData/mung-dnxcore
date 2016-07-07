@@ -1,10 +1,10 @@
 ﻿using System;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IO;
 
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Cors;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Cors;
 
 namespace GrowingData.Mung.Web {
 	public class ApiResult : ActionResult {

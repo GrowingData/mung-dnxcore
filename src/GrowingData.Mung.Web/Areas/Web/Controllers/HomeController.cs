@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using System;
-using Microsoft.AspNet.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using GrowingData.Mung;
-using Microsoft.AspNet.Hosting;
-using Microsoft.AspNet.Mvc.ViewEngines;
-using Microsoft.AspNet.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using GrowingData.Mung.Web;
 using GrowingData.Mung.Web.Models;
 

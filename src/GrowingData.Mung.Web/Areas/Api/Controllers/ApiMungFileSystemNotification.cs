@@ -2,8 +2,8 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
-using Microsoft.AspNet.Mvc;
-using Microsoft.AspNet.Hosting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Hosting;
 using GrowingData.Mung.Web.Models;
 using GrowingData.Utilities.DnxCore;
 
@@ -34,7 +34,7 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 		public ActionResult Pause(string name, bool paused) {
 			var notification = Notification.Get(name);
 			if (notification == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 
 			notification.IsPaused = paused;
@@ -58,7 +58,7 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 
 			var notification = Notification.Get(name);
 			if (notification == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 			notification.Name = newNotificationName;
 			notification.Update();
@@ -76,7 +76,7 @@ namespace GrowingData.Mung.Web.Areas.Api.Controllers {
 		public ActionResult Read(string name) {
 			var notification = Notification.Get(name);
 			if (notification == null) {
-				return new HttpNotFoundResult();
+				return new NotFoundResult();
 			}
 
 			return Content(notification.Template);

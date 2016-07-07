@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using GrowingData.Mung.Core;
+using GrowingData.Utilities.Database;
+using GrowingData.Utilities.Csv;
 
 namespace GrowingData.Mung.SqlBatch {
 	public static class SqlBatchChecker {
@@ -123,8 +124,8 @@ namespace GrowingData.Mung.SqlBatch {
 							.Replace("active-", "")
 							.Replace("failed-", "");
 
-						var sqlInsert = new PostgresqlBulkInserter(fnConnection, "mung", table);
-						sqlInsert.Execute(file);
+						var sqlInsert = new PostgresqlBulkInserter(fnConnection);
+						sqlInsert.Execute("mung", table, file);
 
 						File.Move(file, file.Replace("\\" + prefix, "\\loaded-"));
 

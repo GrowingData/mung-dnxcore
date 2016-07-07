@@ -20,7 +20,7 @@ namespace GrowingData.Mung.Relationizer {
 		private string _basePath;
 		//private string _lastTimeString;
 
-		private SortedList<string, DbColumn> _schema;
+		private SortedList<string, SqlColumn> _schema;
 
 		// For the same event type, we might actually have multiple
 		// different schemas (e.g. the event is being logged with different params),
@@ -70,7 +70,7 @@ namespace GrowingData.Mung.Relationizer {
 		public void Write(RelationalEvent evt) {
 			lock (_syncRoot) {
 				if (_schema == null) {
-					_schema = new SortedList<string, DbColumn>();
+					_schema = new SortedList<string, SqlColumn>();
 					foreach (var s in evt.Schema) {
 						_schema.Add(s.ColumnName, s);
 					}
