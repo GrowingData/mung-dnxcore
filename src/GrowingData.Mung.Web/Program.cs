@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Hosting;
 namespace GrowingData.Mung.Web {
 	public class Program {
 		public static void Main(string[] args) {
+			Console.WriteLine("Running in: " + Directory.GetCurrentDirectory());
+
 			var host = new WebHostBuilder()
 				.UseKestrel()
 				.UseContentRoot(Directory.GetCurrentDirectory())

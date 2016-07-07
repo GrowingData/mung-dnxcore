@@ -31,14 +31,18 @@ namespace GrowingData.Utilities.Database {
 		}
 
 		public bool Execute(string targetSchema, string targetTable, string filename) {
-			using (var stream = File.OpenText(filename)) {
-				using (var reader = new CsvReader(stream)) {
+			try {
+				using (var stream = File.OpenText(filename)) {
+					using (var reader = new CsvReader(stream)) {
 
-					BulkInsert(targetSchema, targetTable, reader);
+						BulkInsert(targetSchema, targetTable, reader);
+					}
+
 				}
-
+				return true;
+			} catch (Exception ex) {
+				return false;
 			}
-			return true;
 		}
 
 

@@ -29,6 +29,9 @@ namespace GrowingData.Mung.Web.Models {
 
 		public string EventType {
 			get {
+				if (string.IsNullOrEmpty(Code)) {
+					return null;
+				}
 				var lines = Code.Split('\n').Select(x => x.Trim());
 				var eventTypeLine = lines.FirstOrDefault(x => x.StartsWith(DirectiveEventName));
 

@@ -77,7 +77,9 @@ namespace GrowingData.Mung.Web.Models {
 		public static List<Notification> List(int mungerId) {
 			using (var cn = DatabaseContext.Db.Mung()) {
 				var sql = @"SELECT * FROM notification ORDER BY name";
-				return cn.SelectAnonymous<Notification>(sql, null);
+				return cn.SelectAnonymous<Notification>(sql, null)
+					.Where(n => !string.IsNullOrEmpty(n.Template))
+					.ToList();
 			}
 		}
 

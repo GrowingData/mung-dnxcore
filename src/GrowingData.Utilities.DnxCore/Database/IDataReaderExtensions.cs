@@ -32,6 +32,14 @@ namespace GrowingData.Utilities.Database {
 
 
 		}
+		public static Dictionary<string, string> GetColumnNameKeys(DbDataReader r) {
+			var columnNames = new Dictionary<string, string>();
+			for (var i = 0; i < r.FieldCount; i++) {
+				var key = DataReaderExtensions.StandardiseName(r.GetName(i));
+				columnNames[key] = r.GetName(i);
+			}
+			return columnNames;
+		}
 
 		/// <summary>
 		/// Binds the current row in the reader to a new object of Type T
@@ -42,39 +50,44 @@ namespace GrowingData.Utilities.Database {
 		public static T ReflectResult<T>(DbDataReader r) where T : new() {
 
 			var type = typeof(T);
-			var properties = type.GetProperties().ToDictionary(x => x.Name);
-			var fields = type.GetFields().ToDictionary(x => x.Name);
+			var properties = ReflectPropertyKeys(type);
+			var fields = ReflectFieldKeys(type);
 
-			HashSet<string> columnNames = null;
+			Dictionary<string, string> columnNames = null;
 
 			var obj = new T();
 			if (columnNames == null) {
-				columnNames = new HashSet<string>();
-				for (var i = 0; i < r.FieldCount; i++) {
-					columnNames.Add(r.GetName(i));
-				}
+				columnNames = DataReaderExtensions.GetColumnNameKeys(r);
 			}
 
-			foreach (var p in properties) {
-				if (columnNames.Contains(p.Key)) {
-					if (r[p.Key] != DBNull.Value) {
-						p.Value.SetValue(obj, r[p.Key]);
-					} else {
-						if (p.Value.PropertyType.GetTypeInfo().IsClass) {
-							p.Value.SetValue(obj, null);
-						}
-						// Nullable value like "int?"
-						if (Nullable.GetUnderlyingType(p.Value.PropertyType) != null) {
-							p.Value.SetValue(obj, null);
+			BindProperties(r, properties, columnNames, obj);
+			BindFields(r, fields, columnNames, obj);
 
-						}
-					}
-				}
-			}
+			return obj;
+		}
+
+		public static string StandardiseName(string name) {
+			return name.ToLower().Replace("_", "");
+		}
+
+
+		public static Dictionary<string, FieldInfo> ReflectFieldKeys(Type type) {
+			return type.GetFields().ToDictionary(x => DataReaderExtensions.StandardiseName(x.Name));
+		}
+
+		public static Dictionary<string, PropertyInfo> ReflectPropertyKeys(Type type) {
+			return type.GetProperties().ToDictionary(x => DataReaderExtensions.StandardiseName(x.Name));
+		}
+
+		public static void BindFields<T>(DbDataReader r,
+		Dictionary<string, FieldInfo> fields,
+		Dictionary<string, string> columnNames,
+		T obj) where T : new() {
 			foreach (var p in fields) {
-				if (columnNames.Contains(p.Key)) {
-					if (r[p.Key] != DBNull.Value) {
-						p.Value.SetValue(obj, r[p.Key]);
+				if (columnNames.ContainsKey(p.Key)) {
+					var columnName = columnNames[p.Key];
+					if (r[columnName] != DBNull.Value) {
+						p.Value.SetValue(obj, r[columnName]);
 					} else {
 						if (p.Value.FieldType.GetTypeInfo().IsClass) {
 							p.Value.SetValue(obj, null);
@@ -87,9 +100,29 @@ namespace GrowingData.Utilities.Database {
 					}
 				}
 			}
-
-			return obj;
 		}
 
+		public static void BindProperties<T>(DbDataReader r,
+			Dictionary<string, PropertyInfo> properties,
+			Dictionary<string, string> columnNames,
+			T obj) where T : new() {
+			foreach (var p in properties) {
+				if (columnNames.ContainsKey(p.Key)) {
+					var columnName = columnNames[p.Key];
+					if (r[columnName] != DBNull.Value) {
+						p.Value.SetValue(obj, r[columnName]);
+					} else {
+						if (p.Value.PropertyType.GetTypeInfo().IsClass) {
+							p.Value.SetValue(obj, null);
+						}
+						// Nullable value like "int?"
+						if (Nullable.GetUnderlyingType(p.Value.PropertyType) != null) {
+							p.Value.SetValue(obj, null);
+
+						}
+					}
+				}
+			}
+		}
 	}
 }

@@ -34,7 +34,8 @@
 		"Microsoft.Extensions.Configuration.Json": "1.0.0",
 		"Microsoft.Extensions.Configuration.FileExtensions": "1.0.0",
 		"Microsoft.AspNetCore.Mvc": "1.0.0",
-		"Microsoft.AspNetCore.Diagnostics": "1.0.0"
+		"Microsoft.AspNetCore.Diagnostics": "1.0.0",
+		"Microsoft.AspNetCore.Mvc.TagHelpers": "1.0.0"
 	},
 
 	"tools": {
@@ -67,7 +68,7 @@
 			"wwwroot",
 			"Views",
 			"appsettings.json",
-			"web.config"
+			"config.json"
 		]
 	},
 

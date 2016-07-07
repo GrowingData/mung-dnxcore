@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 using System;
+using System.IO;
 using Microsoft.AspNetCore.StaticFiles;
 
 using Microsoft.AspNetCore.Builder;
@@ -19,11 +20,15 @@ namespace GrowingData.Mung.Web {
 
 		public Startup(IHostingEnvironment env) {
 
+			var appRootPath = new DirectoryInfo(env.WebRootPath).Parent.FullName;
+
 			// Set up configuration sources.
 			var builder = new ConfigurationBuilder()
+				.SetBasePath(appRootPath)
+				.AddEnvironmentVariables()
 				.AddJsonFile("config.json");
 			//All environment variables in the process's context flow in as configuration values.
-			//.AddEnvironmentVariables();
+			//
 
 			Configuration = builder.Build();
 

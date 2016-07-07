@@ -125,10 +125,11 @@ namespace GrowingData.Mung.SqlBatch {
 							.Replace("failed-", "");
 
 						var sqlInsert = new PostgresqlBulkInserter(fnConnection);
-						sqlInsert.Execute("mung", table, file);
-
-						File.Move(file, file.Replace("\\" + prefix, "\\loaded-"));
-
+						if (sqlInsert.Execute("mung", table, file)) {
+							// Execute might not suceed because the file may be in the process of being
+							// moved
+							File.Move(file, file.Replace("\\" + prefix, "\\loaded-"));
+						}
 
 						Console.WriteLine(" Done.");
 					} catch (Exception ex) {
@@ -150,7 +151,7 @@ namespace GrowingData.Mung.SqlBatch {
 				}
 
 				File.AppendAllText(Path.Combine(dataPath, "sql-batch-check.log"), "Finished: " + DateTime.UtcNow.ToString() + "\r\n");
-				
+
 			} catch (Exception ex) {
 				var exceptionLogPath = Path.Combine(dataPath, "sql-batch-exceptions.log");
 				var errorDetails = string.Format("{0}	{1}: {2}\r\n{3}",

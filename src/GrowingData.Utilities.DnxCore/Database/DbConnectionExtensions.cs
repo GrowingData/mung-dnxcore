@@ -146,58 +146,25 @@ namespace GrowingData.Utilities.Database {
 
 
 
-
 		public static List<T> ReflectResults<T>(DbDataReader r) where T : new() {
 
 			var type = typeof(T);
 
-			var properties = type.GetProperties().ToDictionary(x => x.Name);
-			var fields = type.GetFields().ToDictionary(x => x.Name);
+			var properties = DataReaderExtensions.ReflectPropertyKeys(type);
+			var fields = DataReaderExtensions.ReflectFieldKeys(type);
 
-			HashSet<string> columnNames = null;
+			Dictionary<string, string> columnNames = null;
 			List<T> results = new List<T>();
 			while (r.Read()) {
 				var obj = new T();
 
 				if (columnNames == null) {
-					columnNames = new HashSet<string>();
-					for (var i = 0; i < r.FieldCount; i++) {
-						columnNames.Add(r.GetName(i));
-					}
+					columnNames = DataReaderExtensions.GetColumnNameKeys(r);
 				}
 
-				foreach (var p in properties) {
-					if (columnNames.Contains(p.Key)) {
-						if (r[p.Key] != DBNull.Value) {
-							p.Value.SetValue(obj, r[p.Key]);
-						} else {
-							if (p.Value.PropertyType.GetTypeInfo().IsClass) {
-								p.Value.SetValue(obj, null);
-							}
-							// Nullable value like "int?"
-							if (Nullable.GetUnderlyingType(p.Value.PropertyType) != null) {
-								p.Value.SetValue(obj, null);
+				DataReaderExtensions.BindProperties(r, properties, columnNames, obj);
+				DataReaderExtensions.BindFields(r, fields, columnNames, obj);
 
-							}
-						}
-					}
-				}
-				foreach (var p in fields) {
-					if (columnNames.Contains(p.Key)) {
-						if (r[p.Key] != DBNull.Value) {
-							p.Value.SetValue(obj, r[p.Key]);
-						} else {
-							if (p.Value.FieldType.GetTypeInfo().IsClass) {
-								p.Value.SetValue(obj, null);
-							}
-							// Nullable value like "int?"
-							if (Nullable.GetUnderlyingType(p.Value.FieldType) != null) {
-								p.Value.SetValue(obj, null);
-							}
-
-						}
-					}
-				}
 				results.Add(obj);
 			}
 
@@ -291,7 +258,7 @@ namespace GrowingData.Utilities.Database {
 				return cmd.ExecuteNonQuery();
 			}
 		}
-		
+
 
 		public static void SelectForEach(this DbConnection cn, string sql, object ps, Action<DbDataReader> fn) {
 			using (var cmd = cn.CreateCommand(sql, ps)) {
